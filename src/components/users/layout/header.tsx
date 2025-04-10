@@ -1,71 +1,59 @@
-// components/layout/Header.tsx
 "use client";
-
-import { Moon, Sun } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Mic, Image as ImageIcon, Video, Sun, Moon } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Header() {
-  const [theme, setTheme] = useState("light");
+  const [activeTab, setActiveTab] = useState("audio");
+  const { theme, setTheme } = useTheme();
 
-  // Handle theme toggle
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.classList.toggle("dark");
-    localStorage.setItem("theme", newTheme);
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  // Initialize theme from localStorage on component mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedTheme =
-        localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-
-      setTheme(savedTheme);
-      if (savedTheme === "dark") {
-        document.documentElement.classList.add("dark");
-      }
-    }
-  }, []);
+  const tabs = [
+    {
+      id: "audio",
+      label: "Audio",
+      icon: <Mic className="w-5 h-5" />,
+    },
+    {
+      id: "image",
+      label: "Image",
+      icon: <ImageIcon className="w-5 h-5" />,
+    },
+    {
+      id: "video",
+      label: "Video",
+      icon: <Video className="w-5 h-5" />,
+    },
+  ];
 
   return (
-    <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 z-10">
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-8">
-          {/* Main Navigation Links */}
-          <nav className="flex items-center gap-6">
-            <Link
-              href="/audio"
-              className="font-medium px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-white"
+    <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-white/80 backdrop-blur-xl dark:bg-gray-950/80 px-4">
+      <div className="flex items-center gap-4">
+        <SidebarTrigger className="-ml-1" />
+        <nav className="flex items-center gap-2">
+          {tabs.map((tab) => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? "default" : "ghost"}
+              onClick={() => setActiveTab(tab.id)}
+              className="flex items-center gap-2"
             >
-              Audio
-            </Link>
-            <Link
-              href="/chat"
-              className="font-medium px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
-            >
-              Chat
-            </Link>
-            <Link
-              href="/video"
-              className="font-medium px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
-            >
-              Video
-            </Link>
-          </nav>
-        </div>
+              {tab.icon}
+              <span className="hidden md:inline">{tab.label}</span>
+            </Button>
+          ))}
+        </nav>
+      </div>
 
-        <div className="flex items-center gap-4">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
-            aria-label="Toggle theme"
-          >
-            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-        </div>
+      <div className="flex items-center gap-4">
+        <Button variant="outline" size="icon" onClick={toggleTheme} className="hover:bg-secondary">
+          {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </Button>
       </div>
     </header>
   );

@@ -6,7 +6,6 @@ import FeaturedVoices from "@/components/users/audio/FeaturedVoices";
 import TextInputArea from "@/components/users/audio/TextInputArea";
 import { useState } from "react";
 
-
 export default function TextToSpeechPage() {
   const [text, setText] = useState("");
   const [selectedVoice, setSelectedVoice] = useState("speech-02-hd");
@@ -15,8 +14,6 @@ export default function TextToSpeechPage() {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6 dark:text-white">Create Lifelike Speech</h1>
-
-      {/* Text Input Area with Story Templates */}
       <TextInputArea
         text={text}
         onTextChange={setText}

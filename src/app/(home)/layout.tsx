@@ -1,30 +1,22 @@
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import Header from "@/components/users/layout/header";
-import Sidebar from "@/components/users/layout/side-bar";
-import { ReactNode } from "react";
+import { AppSidebar } from "@/components/users/layout/side-bar";
+import { ThemeProvider } from "next-themes";
 
-
-interface RootLayoutProps {
-  children: ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
-        <div className="flex min-h-screen bg-white dark:bg-gray-950">
-          {/* Sidebar chung cho toàn bộ website */}
-          <Sidebar />
-
-          {/* Phần nội dung chính bao gồm header và main content */}
-          <div className="flex-1 flex flex-col">
-            {/* Header chung */}
+    <ThemeProvider attribute="class" defaultTheme="system">
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full bg-white dark:bg-gray-950">
+          <AppSidebar />
+          <SidebarInset className="flex-1">
             <Header />
-
-            {/* Main content area */}
-            <main className="flex-1">{children}</main>
-          </div>
+            <div className="flex flex-1 overflow-auto">
+              <main className="flex-1 p-4">{children}</main>
+            </div>
+          </SidebarInset>
         </div>
-      </body>
-    </html>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }
