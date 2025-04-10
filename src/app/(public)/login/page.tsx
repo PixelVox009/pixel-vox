@@ -10,6 +10,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { signIn } from "next-auth/react";
 
 // Định nghĩa schema cho form
 const formSchema = z.object({
@@ -55,24 +56,21 @@ export default function LoginPage() {
       setSuccess(null);
       setIsSubmitting(true);
 
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Đăng nhập thất bại");
+      if (res?.error) {
+        throw new Error(res.error);
       }
-      console.log("chuyển đến trang chủ");
-      window.location.href = "/dashboard";
-      // router.push("/dashboard");
+
+      if (res?.ok) {
+        router.push("/dashboard");
+      }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Đăng nhập thất bại");
     } finally {
       setIsSubmitting(false);
     }

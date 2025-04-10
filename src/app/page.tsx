@@ -1,80 +1,71 @@
-import { Button } from "@/components/ui/button";
+// components/home/hero-section.tsx
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Sparkles } from "lucide-react";
 
-
-export default function Home() {
+export function HeroSection() {
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Header */}
-      <header className="bg-white shadow-sm py-4">
-        <div className="container flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-primary">My App</h1>
-          <div className="flex gap-4">
-            <Link href="/login">
-              <Button variant="outline">Đăng nhập</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Đăng ký</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <main className="flex-1">
-        <section className="bg-gray-50 py-24">
-          <div className="container">
-            <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-4xl font-bold mb-6 sm:text-5xl md:text-6xl">Ứng dụng Next.js với MongoDB</h1>
-              <p className="text-xl text-muted-foreground mb-8">
-                Hệ thống đăng nhập/đăng ký hoàn chỉnh sử dụng các công nghệ hiện đại.
+    <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+      <div className="container px-4 md:px-6">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
+          <div className="flex flex-col justify-center space-y-4">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                Tạo nội dung AI
+                <br />
+                chuyên nghiệp và nhanh chóng
+              </h1>
+              <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                Chuyển đổi ý tưởng của bạn thành âm thanh, hình ảnh và video chất lượng cao chỉ với vài cú nhấp chuột.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/register">
-                  <Button size="lg">Bắt đầu ngay</Button>
-                </Link>
-                <Link href="/login">
-                  <Button variant="outline" size="lg">
-                    Đăng nhập
-                  </Button>
-                </Link>
-              </div>
+            </div>
+            <div className="flex flex-col gap-2 min-[400px]:flex-row">
+              <Link href="/register">
+                <Button size="lg" className="gap-1.5">
+                  Bắt đầu ngay <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/about">
+                <Button size="lg" variant="outline">
+                  Tìm hiểu thêm
+                </Button>
+              </Link>
             </div>
           </div>
-        </section>
-
-        {/* Features */}
-        <section className="py-16">
-          <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-12">Tính năng</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-semibold mb-3">Next.js</h3>
-                <p className="text-muted-foreground">
-                  Xây dựng trên Next.js với hỗ trợ đầy đủ cho cả frontend và backend.
-                </p>
+          <div className="hidden lg:block">
+            <div className="relative h-full">
+              {/* Abstract shape decorations */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+                <div className="rounded-xl bg-gradient-to-br from-blue-100 via-blue-200 to-purple-100 p-8 shadow-lg dark:from-blue-900 dark:via-blue-800 dark:to-purple-900">
+                  <div className="flex flex-col space-y-2">
+                    <div className="rounded-lg bg-white p-2 shadow-sm dark:bg-gray-800">
+                      <div className="h-6 w-32 rounded-md bg-blue-100 dark:bg-blue-700"></div>
+                    </div>
+                    <div className="rounded-lg bg-white p-2 shadow-sm dark:bg-gray-800">
+                      <div className="h-6 w-40 rounded-md bg-blue-100 dark:bg-blue-700"></div>
+                    </div>
+                    <div className="rounded-lg bg-white p-2 shadow-sm dark:bg-gray-800">
+                      <div className="h-6 w-36 rounded-md bg-blue-100 dark:bg-blue-700"></div>
+                    </div>
+                    <div className="rounded-lg bg-white p-2 shadow-sm dark:bg-gray-800">
+                      <div className="h-6 w-28 rounded-md bg-blue-100 dark:bg-blue-700"></div>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <div className="rounded-lg bg-blue-500 p-2 text-white shadow-sm">
+                      <Sparkles className="h-5 w-5" />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-semibold mb-3">MongoDB</h3>
-                <p className="text-muted-foreground">
-                  Sử dụng MongoDB để lưu trữ dữ liệu người dùng an toàn và hiệu quả.
-                </p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-semibold mb-3">Shadcn UI</h3>
-                <p className="text-muted-foreground">Giao diện đẹp mắt với các component có thể tái sử dụng.</p>
-              </div>
+              <div className="absolute left-[40%] top-[30%] h-32 w-32 rounded-full bg-blue-500/20 blur-3xl"></div>
+              <div className="absolute left-[10%] top-[60%] h-32 w-32 rounded-full bg-purple-500/20 blur-3xl"></div>
             </div>
           </div>
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-100 py-8">
-        <div className="container text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} My App. Đã đăng ký bản quyền.
         </div>
-      </footer>
-    </div>
+      </div>
+    </section>
   );
 }
+
+export default HeroSection;
