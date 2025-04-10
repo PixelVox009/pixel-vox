@@ -1,12 +1,12 @@
 
+import dbConnect from "@/lib/db";
 import clientPromise from "@/lib/mongodb";
 import { User } from "@/models/User";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import dbConnect from "@/lib/db";
 export const authOptions: NextAuthOptions = {
     adapter: MongoDBAdapter(clientPromise),
     providers: [
@@ -90,8 +90,6 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 await dbConnect();
                 const existingUser = await User.findById(user.id);
-
-                // Đánh dấu đã đăng nhập
                 await User.findByIdAndUpdate(user.id, {
                     $set: {
                         lastLoginAt: new Date(),
@@ -104,3 +102,4 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+
