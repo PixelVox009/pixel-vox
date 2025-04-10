@@ -14,13 +14,16 @@ interface FeaturedVoicesProps {
   onSelectVoiceType: (voiceType: string) => void;
 }
 
-export default function FeaturedVoices({ onSelectVoice, onSelectVoiceType }: FeaturedVoicesProps) {
+export default function FeaturedVoices({
+  onSelectVoice,
+  onSelectVoiceType,
+}: FeaturedVoicesProps) {
   // Sample featured voices
   const voices: VoiceProps[] = [
     {
       id: "radiant-girl",
       name: "Radiant Girl",
-      image: "/voices/radiant-girl.jpg",
+      image: "/image.webp",
       tags: ["English", "Female", "Young Adult", "Lively", "EN-US (General)"],
     },
     {
@@ -70,7 +73,9 @@ export default function FeaturedVoices({ onSelectVoice, onSelectVoiceType }: Fea
               }}
             />
             {voice.copyFeature && (
-              <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs p-0.5 rounded-bl">Copy</div>
+              <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs p-0.5 rounded-bl">
+                Copy
+              </div>
             )}
           </div>
 
@@ -79,7 +84,12 @@ export default function FeaturedVoices({ onSelectVoice, onSelectVoiceType }: Fea
             <h3 className="font-medium dark:text-white flex items-center gap-1">
               {voice.name}
               {voice.copyFeature && (
-                <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

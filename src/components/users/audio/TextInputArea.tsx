@@ -1,16 +1,27 @@
 // components/text-to-speech/TextInputArea.tsx
 import { useState } from "react";
-import { Book, ShoppingCart, Sparkles, ArrowDown, Download } from "lucide-react";
+import {
+  Book,
+  ShoppingCart,
+  Sparkles,
+  ArrowDown,
+  Download,
+} from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 interface TextInputAreaProps {
-  text: string;
-  onTextChange: (text: string) => void;
   selectedVoice: string;
   selectedVoiceType: string;
 }
 
-export default function TextInputArea({ text, onTextChange, selectedVoice, selectedVoiceType }: TextInputAreaProps) {
+export default function TextInputArea({
+  selectedVoice,
+  selectedVoiceType,
+}: TextInputAreaProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [text, setText] = useState("");
 
   const handleGenerate = () => {
     if (!text.trim()) return;
@@ -30,34 +41,36 @@ export default function TextInputArea({ text, onTextChange, selectedVoice, selec
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div className="w-full bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden p-4">
       {/* Text input */}
-      <div className="p-4">
-        <textarea
-          value={text}
-          onChange={(e) => onTextChange(e.target.value)}
-          placeholder="Start typing here to create lifelike speech in multiple languages, voices and emotions with Minimax AI."
-          className="w-full h-32 resize-none border-0 focus:ring-0 bg-transparent dark:text-white placeholder-gray-400 dark:placeholder-gray-600"
-        />
-      </div>
 
+      <Textarea
+        value={text}
+        placeholder="Start typing here to create lifelike speech in multiple languages, voices and emotions with Pixel Vox."
+        className="w-full border-transparent md:text-base p-0 h-[36vh] resize-none focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent dark:text-white placeholder-gray-400 dark:placeholder-gray-600"
+        onChange={(e) => setText(e.target.value)}
+      />
+
+      <Separator />
       {/* Template options */}
-      <div className="border-t border-gray-200 dark:border-gray-800 p-4">
+      <div className="border-gray-200 dark:border-gray-800 p-4">
         <div className="flex flex-wrap gap-3">
           {templateOptions.map((option, index) => (
-            <button
+            <Button
               key={index}
+              variant={"ghost"}
               className="flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               {option.icon}
               <span>{option.label}</span>
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
+      <Separator />
       {/* Voice selection and generate button */}
-      <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
+      <div className=" border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
           {/* Voice selector dropdown */}
           <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2">
@@ -70,16 +83,21 @@ export default function TextInputArea({ text, onTextChange, selectedVoice, selec
             <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center">
               <span className="text-blue-600 dark:text-blue-400">T</span>
             </div>
-            <span className="text-gray-700 dark:text-gray-300">{selectedVoiceType}</span>
+            <span className="text-gray-700 dark:text-gray-300">
+              {selectedVoiceType}
+            </span>
           </div>
         </div>
 
         {/* Generate button */}
         <div className="flex items-center gap-2">
-          <button className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+          <Button
+            variant={"ghost"}
+            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+          >
             <Download size={20} />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleGenerate}
             disabled={isGenerating || !text.trim()}
             className={`
@@ -93,7 +111,7 @@ export default function TextInputArea({ text, onTextChange, selectedVoice, selec
           >
             <Sparkles size={16} />
             {isGenerating ? "Generating..." : "Generate"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
