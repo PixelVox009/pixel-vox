@@ -40,11 +40,12 @@ export async function POST(request: Request) {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log("🚀 ~ POST ~ hashedPassword:", hashedPassword)
-
+        const paymentCode = Math.floor(100000 + Math.random() * 900000).toString();
         // Create user
         const user = await User.create({
             name,
             email,
+            paymentCode,
             hashedPassword,
             tokenBalance: 10, 
         });

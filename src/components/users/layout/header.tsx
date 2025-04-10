@@ -1,9 +1,9 @@
 "use client";
-import { Mic, Image as ImageIcon, Video, Sun, Moon } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Image as ImageIcon, Link, Mic, Moon, Plus, Sun, Video } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useState } from "react";
 
 export default function Header() {
   const [activeTab, setActiveTab] = useState("audio");
@@ -51,6 +51,13 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
+        <Link to="/credits">
+          {" "}
+          <Button>
+            <Plus />
+            Credits
+          </Button>
+        </Link>
         <Button variant="outline" size="icon" onClick={toggleTheme} className="hover:bg-secondary">
           {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </Button>
