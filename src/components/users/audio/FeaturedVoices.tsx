@@ -29,13 +29,13 @@ export default function FeaturedVoices({
     {
       id: "expressive-narrator",
       name: "Expressive Narrator",
-      image: "/voices/expressive-narrator.jpg",
+      image: "/image2.webp",
       tags: ["English", "Male", "Adult", "Audiobook", "EN-British"],
     },
     {
       id: "magnetic-voiced-male",
       name: "Magnetic-voiced Male",
-      image: "/voices/magnetic-male.jpg",
+      image: "/image3.webp",
       tags: ["English", "Male", "Adult", "Ads", "EN-US (General)"],
     },
   ];

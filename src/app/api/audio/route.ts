@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 
     const audios = await Audio.find()
       .skip(skip)
-      .limit(+limit)
+      // .limit(+limit)
       .sort({ [sortBy]: sortOrder });
 
     const totalAudios = await Audio.countDocuments();
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
     if (error) {
       return NextResponse.json(
-        { error: error.details.map((e: any) => e.message) },
+        { error: error.details.map((e: Joi.ValidationErrorItem) => e.message) },
         { status: 400 }
       );
     }

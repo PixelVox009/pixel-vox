@@ -3,5 +3,8 @@ type Audio = {
   title: string;
   status: string;
   progress: number;
+  audioLink: string;
+  completedSegments: number;
+  totalSegments: number;
   createdAt: string;
 };
