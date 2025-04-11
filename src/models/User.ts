@@ -1,5 +1,14 @@
 import mongoose, { Schema, model, models } from 'mongoose';
-
+export interface IUser {
+    name: string;
+    email: string;
+    hashedPassword: string;
+    image: string;
+    role: 'user' | 'admin';
+    tokenBalance: number;
+    lastLoginAt: Date | null;
+    paymentCode: string;
+}
 const UserSchema = new Schema({
     name: {
         type: String,
@@ -28,6 +37,12 @@ const UserSchema = new Schema({
         type: Date,
         default: null,
     },
+    paymentCode: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    },
 }, { timestamps: true });
 
-export const User = models.User || model('User', UserSchema);
+export const User = models.User || mongoose.model<IUser>('User', UserSchema);

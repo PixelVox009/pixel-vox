@@ -175,7 +175,24 @@ export default function RegisterPage() {
               />
               {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
             </div>
-
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  className="mr-2"
+                  checked={termsValue}
+                  onChange={(e) => setValue("terms", e.target.checked)}
+                />
+                <label htmlFor="terms" className="text-sm">
+                  Tôi đồng ý với{" "}
+                  <a href="#" className="text-primary">
+                    điều khoản sử dụng
+                  </a>
+                </label>
+              </div>
+              {errors.terms && <p className="text-sm text-red-500">{errors.terms.message}</p>}
+            </div>
             <div className="pt-4">
               <Button type="submit" className="w-full gap-1.5" disabled={isSubmitting} size="lg">
                 {isSubmitting ? "Đang xử lý..." : "Đăng ký ngay"}{" "}
