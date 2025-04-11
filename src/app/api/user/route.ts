@@ -1,21 +1,27 @@
 // app/api/users/me/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { User } from "@/models/User";
-import Wallet from "@/models/wallet";
+import { IUser, User } from "@/models/User";
+import Wallet, { IWallet } from "@/models/wallet";
+import { Types } from "mongoose";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+
+interface UserResponse {
+    id: string;
+    name: string | null;
+    email: string | null;
+    paymentCode?: string;
+    balance: number;
+}
 
 export async function GET(req: NextRequest) {
     try {
-        // Kiểm tra phiên đăng nhập
         const session = await getServerSession(authOptions);
-
         if (!session?.user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Tìm user hiện tại và nạp thông tin wallet
-        const user = await User.findOne({
+        const user = await User.findOne<IUser>({
             $or: [
                 { _id: session.user.id },
                 { email: session.user.email }
@@ -26,20 +32,24 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        // Lấy thông tin wallet
-        const wallet = await Wallet.findOne({ customer: user._id }).lean();
+        const wallet = await Wallet.findOne<IWallet>({ customer: user._id }).lean();
 
-        // Trả về thông tin người dùng
-        return NextResponse.json({
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            paymentCode: user.paymentCode, // Sử dụng trực tiếp từ bảng User
-            balance: wallet?.balance || 0
-        });
+        const response: UserResponse = {
+            id: typeof user._id === 'string'
+                ? user._id
+                : user._id instanceof Types.ObjectId
+                    ? user._id.toString()
+                    : String(user._id),
+            name: user.name ?? null,
+            email: user.email ?? null,
+            paymentCode: user.paymentCode,
+            balance: wallet?.balance ?? 0
+        };
+
+        return NextResponse.json(response);
 
     } catch (error) {
-        console.error("Lỗi lấy thông tin người dùng:", error);
+        console.error("Error fetching user information:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

@@ -5,6 +5,7 @@ import { Compass, ImagePlus, MessageSquare, Mic2, VolumeX, type LucideIcon } fro
 import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const navItems: {
   name: string;
@@ -30,7 +31,7 @@ export function NavProjects() {
           return (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild>
-                <a
+                <Link
                   href={item.url}
                   className={`flex items-center gap-3 w-full group py-3 px-4 rounded-lg transition-colors
                     ${isActive ? "bg-primary/10 text-primary" : "hover:bg-secondary/50"}
@@ -48,7 +49,7 @@ export function NavProjects() {
                   >
                     {item.name}
                   </span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );
