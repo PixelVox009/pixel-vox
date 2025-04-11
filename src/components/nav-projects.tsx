@@ -1,10 +1,11 @@
 "use client";
 
-import { Compass, MessageSquare, Mic2, VolumeX, type LucideIcon } from "lucide-react";
+import { Compass, ImagePlus, MessageSquare, Mic2, VolumeX, type LucideIcon } from "lucide-react";
 
 import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const navItems: {
   name: string;
@@ -12,6 +13,7 @@ const navItems: {
   icon: LucideIcon;
 }[] = [
   { name: "Explore", url: "/audio", icon: Compass },
+  { name: "Image", url: "/image", icon: ImagePlus },
   { name: "Text to Speech", url: "/text-to-speech", icon: MessageSquare },
   { name: "Voices", url: "/voices", icon: Mic2 },
   { name: "Voice Isolator", url: "/voice-isolator", icon: VolumeX },
@@ -29,7 +31,7 @@ export function NavProjects() {
           return (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild>
-                <a
+                <Link
                   href={item.url}
                   className={`flex items-center gap-3 w-full group py-3 px-4 rounded-lg transition-colors
                     ${isActive ? "bg-primary/10 text-primary" : "hover:bg-secondary/50"}
@@ -47,7 +49,7 @@ export function NavProjects() {
                   >
                     {item.name}
                   </span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );

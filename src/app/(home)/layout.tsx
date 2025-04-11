@@ -1,6 +1,8 @@
+import Providers from "@/components/providers";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import Header from "@/components/users/layout/header";
 import { AppSidebar } from "@/components/users/layout/side-bar";
+
 import { ThemeProvider } from "next-themes";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -11,8 +13,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <AppSidebar />
           <SidebarInset className="flex-1">
             <Header />
-            <div className="flex flex-1 overflow-auto">
-              <main className="flex-1 p-4">{children}</main>
+            <div className="">
+              <Providers>{children}</Providers>
             </div>
           </SidebarInset>
         </div>
