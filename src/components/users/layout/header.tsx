@@ -1,21 +1,29 @@
 "use client";
-import { Mic, Image as ImageIcon, Video, Sun, Moon } from "lucide-react";
+
+import {
+  Mic,
+  Image as ImageIcon,
+  Video,
+  Sun,
+  Moon,
+  Flower,
+} from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { useTheme } from "next-themes";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Flower,
-  Image as ImageIcon,
-  Mic,
-  Moon,
-  Sun,
-  Video,
-} from "lucide-react";
-import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 // Định nghĩa các interface
 interface TokenBalance {
@@ -171,6 +179,133 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="flex items-center gap-1 px-3 h-9"
+            >
+              <Flower size={16} color="#b83fd9" />
+              <span className="text-xl font-medium">
+                {isLoading ? "..." : balanceData?.balance.toLocaleString()}
+              </span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-xl md:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl">Itemized Bills</DialogTitle>
+            </DialogHeader>
+
+            {creditsDetails && (
+              <div className="space-y-6">
+                {/* Credits Summary */}
+                <div className="grid grid-cols-9 gap-2 text-center">
+                  <div className="col-span-2 text-left">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Remaining Credits
+                    </div>
+                    <div className="text-xl font-semibold text-purple-500">
+                      {creditsDetails.remaining.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    =
+                  </div>
+                  <div className="col-span-1">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Membership Credits
+                    </div>
+                    <div className="font-medium">
+                      {creditsDetails.membership.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    +
+                  </div>
+                  <div className="col-span-1">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Top-up Credits
+                    </div>
+                    <div className="font-medium">
+                      {formatVndToUsd(creditsDetails.topup)}
+                    </div>
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    +
+                  </div>
+                  <div className="col-span-1">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Bonus Credits
+                    </div>
+                    <div className="font-medium">
+                      {creditsDetails.bonus.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Credits History */}
+                <div className="space-y-4 mt-4">
+                  {transactionHistory.length > 0 ? (
+                    transactionHistory.map((transaction, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center"
+                      >
+                        <div>
+                          <div className="font-medium">
+                            {transaction.type === "bank"
+                              ? "Top-up Credits"
+                              : transaction.description}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {formatDate(transaction.createdAt)}
+                          </div>
+                          {transaction.amount > 0 && (
+                            <div className="text-xs text-gray-400">
+                              {formatVndToUsd(transaction.amount)}
+                            </div>
+                          )}
+                        </div>
+                        <div
+                          className={`font-semibold ${
+                            transaction.tokensEarned > 0
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {transaction.tokensEarned > 0 ? "+" : ""}
+                          {transaction.tokensEarned.toLocaleString()}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500">
+                      No transaction history
+                    </div>
+                  )}
+                </div>
+
+                {/* USD Conversion Note */}
+                <div className="text-xs text-gray-500 text-center">
+                  <p>1 credit = $1 = {VND_TO_USD_RATE.toLocaleString()} VND</p>
+                </div>
+
+                {/* Buy Credits Button */}
+                <div className="flex justify-end pt-4">
+                  <DialogClose asChild>
+                    <Button
+                      onClick={handleBuyCredits}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      Buy Credits
+                    </Button>
+                  </DialogClose>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         <Button
           variant="outline"
           size="icon"
