@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 // Định nghĩa các interface
 interface TokenBalance {
@@ -71,7 +71,8 @@ const fetchTransactionHistory = async (): Promise<Transaction[]> => {
 };
 
 export default function Header() {
-  const [activeTab, setActiveTab] = useState("audio");
+  const pathname = usePathname();
+  const [activeTab, setActiveTab] = useState(pathname.slice(1));
   const { theme, setTheme } = useTheme();
   const router = useRouter();
 

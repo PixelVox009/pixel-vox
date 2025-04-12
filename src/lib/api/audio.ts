@@ -6,7 +6,7 @@ export const audioService = {
       const { data } = await api.get("/audio", {});
       return data;
     } catch (error) {
-      console.error("Error fetching audios:", error);
+      console.error("Error fetching audio:", error);
       throw error;
     }
   },
@@ -15,7 +15,7 @@ export const audioService = {
       const { data } = await api.post("/audio/generate", { textContent });
       return data;
     } catch (error) {
-      console.error("Error fetching audios:", error);
+      console.error("Error fetching audio:", error);
       throw error;
     }
   },
@@ -24,7 +24,7 @@ export const audioService = {
       const { data } = await api.delete("/audio/" + id);
       return data;
     } catch (error) {
-      console.error("Error fetching audios:", error);
+      console.error("Error fetching audio:", error);
       throw error;
     }
   },

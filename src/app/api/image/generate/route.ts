@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import dbConnect from "@/lib/db";
 import { Image } from "@/models/Image";
+import { autoSplitStory } from "@/utils/splitStory";
 
 const schema = Joi.object({
   textContent: Joi.string().required(),
@@ -25,11 +26,14 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    const orderId = new Date().getTime();
+    const contentSegments = autoSplitStory(value.textContent);
 
     const { data: resData } = await axios.post(
       `${process.env.IMAGE_SERVER_URL}/tool-service-api/create-image-by-customer`,
       {
-        thumbnailsText: [value.textContent],
+        thumbnailsText: contentSegments,
+        orderId,
       },
       {
         headers: {
@@ -39,7 +43,6 @@ export async function POST(req: NextRequest) {
     );
     const imageService = resData.data;
 
-    const orderId = new Date().getTime();
     const title = value.textContent.split(" ").slice(0, 8).join(" ").trim();
 
     // Create Image
@@ -52,7 +55,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         statusCode: 201,
-        message: "Tạo image thành công",
+        message: "Image created successfully",
         data: image,
       },
       { status: 201 }

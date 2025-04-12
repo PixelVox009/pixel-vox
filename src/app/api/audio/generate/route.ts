@@ -49,7 +49,6 @@ export async function POST(req: NextRequest) {
         }
       );
       const audioService = resData.data;
-      console.log(`Độ dài nội dung: ${contentSegments[i].length} ký tự`);
 
       segmentList.push({
         serviceId: audioService.serviceId,
@@ -71,7 +70,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         statusCode: 201,
-        message: "Tạo audio thành công",
+        message: "Audio created successfully",
         data: audio,
       },
       { status: 201 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import TextInputArea from "@/components/TextInputArea";
 import { DataTable } from "@/components/DataTable";
@@ -10,19 +10,25 @@ import { columns } from "@/components/users/image/columns";
 
 export default function ImageGenerationPage() {
   const [text, setText] = useState("");
-  const [isPending, setIsPending] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["image"],
     queryFn: imageService.getImageList,
   });
 
+  // Mutations
+  const { isPending, mutate } = useMutation({
+    mutationFn: imageService.generateImage,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["image"] });
+    },
+  });
+
   const handleGenerate = () => {
     if (!text.trim()) return;
-
-    // mutate(text);
-    setIsPending(true);
-    setTimeout(() => setIsPending(false), 3000);
+    mutate(text);
   };
 
   return (

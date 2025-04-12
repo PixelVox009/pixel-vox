@@ -57,7 +57,7 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
           <TooltipTrigger asChild>
             <Button
               size={"icon"}
-              disabled={!audio.audioLink}
+              disabled={!audio.audioLink || audio.progress !== 100}
               className="h-8 w-8 p-0 dark:text-white dark:bg-gray-800 dark:border-gray-700"
             >
               <ArrowDownToLine size={16} />

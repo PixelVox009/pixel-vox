@@ -24,30 +24,30 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { audioService } from "@/lib/api/audio";
+import { imageService } from "@/lib/api/image";
 
 type DataTableActionsProps<TData> = {
   row: Row<TData>;
 };
 
 function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
-  const audio = row.original as Image;
+  const image = row.original as Image;
 
   const [openDialog, setOpenDialog] = useState(false);
   const queryClient = useQueryClient();
 
   // Mutations
   const { isPending, mutate } = useMutation({
-    mutationFn: audioService.deleteAudio,
+    mutationFn: imageService.deleteImage,
     onSuccess: () => {
-      toast.success("Xoá audio thành công");
+      toast.success("Xoá image thành công");
 
-      queryClient.invalidateQueries({ queryKey: ["audio"] });
+      queryClient.invalidateQueries({ queryKey: ["image"] });
     },
   });
 
   const handleDelete = () => {
-    mutate(audio._id);
+    mutate(image._id);
   };
 
   return (
@@ -57,7 +57,7 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
           <TooltipTrigger asChild>
             <Button
               size={"icon"}
-              disabled={!audio.imageLink}
+              disabled={!image.imageLink}
               className="h-8 w-8 p-0 dark:text-white dark:bg-gray-800 dark:border-gray-700"
             >
               <ArrowDownToLine size={16} />
