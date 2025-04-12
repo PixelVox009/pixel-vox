@@ -12,9 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Image, LogIn, Music, Sparkles, Video } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 
-// Định nghĩa schema cho form
 const formSchema = z.object({
   email: z.string().email({
     message: "Email không hợp lệ.",
@@ -30,10 +29,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [role, setRole] = useState<"user" | "admin">("user");
   const router = useRouter();
   const searchParams = useSearchParams();
-
   useEffect(() => {
     const successMessage = searchParams.get("success");
     if (successMessage) {
@@ -59,12 +56,10 @@ export default function LoginPage() {
       setSuccess(null);
       setIsSubmitting(true);
 
-      // Thêm role vào request đăng nhập
       const res = await signIn("credentials", {
         redirect: false,
         email: values.email,
         password: values.password,
-        role: role, 
       });
 
       if (res?.error) {
@@ -72,8 +67,9 @@ export default function LoginPage() {
       }
 
       if (res?.ok) {
-        if (role === "admin") {
-          router.push("/admin/dashboard");
+        const session = await getSession();
+        if (session?.user.role === "admin") {
+          router.push("admin/dashboard");
         } else {
           router.push("/audio");
         }
@@ -165,7 +161,7 @@ export default function LoginPage() {
 
             <div className="pt-2">
               <Button type="submit" className="w-full gap-1.5" disabled={isSubmitting} size="lg">
-                {isSubmitting ? "Đang xử lý..." : `Đăng nhập`}
+                {isSubmitting ? "Đang xử lý..." : "Đăng nhập"}
                 {!isSubmitting && <ArrowRight className="h-4 w-4 ml-1" />}
               </Button>
             </div>

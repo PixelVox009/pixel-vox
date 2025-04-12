@@ -33,11 +33,11 @@ const ImportantNotes: React.FC = () => {
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>
-              <span>Số tiền tối thiểu để nhận được 1 token là 25,000 VND</span>
+              <span>Số tiền tối thiểu để nhận được 1 token là 1$</span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>
-              <span>Nếu cần hỗ trợ, vui lòng liên hệ hotline: 1900 xxxx</span>
+              <span>Nếu cần hỗ trợ, vui lòng liên hệ hotline: 0967747745</span>
             </li>
           </ul>
         </div>

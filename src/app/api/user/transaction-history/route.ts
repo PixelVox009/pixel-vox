@@ -6,21 +6,31 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function GET(req: NextRequest) {
     try {
-        // Lấy phiên hiện tại
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
-
-        // Lấy tham số phân trang nếu có
         const searchParams = req.nextUrl.searchParams;
         const limit = parseInt(searchParams.get("limit") || "10");
-
-        // Lấy lịch sử giao dịch từ bảng PaymentActivity
-        const transactions = await PaymentActivity.find({ customer: session.user.id })
-            .sort({ createdAt: -1 }) // Sắp xếp theo thời gian mới nhất
+        const type = searchParams.get("type");
+        const query: any = { customer: session.user.id };
+        if (type) {
+            if (type === "all") {
+                // Không thêm điều kiện
+            } else if (type === "consumed") {
+                query.type = "token_usage";
+            } else if (type === "purchased") {
+                query.type = "bank";
+            } else if (type === "obtained") {
+                query.tokensEarned = { $gt: 0 };
+            } else {
+                query.type = type;
+            }
+        }
+        const transactions = await PaymentActivity.find(query)
+            .sort({ createdAt: -1 })
             .limit(limit)
-            .lean(); // Chuyển đổi sang plain JavaScript object
+            .lean();
 
         return NextResponse.json({
             transactions,
