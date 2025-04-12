@@ -31,7 +31,7 @@ const SUGGESTED_PACKAGES = [
 const MIN_AMOUNT = 25000;
 
 export default function DepositPage() {
-  const { session, sessionStatus, data: userData, isLoading } = useUserData();
+  const { sessionStatus, data: userData, isLoading } = useUserData();
 
   const [amount, setAmount] = useState<number>(250000);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
@@ -56,7 +56,6 @@ export default function DepositPage() {
       setQrCodeUrl(vietQrUrl);
     }
   }, [amount, userData?.paymentCode]);
-
   useEffect(() => {
     setTransactionId(`QRPAY${Date.now()}`);
   }, [amount]);

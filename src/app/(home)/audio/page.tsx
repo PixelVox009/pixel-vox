@@ -20,8 +20,6 @@ export default function TextToSpeechPage() {
         selectedVoice={selectedVoice}
         selectedVoiceType={selectedVoiceType}
       />
-
-      {/* Audio Tools and Featured Voices Section */}
       <div className="mt-12">
         <div className="flex justify-between items-start">
           <h2 className="text-xl font-bold dark:text-white">Audio Tools</h2>
@@ -34,12 +32,9 @@ export default function TextToSpeechPage() {
         </div>
 
         <div className="flex flex-col md:flex-row mt-4 gap-8">
-          {/* Left - Audio Tools */}
           <div className="md:w-1/2">
             <AudioTools />
           </div>
-
-          {/* Right - Featured Voices */}
           <div className="md:w-1/2">
             <FeaturedVoices onSelectVoice={setSelectedVoice} onSelectVoiceType={setSelectedVoiceType} />
           </div>

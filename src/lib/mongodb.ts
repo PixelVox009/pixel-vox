@@ -2,21 +2,16 @@ import mongoose from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-generator';
-const MONGODB_DB = process.env.MONGODB_DB || 'ai-generator';
-
 if (!MONGODB_URI) {
     throw new Error('Vui lòng định nghĩa biến môi trường MONGODB_URI');
 }
-
 declare global {
     var mongoose: {
         conn: typeof mongoose | null;
         promise: Promise<typeof mongoose> | null;
     } | undefined;
-
     var mongoClientPromise: Promise<MongoClient> | undefined;
 }
-
 const globalWithMongoose = global as typeof globalThis & {
     mongoose?: {
         conn: typeof mongoose | null;
@@ -24,13 +19,11 @@ const globalWithMongoose = global as typeof globalThis & {
     };
     mongoClientPromise?: Promise<MongoClient>;
 };
-
 // --- Mongoose connection (ODM)
 if (!globalWithMongoose.mongoose) {
     globalWithMongoose.mongoose = { conn: null, promise: null };
 }
 const mongooseCache = globalWithMongoose.mongoose;
-
 export async function connectMongoose() {
     if (mongooseCache.conn) return mongooseCache.conn;
 
