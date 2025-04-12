@@ -31,7 +31,7 @@ const SUGGESTED_PACKAGES = [
 const MIN_AMOUNT = 25000;
 
 export default function DepositPage() {
-  const { session, sessionStatus, data: userData, isLoading } = useUserData();
+  const { sessionStatus, data: userData, isLoading } = useUserData();
 
   const [amount, setAmount] = useState<number>(250000);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
@@ -48,7 +48,6 @@ export default function DepositPage() {
       const content = `${BANK_CONFIG.prefixCode} ${userData.paymentCode} ${BANK_CONFIG.suffixCode}`;
       setTransferContent(content);
       setTokenEstimate(Math.floor(amount / MIN_AMOUNT));
-
       const vietQrUrl = `https://img.vietqr.io/image/ACB-${
         BANK_CONFIG.accountNumber
       }-compact.jpg?amount=${amount}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(
@@ -57,7 +56,6 @@ export default function DepositPage() {
       setQrCodeUrl(vietQrUrl);
     }
   }, [amount, userData?.paymentCode]);
-
   useEffect(() => {
     setTransactionId(`QRPAY${Date.now()}`);
   }, [amount]);
@@ -72,7 +70,6 @@ export default function DepositPage() {
   const handleCustomAmountChange = (value: string, isValid: boolean) => {
     setCustomAmount(value);
     setIsValidAmount(isValid);
-
     if (Number(value) > 0) {
       setAmount(Number(value));
       setActivePackage(-1);
