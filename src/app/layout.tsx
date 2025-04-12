@@ -7,10 +7,15 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AI Generator - Tạo nội dung AI chất lượng cao",
-  description: "Nền tảng tạo audio, hình ảnh và video bằng AI với hệ thống token linh hoạt",
+  description:
+    "Nền tảng tạo audio, hình ảnh và video bằng AI với hệ thống token linh hoạt",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="vi" suppressHydrationWarning>
       <body className={inter.className}>

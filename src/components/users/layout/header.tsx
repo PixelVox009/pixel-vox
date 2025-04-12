@@ -1,8 +1,28 @@
 "use client";
+
+import {
+  Mic,
+  Image as ImageIcon,
+  Video,
+  Sun,
+  Moon,
+  Flower,
+} from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { useTheme } from "next-themes";
+
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Flower, Image as ImageIcon, Mic, Moon, Sun, Video } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
@@ -57,7 +77,6 @@ const fetchTransactionHistory = async (type: string = "all"): Promise<Transactio
 
 export default function Header() {
   const [activeTab, setActiveTab] = useState("audio");
-  const [activeTransactionTab, setActiveTransactionTab] = useState("all");
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -67,15 +86,15 @@ export default function Header() {
     queryKey: ["tokenBalance"],
     queryFn: fetchTokenBalance,
     refetchOnWindowFocus: false,
-    staleTime: 60000,
+    staleTime: 60000, // 1 minute
   });
 
   // Fetch transaction history with React Query
   const { data: transactionHistory = [], isLoading: isHistoryLoading } = useQuery<Transaction[]>({
-    queryKey: ["transactionHistory", activeTransactionTab],
-    queryFn: () => fetchTransactionHistory(activeTransactionTab),
+    queryKey: ["transactionHistory"],
+    queryFn: fetchTransactionHistory,
     refetchOnWindowFocus: false,
-    staleTime: 60000,
+    staleTime: 60000, // 1 minute
   });
 
   // Calculate credits details
@@ -84,7 +103,10 @@ export default function Header() {
         remaining: balanceData.balance || 0,
         membership: 0, // Adjust as needed
         topup: balanceData.totalRecharged || 0,
-        bonus: Math.max(0, (balanceData.balance || 0) - (balanceData.totalRecharged || 0)),
+        bonus: Math.max(
+          0,
+          (balanceData.balance || 0) - (balanceData.totalRecharged || 0)
+        ),
       }
     : null;
 
@@ -106,16 +128,19 @@ export default function Header() {
     {
       id: "audio",
       label: "Audio",
+      href: "/audio",
       icon: <Mic className="w-5 h-5" />,
     },
     {
       id: "image",
       label: "Image",
+      href: "/image",
       icon: <ImageIcon className="w-5 h-5" />,
     },
     {
       id: "video",
       label: "Video",
+      href: "/image",
       icon: <Video className="w-5 h-5" />,
     },
   ];
@@ -195,11 +220,13 @@ export default function Header() {
             <Button
               key={tab.id}
               variant={activeTab === tab.id ? "default" : "ghost"}
-              onClick={() => setActiveTab(tab.id)}
+              asChild
               className="flex items-center gap-2"
             >
-              {tab.icon}
-              <span className="hidden md:inline">{tab.label}</span>
+              <Link href={tab.href} onClick={() => setActiveTab(tab.id)}>
+                {tab.icon}
+                <span className="hidden md:inline">{tab.label}</span>
+              </Link>
             </Button>
           ))}
         </nav>
@@ -208,9 +235,12 @@ export default function Header() {
       <div className="flex items-center gap-4">
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-1 px-3 h-9">
+            <Button
+              variant="outline"
+              className="flex items-center gap-1 px-3 h-9"
+            >
               <Flower size={16} color="#b83fd9" />
-              <span className="text-sm font-medium">{isLoading ? "..." : balanceData?.balance.toLocaleString()}</span>
+              <span className="text-xl font-medium">{isLoading ? "..." : balanceData?.balance.toLocaleString()}</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-xl md:max-w-2xl">
@@ -223,39 +253,43 @@ export default function Header() {
                 {/* Credits Summary */}
                 <div className="grid grid-cols-7 gap-2 text-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                   <div className="col-span-2 text-left">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Remaining Credits</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Remaining Credits
+                    </div>
                     <div className="text-xl font-semibold text-purple-500">
                       {creditsDetails.remaining.toLocaleString()}
                     </div>
                   </div>
-                  <div className="col-span-1 flex items-center justify-center">=</div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    =
+                  </div>
                   <div className="col-span-1">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Membership Credits</div>
-                    <div className="font-medium">{creditsDetails.membership.toLocaleString()}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Membership Credits
+                    </div>
+                    <div className="font-medium">
+                      {creditsDetails.membership.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    +
+                  </div>
+                  <div className="col-span-1">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Top-up Credits
+                    </div>
+                    <div className="font-medium">
+                      {formatVndToUsd(creditsDetails.topup)}
+                    </div>
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    +
                   </div>
                   <div className="col-span-1 flex items-center justify-center">+</div>
                   <div className="col-span-1">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Top-up Credits</div>
-                    <div className="font-medium">{formatVndToUsd(creditsDetails.topup)}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Bonus Credits</div>
+                    <div className="font-medium">{creditsDetails.bonus.toLocaleString()}</div>
                   </div>
-                </div>
-
-                {/* Transaction Tabs */}
-                <div className="flex space-x-1 rounded-lg bg-gray-100 dark:bg-gray-800 p-1">
-                  {transactionTabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => handleTabChange(tab.id)}
-                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors
-                        ${
-                          activeTransactionTab === tab.id
-                            ? "bg-white dark:bg-gray-700 shadow-sm"
-                            : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                        }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
                 </div>
 
                 {/* Credits History */}
@@ -264,24 +298,30 @@ export default function Header() {
                     <div className="text-center py-4">Loading transactions...</div>
                   ) : transactionHistory.length > 0 ? (
                     transactionHistory.map((transaction, index) => (
-                      <div
-                        key={transaction._id || index}
-                        className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-                      >
+                      <div key={index} className="flex justify-between items-center">
                         <div>
-                          <div className="font-medium">{getTransactionTitle(transaction)}</div>
+                          <div className="font-medium">
+                            {transaction.type === "bank" ? "Top-up Credits" : transaction.description}
+                          </div>
                           <div className="text-sm text-gray-500">{formatDate(transaction.createdAt)}</div>
                           {transaction.amount > 0 && (
-                            <div className="text-xs text-gray-400">{formatVndToUsd(transaction.amount)}</div>
+                            <div className="text-xs text-gray-400">
+                              {formatVndToUsd(transaction.amount)}
+                            </div>
                           )}
                         </div>
-                        <div className={`font-semibold ${getTokenColor(transaction)}`}>
-                          {getTokenChange(transaction)}
+                        <div
+                          className={`font-semibold ${
+                            transaction.tokensEarned > 0 ? "text-green-500" : "text-red-500"
+                          }`}
+                        >
+                          {transaction.tokensEarned > 0 ? "+" : ""}
+                          {transaction.tokensEarned.toLocaleString()}
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center text-gray-500 py-8">No transaction history</div>
+                    <div className="text-center text-gray-500">No transaction history</div>
                   )}
                 </div>
 
@@ -291,7 +331,10 @@ export default function Header() {
                 </div>
                 <div className="flex justify-end pt-4">
                   <DialogClose asChild>
-                    <Button onClick={handleBuyCredits} className="bg-purple-600 hover:bg-purple-700">
+                    <Button
+                      onClick={handleBuyCredits}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
                       Buy Credits
                     </Button>
                   </DialogClose>
@@ -301,8 +344,17 @@ export default function Header() {
           </DialogContent>
         </Dialog>
 
-        <Button variant="outline" size="icon" onClick={toggleTheme} className="hover:bg-secondary">
-          {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleTheme}
+          className="hover:bg-secondary"
+        >
+          {theme === "dark" ? (
+            <Sun className="w-5 h-5" />
+          ) : (
+            <Moon className="w-5 h-5" />
+          )}
         </Button>
       </div>
     </header>
