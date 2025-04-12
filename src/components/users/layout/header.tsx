@@ -1,32 +1,15 @@
 "use client";
 
-import {
-  Mic,
-  Image as ImageIcon,
-  Video,
-  Sun,
-  Moon,
-  Flower,
-} from "lucide-react";
-import { useState } from "react";
-import Link from "next/link";
-import { useTheme } from "next-themes";
-
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useQuery } from "@tanstack/react-query";
 import { Flower, Image as ImageIcon, Mic, Moon, Sun, Video } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 // Định nghĩa các interface
 interface TokenBalance {
@@ -103,10 +86,7 @@ export default function Header() {
         remaining: balanceData.balance || 0,
         membership: 0, // Adjust as needed
         topup: balanceData.totalRecharged || 0,
-        bonus: Math.max(
-          0,
-          (balanceData.balance || 0) - (balanceData.totalRecharged || 0)
-        ),
+        bonus: Math.max(0, (balanceData.balance || 0) - (balanceData.totalRecharged || 0)),
       }
     : null;
 
@@ -235,10 +215,7 @@ export default function Header() {
       <div className="flex items-center gap-4">
         <Dialog>
           <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              className="flex items-center gap-1 px-3 h-9"
-            >
+            <Button variant="outline" className="flex items-center gap-1 px-3 h-9">
               <Flower size={16} color="#b83fd9" />
               <span className="text-xl font-medium">{isLoading ? "..." : balanceData?.balance.toLocaleString()}</span>
             </Button>
@@ -253,38 +230,22 @@ export default function Header() {
                 {/* Credits Summary */}
                 <div className="grid grid-cols-7 gap-2 text-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                   <div className="col-span-2 text-left">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      Remaining Credits
-                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Remaining Credits</div>
                     <div className="text-xl font-semibold text-purple-500">
                       {creditsDetails.remaining.toLocaleString()}
                     </div>
                   </div>
-                  <div className="col-span-1 flex items-center justify-center">
-                    =
-                  </div>
+                  <div className="col-span-1 flex items-center justify-center">=</div>
                   <div className="col-span-1">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      Membership Credits
-                    </div>
-                    <div className="font-medium">
-                      {creditsDetails.membership.toLocaleString()}
-                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Membership Credits</div>
+                    <div className="font-medium">{creditsDetails.membership.toLocaleString()}</div>
                   </div>
-                  <div className="col-span-1 flex items-center justify-center">
-                    +
-                  </div>
+                  <div className="col-span-1 flex items-center justify-center">+</div>
                   <div className="col-span-1">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      Top-up Credits
-                    </div>
-                    <div className="font-medium">
-                      {formatVndToUsd(creditsDetails.topup)}
-                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Top-up Credits</div>
+                    <div className="font-medium">{formatVndToUsd(creditsDetails.topup)}</div>
                   </div>
-                  <div className="col-span-1 flex items-center justify-center">
-                    +
-                  </div>
+                  <div className="col-span-1 flex items-center justify-center">+</div>
                   <div className="col-span-1 flex items-center justify-center">+</div>
                   <div className="col-span-1">
                     <div className="text-sm text-gray-500 dark:text-gray-400">Bonus Credits</div>
@@ -305,9 +266,7 @@ export default function Header() {
                           </div>
                           <div className="text-sm text-gray-500">{formatDate(transaction.createdAt)}</div>
                           {transaction.amount > 0 && (
-                            <div className="text-xs text-gray-400">
-                              {formatVndToUsd(transaction.amount)}
-                            </div>
+                            <div className="text-xs text-gray-400">{formatVndToUsd(transaction.amount)}</div>
                           )}
                         </div>
                         <div
@@ -331,10 +290,7 @@ export default function Header() {
                 </div>
                 <div className="flex justify-end pt-4">
                   <DialogClose asChild>
-                    <Button
-                      onClick={handleBuyCredits}
-                      className="bg-purple-600 hover:bg-purple-700"
-                    >
+                    <Button onClick={handleBuyCredits} className="bg-purple-600 hover:bg-purple-700">
                       Buy Credits
                     </Button>
                   </DialogClose>
@@ -344,17 +300,8 @@ export default function Header() {
           </DialogContent>
         </Dialog>
 
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleTheme}
-          className="hover:bg-secondary"
-        >
-          {theme === "dark" ? (
-            <Sun className="w-5 h-5" />
-          ) : (
-            <Moon className="w-5 h-5" />
-          )}
+        <Button variant="outline" size="icon" onClick={toggleTheme} className="hover:bg-secondary">
+          {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </Button>
       </div>
     </header>
