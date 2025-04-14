@@ -8,7 +8,7 @@ import Wallet from "@/models/wallet";
 import { isValidObjectId } from "mongoose";
 
 export async function GET(
-    request: NextRequest,
+    req: NextRequest,
     { params }: { params: { userId: string } }
 ) {
     try {
@@ -20,7 +20,7 @@ export async function GET(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { userId } = params;
+        const { userId } = await params;
 
         // Kiểm tra ID hợp lệ
         if (!isValidObjectId(userId)) {
