@@ -73,7 +73,7 @@ export function HeroSection() {
               </div>
               <div className="flex flex-col items-center">
                 <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900 mb-2">
-                  <ImageIc  className="h-6 w-6 text-purple-600 dark:text-purple-300"/>
+                  <ImageIc className="h-6 w-6 text-purple-600 dark:text-purple-300" />
                 </div>
                 <span className="text-sm font-medium">Hình ảnh</span>
               </div>
@@ -111,47 +111,47 @@ export function HeroSection() {
           </div>
 
           {/* Right side - Interactive illustration */}
-          <div className="relative flex justify-center items-center z-10">
-            <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-blue-100 via-blue-200 to-purple-100 p-1 shadow-lg dark:from-blue-900 dark:via-blue-800 dark:to-purple-900 transition-all hover:shadow-xl duration-300">
-              <div className="bg-white dark:bg-gray-900 rounded-lg p-8">
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="h-2.5 w-24 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                    <div className="h-2.5 w-32 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+          <div className="relative flex justify-center items-center z-10 scale-100 md:scale-125 lg:scale-100">
+            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-blue-100 via-blue-200 to-purple-100 p-1.5 shadow-xl dark:from-blue-900 dark:via-blue-800 dark:to-purple-900 transition-all hover:shadow-2xl duration-300">
+              <div className="bg-white dark:bg-gray-900 rounded-xl p-10">
+                <div className="space-y-8">
+                  <div className="space-y-3">
+                    <div className="h-3 w-32 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                    <div className="h-3 w-40 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                   </div>
 
-                  <div className="flex space-x-3">
-                    <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center animate-pulse">
-                      <Music className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <div className="flex space-x-4">
+                    <div className="h-12 w-12 rounded-xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center animate-pulse">
+                      <Music className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div
-                      className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center animate-pulse"
+                      className="h-12 w-12 rounded-xl bg-purple-100 dark:bg-purple-900 flex items-center justify-center animate-pulse"
                       style={{ animationDelay: "0.5s" }}
                     >
-                      <ImageIc className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                      <ImageIc className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div
-                      className="h-10 w-10 rounded-lg bg-pink-100 dark:bg-pink-900 flex items-center justify-center animate-pulse"
+                      className="h-12 w-12 rounded-xl bg-pink-100 dark:bg-pink-900 flex items-center justify-center animate-pulse"
                       style={{ animationDelay: "1s" }}
                     >
-                      <Video className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                      <Video className="h-6 w-6 text-pink-600 dark:text-pink-400" />
                     </div>
                   </div>
 
-                  <div className="relative h-40 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+                  <div className="relative h-52 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden">
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <Sparkles className="h-8 w-8 text-primary animate-bounce" />
+                      <Sparkles className="h-10 w-10 text-primary animate-bounce" />
                     </div>
                     <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-blue-500/20 to-transparent"></div>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <div className="space-y-2">
-                      <div className="h-2.5 w-20 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                      <div className="h-2.5 w-16 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                    <div className="space-y-3">
+                      <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                      <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                     </div>
-                    <Button size="icon" className="h-8 w-8">
-                      <Sparkles className="h-4 w-4" />
+                    <Button size="icon" className="h-10 w-10">
+                      <Sparkles className="h-5 w-5" />
                     </Button>
                   </div>
                 </div>
@@ -159,14 +159,14 @@ export function HeroSection() {
             </div>
 
             {/* Floating elements */}
-            <div className="absolute -top-6 -right-6 h-12 w-12 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce shadow-lg z-20">
-              <Sparkles className="h-6 w-6 text-white" />
+            <div className="absolute -top-8 -right-8 h-16 w-16 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce shadow-xl z-20">
+              <Sparkles className="h-8 w-8 text-white" />
             </div>
             <div
-              className="absolute -bottom-4 -left-4 h-8 w-8 bg-pink-400 rounded-full flex items-center justify-center animate-pulse shadow-lg z-20"
+              className="absolute -bottom-6 -left-6 h-12 w-12 bg-pink-400 rounded-full flex items-center justify-center animate-pulse shadow-xl z-20"
               style={{ animationDelay: "1.5s" }}
             >
-              <Music className="h-4 w-4 text-white" />
+              <Music className="h-6 w-6 text-white" />
             </div>
           </div>
         </div>
