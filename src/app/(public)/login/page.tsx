@@ -11,8 +11,9 @@ import PixelVoxLogo from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Image, LogIn, Music, Sparkles, Video } from "lucide-react";
+import { ArrowRight, LogIn, Music, Sparkles, Video } from "lucide-react";
 import { getSession, signIn } from "next-auth/react";
+
 
 const formSchema = z.object({
   email: z.string().email({
@@ -74,8 +75,8 @@ export default function LoginPage() {
           router.push("/audio");
         }
       }
-    } catch (err: any) {
-      setError(err.message || "Đăng nhập thất bại");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Đăng nhập thất bại");
     } finally {
       setIsSubmitting(false);
     }
@@ -91,9 +92,7 @@ export default function LoginPage() {
         <div
           className="absolute top-[30%] right-[15%] text-purple-500 animate-pulse"
           style={{ animationDuration: "4s" }}
-        >
-          <Image className="h-10 w-10 opacity-20" />
-        </div>
+        ></div>
         <div
           className="absolute bottom-[20%] left-[20%] text-pink-500 animate-bounce"
           style={{ animationDuration: "3.5s" }}

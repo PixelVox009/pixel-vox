@@ -1,20 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface CustomAmountInputProps {
   value: string;
   onChange: (value: string, isValid: boolean) => void;
-  tokenEstimate: number;
   minAmount?: number;
 }
 
-const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange, tokenEstimate, minAmount = 25000 }) => {
+const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange, minAmount = 25000 }) => {
   const [error, setError] = useState<string>("");
+  const [exchangeRate, setExchangeRate] = useState<number>(25000);
+  const [usdToTokenRate, setUsdToTokenRate] = useState<number>(10);
 
-  // Tỷ giá chuyển đổi
-  const VND_TO_USD_RATE = 25000; // 25,000 VND = 1 USD = 1 token
+  // Lấy tỷ giá từ server
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("/api/settings/exchange-rates");
+        if (response.ok) {
+          const data = await response.json();
+          setExchangeRate(data.vndToUsdRate || 25000);
+          setUsdToTokenRate(data.usdToTokenRate || 10);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tỷ giá:", error);
+        // Sử dụng giá trị mặc định nếu có lỗi
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
 
   // Tính số tiền USD tương đương
-  const usdAmount = value ? (Number(value) / VND_TO_USD_RATE).toFixed(2) : "0.00";
+  const usdAmount = value ? (Number(value) / exchangeRate).toFixed(2) : "0.00";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Chỉ chấp nhận số
@@ -30,6 +47,9 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange, 
       onChange(numericValue, true);
     }
   };
+
+  // Tính số token sẽ nhận được dựa trên tỷ giá mới
+  const calculatedTokens = value ? Math.floor((Number(value) / exchangeRate) * usdToTokenRate) : 0;
 
   return (
     <div className="mt-6">
@@ -94,11 +114,13 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange, 
         </div>
         <div className="ml-3">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Bạn sẽ nhận được <span className="font-semibold text-blue-600 dark:text-blue-400">{tokenEstimate}</span>{" "}
+            Bạn sẽ nhận được <span className="font-semibold text-blue-600 dark:text-blue-400">{calculatedTokens}</span>{" "}
             tokens
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            <span className="italic">1 token = $1 = {VND_TO_USD_RATE.toLocaleString("vi-VN")} VND</span>
+            <span className="italic">
+              1 USD = {usdToTokenRate} token = {exchangeRate.toLocaleString("vi-VN")} VND
+            </span>
           </p>
         </div>
       </div>

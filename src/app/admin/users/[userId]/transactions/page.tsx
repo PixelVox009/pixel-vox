@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { formatVndToUsd } from "@/utils/formatVndUseDola";
+import { formatVndToUsd, useExchangeRates } from "@/utils/formatVndUseDola";
 
 // Date range picker component
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
@@ -38,32 +38,6 @@ import Link from "next/link";
 import { DateRange } from "react-day-picker";
 
 // Types
-interface UserWallet {
-  _id: string;
-  customer: string;
-  balance: number;
-  totalRecharged: number;
-  totalTokens: number;
-  totalSpent: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface UserData {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  tokenBalance: number;
-  lastLoginAt: string;
-  createdAt: string;
-  updatedAt: string;
-  paymentCode?: string;
-  avatar?: string;
-  wallet?: UserWallet;
-  phone?: string;
-}
-
 interface Transaction {
   _id: string;
   transaction: string;
@@ -80,15 +54,6 @@ interface Transaction {
   depositDiscountPercent?: number;
   createdAt: string;
   updatedAt: string;
-}
-
-interface TransactionStats {
-  totalSpent: number;
-  totalEarned: number;
-  avgTransactionValue: number;
-  totalTokens: number;
-  totalTransactions: number;
-  lastTransactionDate: string;
 }
 
 // API functions
@@ -141,6 +106,7 @@ export default function UserTransactionHistoryPage() {
   // State
   const [transactionType, setTransactionType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const { rates } = useExchangeRates();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: addDays(new Date(), -30),
     to: new Date(),
@@ -235,13 +201,6 @@ export default function UserTransactionHistoryPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
   };
 
   const getInitials = (name: string) => {
@@ -359,7 +318,7 @@ export default function UserTransactionHistoryPage() {
                     <Skeleton className="h-6 w-20" />
                   ) : (
                     <div className="text-2xl font-bold">
-                      {formatVndToUsd(userData?.wallet?.totalRecharged || 0)}
+                      {formatVndToUsd(userData?.wallet?.totalRecharged || 0, rates.vndToUsdRate)}
                       <span className="text-sm font-normal text-muted-foreground"> USD</span>
                     </div>
                   )}
@@ -548,7 +507,7 @@ export default function UserTransactionHistoryPage() {
 
                             {transaction.amount > 0 && (
                               <div className="text-xs text-muted-foreground">
-                                {formatVndToUsd(transaction.amount)} $
+                                {formatVndToUsd(transaction.amount, rates.vndToUsdRate)} $
                               </div>
                             )}
                           </div>

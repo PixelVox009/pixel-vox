@@ -1,19 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 import PaymentActivity, { IPaymentActivity } from "@/models/payment-activity";
 
+import dbConnect from "@/lib/db";
+import { User } from "@/models/User";
 import Wallet, { IWallet } from "@/models/wallet";
 import { isValidObjectId } from "mongoose";
-import { User } from "@/models/User";
-import dbConnect from "@/lib/db";
+
+interface TimeQuery {
+    $gte?: Date;
+    $lte?: Date;
+}
 
 export async function GET(
     req: NextRequest,
     { params }: { params: { userId: string } }
 ) {
     try {
+        await dbConnect();
         // Kiểm tra quyền admin
         const session = await getServerSession(authOptions);
         if (!session?.user?.role || session.user.role !== "admin") {
@@ -32,9 +38,6 @@ export async function GET(
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
 
-        // Kết nối database
-        await dbConnect();
-
         // Kiểm tra người dùng tồn tại
         const userExists = await User.exists({ _id: userId });
         if (!userExists) {
@@ -42,7 +45,7 @@ export async function GET(
         }
 
         // Xây dựng query để tính toán số liệu thống kê
-        const timeQuery: any = {};
+        const timeQuery: TimeQuery = {};
         if (startDate || endDate) {
             if (startDate) {
                 timeQuery.$gte = new Date(startDate);
@@ -101,8 +104,9 @@ export async function GET(
             totalTransactions,
             lastTransactionDate
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching transaction stats:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

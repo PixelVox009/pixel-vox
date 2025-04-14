@@ -1,6 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const ImportantNotes: React.FC = () => {
+  const [exchangeRates, setExchangeRates] = useState({
+    vndToUsdRate: 25000,
+    usdToTokenRate: 10,
+  });
+
+  // Lấy tỷ giá từ API
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("/api/settings/exchange-rates");
+        if (response.ok) {
+          const data = await response.json();
+          setExchangeRates({
+            vndToUsdRate: data.vndToUsdRate || 25000,
+            usdToTokenRate: data.usdToTokenRate || 10,
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tỷ giá:", error);
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
+
+  // Tính số tiền VND tối thiểu để có 1 USD
+  const minUsdAmount = exchangeRates.vndToUsdRate;
+
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800/50">
       <div className="flex">
@@ -33,7 +61,16 @@ const ImportantNotes: React.FC = () => {
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>
-              <span>Số tiền tối thiểu để nhận được 1 token là 1$</span>
+              <span>
+                Số tiền tối thiểu để nhận được 1 token là{" "}
+                {Math.ceil(minUsdAmount / exchangeRates.usdToTokenRate).toLocaleString("vi-VN")} VND
+              </span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>
+                1 USD = {exchangeRates.usdToTokenRate} token = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")} VND
+              </span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>

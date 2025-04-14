@@ -8,6 +8,18 @@ import PaymentActivity from "@/models/payment-activity";
 import { IUser, User } from "@/models/User";
 import { isValidObjectId } from "mongoose";
 
+interface Query {
+    type?: string;
+    status?: string;
+    customer?: string;
+    search?: string;
+    $or?: Array<Record<string, unknown>>;
+    createdAt?: {
+        $gte?: Date;
+        $lte?: Date;
+    };
+}
+
 export async function GET(req: NextRequest) {
     try {
         // Kiểm tra quyền admin
@@ -36,7 +48,7 @@ export async function GET(req: NextRequest) {
         await dbConnect();
 
         // Build query
-        const query: any = {};
+        const query: Query = {};
 
         // Add type filter
         if (type && type !== 'all') {
@@ -89,19 +101,21 @@ export async function GET(req: NextRequest) {
 
         // Get user information for display
         const userIds = activities.map(activity => activity.customer).filter(Boolean);
-        const users = await User.find(query)
+        const users = await User.find({ _id: { $in: userIds } })
             .select('-hashedPassword')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit)
-            .lean<IUser[]>(); 
+            .lean<IUser[]>();
+
         const usersMap: Record<string, IUser> = users.reduce((map, user) => {
-            map[user._id.toString()] = user;
+            if (user._id) {
+                map[user._id.toString()] = user;
+            }
             return map;
         }, {} as Record<string, IUser>);
 
-        const activitiesWithUser = activities.map(activity => {
-            const activityObj = activity;
+        type ActivityWithUser = typeof activities[0] & { customerInfo?: IUser };
+
+        const activitiesWithUser: ActivityWithUser[] = activities.map(activity => {
+            const activityObj = { ...activity } as ActivityWithUser;
             const customerId = activity.customer?.toString();
 
             if (customerId && usersMap[customerId]) {
@@ -118,10 +132,11 @@ export async function GET(req: NextRequest) {
             limit,
             totalPages: Math.ceil(total / limit)
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching payment activities:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
         return NextResponse.json({
-            error: error.message || 'Internal server error'
+            error: errorMessage
         }, { status: 500 });
     }
 }

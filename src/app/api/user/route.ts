@@ -1,10 +1,11 @@
 // app/api/users/me/route.ts
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import dbConnect from "@/lib/db";
 import { IUser, User } from "@/models/User";
 import Wallet, { IWallet } from "@/models/wallet";
 import { Types } from "mongoose";
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 interface UserResponse {
     id: string;
@@ -14,8 +15,9 @@ interface UserResponse {
     balance: number;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
+        await dbConnect();
         const session = await getServerSession(authOptions);
         if (!session?.user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

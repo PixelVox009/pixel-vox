@@ -7,12 +7,22 @@ import PaymentActivity from "@/models/payment-activity";
 import { isValidObjectId } from "mongoose";
 import { User } from "@/models/User";
 import dbConnect from "@/lib/db";
+interface Query {
+    customer: string;
+    type?: string;
+    createdAt?: {
+        $gte?: Date;
+        $lte?: Date;
+    };
+    $or?: Array<Record<string, unknown>>;
+}
 
 export async function GET(
     req: NextRequest,
     { params }: { params: { userId: string } }
 ) {
     try {
+        await dbConnect();
         // Kiểm tra quyền admin
         const session = await getServerSession(authOptions);
         if (!session?.user?.role || session.user.role !== "admin") {
@@ -36,7 +46,7 @@ export async function GET(
         const skip = parseInt(searchParams.get('skip') || '0');
 
         // Kết nối database
-        await dbConnect();
+        
 
         // Kiểm tra người dùng tồn tại
         const userExists = await User.exists({ _id: userId });
@@ -45,7 +55,7 @@ export async function GET(
         }
 
         // Xây dựng query
-        const query: any = { customer: userId };
+        const query: Query = { customer: userId };
 
         // Filter theo type
         if (type !== 'all') {
@@ -93,8 +103,9 @@ export async function GET(
             hasMore,
             next: hasMore ? skip + limit : null
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching user transactions:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

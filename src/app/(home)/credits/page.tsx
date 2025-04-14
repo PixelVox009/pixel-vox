@@ -39,15 +39,44 @@ export default function DepositPage() {
   const [customAmount, setCustomAmount] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
   const [activePackage, setActivePackage] = useState<number>(0);
-  const [tokenEstimate, setTokenEstimate] = useState<number>(10);
+  const [, setTokenEstimate] = useState<number>(10);
   const [transactionId, setTransactionId] = useState<string>(`QRPAY${Date.now()}`);
-  const [isValidAmount, setIsValidAmount] = useState<boolean>(true);
+  const [, setIsValidAmount] = useState<boolean>(true);
+  const [exchangeRates, setExchangeRates] = useState({
+    vndToUsdRate: 25000,
+    usdToTokenRate: 10,
+  });
+
+  // Lấy tỷ giá từ API
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("/api/settings/exchange-rates");
+        if (response.ok) {
+          const data = await response.json();
+          setExchangeRates({
+            vndToUsdRate: data.vndToUsdRate || 25000,
+            usdToTokenRate: data.usdToTokenRate || 10,
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tỷ giá:", error);
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
 
   useEffect(() => {
     if (userData?.paymentCode) {
       const content = `${BANK_CONFIG.prefixCode} ${userData.paymentCode} ${BANK_CONFIG.suffixCode}`;
       setTransferContent(content);
-      setTokenEstimate(Math.floor(amount / MIN_AMOUNT));
+
+      // Tính toán số token dựa trên tỷ giá mới
+      const amountUsd = amount / exchangeRates.vndToUsdRate;
+      const tokens = Math.floor(amountUsd * exchangeRates.usdToTokenRate);
+      setTokenEstimate(tokens);
+
       const vietQrUrl = `https://img.vietqr.io/image/ACB-${
         BANK_CONFIG.accountNumber
       }-compact.jpg?amount=${amount}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(
@@ -55,7 +84,8 @@ export default function DepositPage() {
       )}`;
       setQrCodeUrl(vietQrUrl);
     }
-  }, [amount, userData?.paymentCode]);
+  }, [amount, userData?.paymentCode, exchangeRates]);
+
   useEffect(() => {
     setTransactionId(`QRPAY${Date.now()}`);
   }, [amount]);
@@ -105,7 +135,7 @@ export default function DepositPage() {
     );
   }
 
-  if (status === "unauthenticated") {
+  if (sessionStatus === "unauthenticated") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
         <div className="w-full max-w-md p-6 bg-white dark:bg-slate-800 rounded-xl shadow-xl">
@@ -159,12 +189,7 @@ export default function DepositPage() {
                   onSelectPackage={handleSelectPackage}
                   formatCurrency={formatCurrency}
                 />
-                <CustomAmountInput
-                  value={customAmount}
-                  onChange={handleCustomAmountChange}
-                  tokenEstimate={tokenEstimate}
-                  minAmount={MIN_AMOUNT}
-                />
+                <CustomAmountInput value={customAmount} onChange={handleCustomAmountChange} minAmount={MIN_AMOUNT} />
               </div>
 
               {/* Thông tin chuyển khoản */}

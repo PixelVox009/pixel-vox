@@ -1,17 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
-import Wallet from "@/models/wallet";
-import { isValidObjectId } from "mongoose";
 import dbConnect from "@/lib/db";
 import { User } from "@/models/User";
+import Wallet from "@/models/wallet";
+import { isValidObjectId } from "mongoose";
 
 export async function GET(
     req: NextRequest,
     { params }: { params: { userId: string } }
 ) {
     try {
+        await dbConnect();
         // Kiểm tra quyền admin
         const session = await getServerSession(authOptions);
         if (!session?.user?.role || session.user.role !== "admin") {
@@ -26,7 +27,7 @@ export async function GET(
         }
 
         // Kết nối database
-        await dbConnect();
+
 
         // Tìm user
         const user = await User.findById(userId).select('-hashedPassword').lean();
@@ -42,8 +43,9 @@ export async function GET(
             ...user,
             wallet: wallet || null
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching user details:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

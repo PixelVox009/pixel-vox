@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
-import { User } from "@/models/User";
+import { IUser, User } from "@/models/User";
 import Wallet from "@/models/wallet";
 import { getServerSession } from "next-auth";
 
-
 export async function GET(req: NextRequest) {
     try {
+        await dbConnect();
         // Kiểm tra quyền admin
         const session = await getServerSession(authOptions);
         if (!session?.user?.role || session.user.role !== "admin") {
@@ -23,10 +23,10 @@ export async function GET(req: NextRequest) {
         const role = searchParams.get('role') || '';
 
         // Kết nối database
-        await dbConnect();
+
 
         // Xây dựng query
-        const query: any = {};
+        const query: Record<string, unknown> = {};
 
         // Filter theo role
         if (role && role !== '') {
@@ -46,12 +46,11 @@ export async function GET(req: NextRequest) {
         const skip = (page - 1) * limit;
 
         // Thực hiện truy vấn với phân trang
-        const users = await User.find(query)
+        const users: IUser[] = await User.find(query)
             .select('-hashedPassword')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .lean();
 
         // Lấy tổng số bản ghi phù hợp với query
         const total = await User.countDocuments(query);
@@ -67,7 +66,7 @@ export async function GET(req: NextRequest) {
 
         // Map wallets vào users
         const usersWithWallets = users.map(user => {
-            const wallet = wallets.find(w => w.customer.toString() === (user as any)._id.toString());
+            const wallet = wallets.find(w => w.customer.toString() === (user)._id.toString());
             return {
                 ...user,
                 wallet: wallet || {
@@ -93,9 +92,10 @@ export async function GET(req: NextRequest) {
                 totalPages
             }
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching users:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
 
@@ -103,6 +103,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
+        await dbConnect();
         // Kiểm tra quyền admin
         const session = await getServerSession(authOptions);
         if (!session?.user?.role || session.user.role !== "admin") {
@@ -114,7 +115,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Kết nối database
-        await dbConnect();
+
 
         // Kiểm tra email đã tồn tại chưa
         const existingUser = await User.findOne({ email: data.email });
@@ -160,8 +161,9 @@ export async function POST(req: NextRequest) {
                 password: undefined // Loại bỏ password khỏi response
             }
         }, { status: 201 });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error creating user:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

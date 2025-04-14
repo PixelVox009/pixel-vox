@@ -1,7 +1,7 @@
 // components/home/hero-section.tsx
 import PixelVoxLogo from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Image, LogIn, Music, Sparkles, Video } from "lucide-react";
+import { ArrowRight, Image as ImageIc, LogIn, Music, Sparkles, Video } from "lucide-react";
 import Link from "next/link";
 
 export function HeroSection() {
@@ -73,7 +73,7 @@ export function HeroSection() {
               </div>
               <div className="flex flex-col items-center">
                 <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900 mb-2">
-                  <Image className="h-6 w-6 text-purple-600 dark:text-purple-300" />
+                  <ImageIc  className="h-6 w-6 text-purple-600 dark:text-purple-300"/>
                 </div>
                 <span className="text-sm font-medium">Hình ảnh</span>
               </div>
@@ -128,7 +128,7 @@ export function HeroSection() {
                       className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center animate-pulse"
                       style={{ animationDelay: "0.5s" }}
                     >
-                      <Image className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                      <ImageIc className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div
                       className="h-10 w-10 rounded-lg bg-pink-100 dark:bg-pink-900 flex items-center justify-center animate-pulse"

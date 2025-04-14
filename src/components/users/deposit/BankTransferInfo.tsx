@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface BankConfig {
   bankName: string;
@@ -25,6 +25,34 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
   copied,
   formatCurrency,
 }) => {
+  const [exchangeRates, setExchangeRates] = useState({
+    vndToUsdRate: 25000,
+    usdToTokenRate: 10,
+  });
+
+  // Lấy tỷ giá từ API
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("/api/settings/exchange-rates");
+        if (response.ok) {
+          const data = await response.json();
+          setExchangeRates({
+            vndToUsdRate: data.vndToUsdRate || 25000,
+            usdToTokenRate: data.usdToTokenRate || 10,
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tỷ giá:", error);
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
+
+  const usdAmount = (amount / exchangeRates.vndToUsdRate).toFixed(2);
+  const tokenAmount = Math.floor(Number(usdAmount) * exchangeRates.usdToTokenRate);
+
   return (
     <div className="border-t border-slate-200 dark:border-slate-700 pt-8">
       <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Thông tin chuyển khoản</h2>
@@ -99,6 +127,9 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
                     <span className="text-sm">Sao chép</span>
                   </button>
                 </div>
+                <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
+                  ≈ ${usdAmount} ({tokenAmount} tokens)
+                </p>
               </div>
 
               <div>
@@ -135,9 +166,17 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
             </div>
           </div>
         </div>
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
+            <span className="italic">
+              1 USD = {exchangeRates.usdToTokenRate} token = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")} VND
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
 export default BankTransferInfo;
+  

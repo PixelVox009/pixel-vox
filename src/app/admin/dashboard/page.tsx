@@ -22,6 +22,7 @@ import {
   Plus,
   Send,
 } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 // Mock data for recent contacts
@@ -536,7 +537,7 @@ export default function Dashboard() {
                   <div key={contact.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10">
-                        <img src={contact.avatar} alt={contact.name} />
+                        <Image src={contact.avatar} alt={contact.name} />
                       </Avatar>
                       <div>
                         <div className="font-medium">{contact.name}</div>
