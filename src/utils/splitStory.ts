@@ -264,7 +264,7 @@ function splitStoryByCharLength(story: string) {
 
   // Tìm tất cả các câu trong truyện
   const sentenceRegex = /[^.!?。？！]+[.!?。？！]+/g;
-  let sentences: any[] = [];
+  let sentences: string[] = [];
   let match;
 
   while ((match = sentenceRegex.exec(story)) !== null) {

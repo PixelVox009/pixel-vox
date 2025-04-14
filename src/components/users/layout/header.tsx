@@ -11,7 +11,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { formatVndToUsd, useExchangeRates } from "@/utils/formatVndUseDola";
 
 import { useQuery } from "@tanstack/react-query";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 // Định nghĩa các interface
 interface TokenBalance {
@@ -80,8 +80,6 @@ export default function Header() {
     refetchOnWindowFocus: false,
     staleTime: 60000, // 1 minute
   });
-
-  const pathname = usePathname();
 
   // Calculate credits details
   const creditsDetails: CreditsDetails | null = balanceData

@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 // Định nghĩa kiểu cho User
 interface User {
@@ -39,31 +39,36 @@ export default function UserContactsCard() {
   });
   const [loading, setLoading] = useState(false);
 
-  const fetchUsers = async (page = 1) => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: pagination.limit.toString(),
-        role: "user",
-      });
+ const fetchUsers = useCallback(
+   async (page = 1) => {
+     setLoading(true);
+     try {
+       const params = new URLSearchParams({
+         page: page.toString(),
+         limit: pagination.limit.toString(),
+         role: "user",
+       });
 
-      const response = await fetch(`/api/admin/users?${params.toString()}`);
+       const response = await fetch(`/api/admin/users?${params.toString()}`);
 
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.users);
-        setPagination(data.pagination);
-      } else {
-        console.error("Lỗi khi lấy danh sách người dùng");
-      }
-    } catch (error) {
-      console.error("Lỗi khi gọi API:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+       if (response.ok) {
+         const data = await response.json();
+         setUsers(data.users);
+         setPagination(data.pagination);
+       } else {
+         console.error("Lỗi khi lấy danh sách người dùng");
+       }
+     } catch (error) {
+       console.error("Lỗi khi gọi API:", error);
+     } finally {
+       setLoading(false);
+     }
+   },
+   [pagination.limit]
+ );
+  useEffect(() => {
+    fetchUsers(); // gọi lần đầu khi component render
+  }, [fetchUsers]);
   const getInitials = (name?: string) => {
     if (!name) return "U";
     return name
