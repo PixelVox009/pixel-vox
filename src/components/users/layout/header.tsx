@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { formatVndToUsd, useExchangeRates } from "@/utils/formatVndUseDola";
+
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 // Định nghĩa các interface
 interface TokenBalance {
@@ -63,18 +64,26 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const { rates } = useExchangeRates();
+
+  // Fetch token balance with React Query
   const { data: balanceData, isLoading: isBalanceLoading } = useQuery<TokenBalance>({
     queryKey: ["tokenBalance"],
     queryFn: fetchTokenBalance,
     refetchOnWindowFocus: false,
     staleTime: 60000, // 1 minute
   });
+
+  // Fetch transaction history with React Query
   const { data: transactionHistory = [], isLoading: isHistoryLoading } = useQuery<Transaction[]>({
     queryKey: ["transactionHistory", activeTransactionTab],
     queryFn: () => fetchTransactionHistory(activeTransactionTab),
     refetchOnWindowFocus: false,
     staleTime: 60000, // 1 minute
   });
+
+  const pathname = usePathname();
+
+  // Calculate credits details
   const creditsDetails: CreditsDetails | null = balanceData
     ? {
         remaining: balanceData.balance || 0,
@@ -83,16 +92,21 @@ export default function Header() {
         bonus: Math.max(0, (balanceData.balance || 0) - (balanceData.totalRecharged || 0)),
       }
     : null;
+
   const isLoading = isBalanceLoading || isHistoryLoading;
+
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
+
   const handleBuyCredits = () => {
     router.push("/credits");
   };
+
   const handleTabChange = (tab: string) => {
     setActiveTransactionTab(tab);
   };
+
   const tabs = [
     {
       id: "audio",
@@ -119,6 +133,7 @@ export default function Header() {
     { id: "purchased", label: "Purchased" },
     { id: "bonus", label: "Bonus" },
   ];
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date
@@ -131,6 +146,7 @@ export default function Header() {
       })
       .replace(",", "");
   };
+
   const getTokenChange = (transaction: Transaction) => {
     if (transaction.tokensEarned && transaction.tokensEarned > 0) {
       return `+${transaction.tokensEarned.toLocaleString()}`;
@@ -144,6 +160,7 @@ export default function Header() {
     }
     return "0";
   };
+
   const getTokenColor = (transaction: Transaction) => {
     if (transaction.tokensEarned && transaction.tokensEarned > 0) {
       return "text-green-500";
@@ -156,6 +173,7 @@ export default function Header() {
     }
     return "text-gray-500";
   };
+
   const getTransactionTitle = (transaction: Transaction) => {
     if (transaction.description) return transaction.description;
     if (transaction.type === "bank") return "Top-up Credits";
@@ -163,6 +181,7 @@ export default function Header() {
     if (transaction.type === "bonus") return "Bonus Credits";
     return "Transaction";
   };
+
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-white/80 backdrop-blur-xl dark:bg-gray-950/80 px-4">
       <div className="flex items-center gap-4">
@@ -215,6 +234,11 @@ export default function Header() {
                   <div className="col-span-1">
                     <div className="text-sm text-gray-500 dark:text-gray-400">Top-up Credits</div>
                     <div className="font-medium">{formatVndToUsd(creditsDetails.topup, rates.vndToUsdRate)}$</div>
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center">+</div>
+                  <div className="col-span-1">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Bonus Credits</div>
+                    <div className="font-medium">{creditsDetails.bonus.toLocaleString()}</div>
                   </div>
                 </div>
 

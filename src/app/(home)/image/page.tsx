@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import "yet-another-react-lightbox/styles.css";
 
 import TextInputArea from "@/components/TextInputArea";
 import { DataTable } from "@/components/DataTable";
@@ -10,6 +11,7 @@ import { columns } from "@/components/users/image/columns";
 
 export default function ImageGenerationPage() {
   const [text, setText] = useState("");
+
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -38,13 +40,13 @@ export default function ImageGenerationPage() {
       </h1>
       <TextInputArea
         text={text}
-        setText={setText}
+        onTextChange={setText}
         isPending={isPending}
         onGenerate={handleGenerate}
       />
 
       <div className="mt-4 flex flex-col gap-4">
-        <div className="container mx-auto py-10 dark:text-gray-300">
+        <div className="py-10 dark:text-gray-300">
           <h2 className="text-xl font-bold dark:text-white mb-2">Image List</h2>
           <DataTable
             columns={columns}
