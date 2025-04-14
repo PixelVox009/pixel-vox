@@ -113,7 +113,7 @@ export default function UsersPage() {
     queryKey: ["users", page, limit, search, role],
     queryFn: () => fetchUsers(page, limit, search, role),
   });
-
+  console.log(data);
   const handleRoleChange = (value: string) => {
     const roleFilter = value === "all" ? "" : value;
     setRole(roleFilter);
@@ -177,6 +177,7 @@ export default function UsersPage() {
   };
 
   const getInitials = (name: string) => {
+    if (!name) return "";
     return name
       .split(" ")
       .map((part) => part.charAt(0))
@@ -307,9 +308,9 @@ export default function UsersPage() {
                       <TableCell>{user.paymentCode || "N/A"}</TableCell>
                       <TableCell>{user.wallet?.totalTokens || 0} tokens</TableCell>
                       <TableCell>{user.wallet?.totalSpent || 0} tokens</TableCell>
-                      <TableCell>{formatVndToUsd(user.wallet?.totalRecharged || 0,rates.vndToUsdRate)} $</TableCell>
+                      <TableCell>{formatVndToUsd(user.wallet?.totalRecharged || 0, rates.vndToUsdRate)} $</TableCell>
                       <TableCell className="font-medium">
-                        <Badge>{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</Badge>
+                        <Badge>{user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "N/A"}</Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-end gap-2">
@@ -414,9 +415,7 @@ export default function UsersPage() {
                 onChange={(e) => setGiftDescription(e.target.value)}
                 placeholder="Ví dụ: Khuyến mãi, thưởng hoạt động,..."
               />
-              <p className="text-sm text-muted-foreground">
-                Description will be displayed in user transaction history
-              </p>
+              <p className="text-sm text-muted-foreground">Description will be displayed in user transaction history</p>
             </div>
           </div>
 

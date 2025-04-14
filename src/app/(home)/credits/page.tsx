@@ -28,8 +28,6 @@ const SUGGESTED_PACKAGES = [
   { tokens: 100, amount: 2500000 },
 ];
 
-const MIN_AMOUNT = 25000;
-
 export default function DepositPage() {
   const { sessionStatus, data: userData, isLoading } = useUserData();
 
@@ -189,7 +187,7 @@ export default function DepositPage() {
                   onSelectPackage={handleSelectPackage}
                   formatCurrency={formatCurrency}
                 />
-                <CustomAmountInput value={customAmount} onChange={handleCustomAmountChange} minAmount={MIN_AMOUNT} />
+                <CustomAmountInput value={customAmount} onChange={handleCustomAmountChange} />
               </div>
 
               {/* Thông tin chuyển khoản */}

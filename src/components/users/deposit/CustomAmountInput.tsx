@@ -3,10 +3,9 @@ import React, { useState, useEffect } from "react";
 interface CustomAmountInputProps {
   value: string;
   onChange: (value: string, isValid: boolean) => void;
-  minAmount?: number;
 }
 
-const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange, minAmount = 25000 }) => {
+const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange }) => {
   const [error, setError] = useState<string>("");
   const [exchangeRate, setExchangeRate] = useState<number>(25000);
   const [usdToTokenRate, setUsdToTokenRate] = useState<number>(10);
@@ -39,8 +38,8 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange, 
     const numAmount = Number(numericValue);
 
     // Kiểm tra điều kiện tối thiểu
-    if (numAmount > 0 && numAmount < minAmount) {
-      setError(`Số tiền tối thiểu là $1 (${minAmount.toLocaleString("vi-VN")} VND)`);
+    if (numAmount > 0 && numAmount < exchangeRate) {
+      setError(`Số tiền tối thiểu là $1 (${exchangeRate.toLocaleString("vi-VN")} VND)`);
       onChange(numericValue, false);
     } else {
       setError("");

@@ -93,7 +93,7 @@ export default function TransactionHistory() {
 
       const data: TransactionResponse = await response.json();
       setTransactions(data.data);
-      setTotalPages(data.pagination.totalPages);
+      setTotalPages(data?.pagination?.totalPages);
       setTotalTransactions(data.pagination.total);
     } catch (error) {
       console.error("Error fetching transactions:", error);
@@ -327,7 +327,10 @@ export default function TransactionHistory() {
                     <TableCell className={transaction.tokensEarned > 0 ? "text-green-600" : "text-red-600"}>
                       {transaction.tokensEarned > 0 ? `+${transaction.tokensEarned}` : transaction.tokensEarned}
                     </TableCell>
-                    {formatVndToUsd(transaction.amount, rates.vndToUsdRate)} $
+                    <TableCell className="hidden lg:table-cell">
+                      {" "}
+                      {formatVndToUsd(transaction.amount, rates.vndToUsdRate)} $
+                    </TableCell>
                     <TableCell className="hidden lg:table-cell">
                       <Badge className={getStatusColor(transaction.status)}>
                         {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}

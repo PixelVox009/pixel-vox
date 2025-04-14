@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    domains: ["f003.backblazeb2.com"],
+    domains: ["f003.backblazeb2.com", "api.dicebear.com"],
   },
 };
 
