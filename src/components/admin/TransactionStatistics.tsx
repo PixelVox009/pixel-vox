@@ -13,8 +13,6 @@ import { StatsOverview } from "./StatsOverview";
 import { TransactionChart } from "./TransactionChart";
 import UserContactsCard from "./UserInfo";
 
-// Import our new components
-
 // Thông tin ngân hàng cố định
 const BANK_CONFIG: BankConfig = {
   bankName: "ACB",
@@ -96,9 +94,21 @@ export default function DashboardComponent() {
       vndToUsdRate: data.vndToUsdRate || 0,
     }),
   });
+
   useEffect(() => {
     console.log("Exchange Rates:", exchangeRates);
   }, [exchangeRates]);
+
+  // Thêm useEffect để đồng bộ newExchangeRates với exchangeRates khi dữ liệu được tải
+  useEffect(() => {
+    if (exchangeRates) {
+      setNewExchangeRates({
+        usdToTokenRate: exchangeRates.usdToTokenRate,
+        vndToUsdRate: exchangeRates.vndToUsdRate,
+      });
+    }
+  }, [exchangeRates]);
+
   // Mutation for updating exchange rates
   const updateRatesMutation = useMutation({
     mutationFn: async (rates: ExchangeRates) => {
@@ -151,6 +161,7 @@ export default function DashboardComponent() {
       return "Invalid date";
     }
   };
+
   return (
     <div className="p-6 ">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

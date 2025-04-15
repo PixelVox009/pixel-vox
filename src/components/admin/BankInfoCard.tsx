@@ -25,13 +25,13 @@ export function BankInfoCard({ bankConfig }: BankInfoCardProps) {
             <div className="h-3 w-3 rounded-full bg-yellow-100"></div>
           </div>
         </div>
-        <p className="text-sm text-blue-200 dark:text-blue-300 mb-6">Thông tin tài khoản</p>
+        <p className="text-sm text-blue-200 dark:text-blue-300 mb-6">Account information</p>
 
         <div className="space-y-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-blue-300">
               <CreditCard size={16} />
-              <span className="text-sm">Số tài khoản</span>
+              <span className="text-sm">Account number</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="font-mono text-xl">{bankConfig.accountNumber}</span>
@@ -49,7 +49,7 @@ export function BankInfoCard({ bankConfig }: BankInfoCardProps) {
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-blue-300">
               <User size={16} />
-              <span className="text-sm">Tên tài khoản</span>
+              <span className="text-sm">Account name</span>
             </div>
             <p className="font-medium text-lg uppercase">{bankConfig.accountName}</p>
           </div>

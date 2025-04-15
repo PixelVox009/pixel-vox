@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Transaction } from "@/types/month";
 import { ArrowDown, ChevronRight, Clock, RefreshCw } from "lucide-react";
-
+import Link from "next/link";
 
 interface RecentTransactionsProps {
   transactions?: Transaction[];
@@ -24,13 +24,16 @@ export function RecentTransactions({
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="text-lg dark:text-gray-200">Giao dịch gần đây</CardTitle>
-            <CardDescription className="dark:text-gray-400">5 giao dịch nạp tiền gần nhất</CardDescription>
+            <CardTitle className="text-lg dark:text-gray-200">Recent transactions</CardTitle>
+            <CardDescription className="dark:text-gray-400">5 most recent deposits</CardDescription>
           </div>
-          <Button variant="ghost" size="sm" className="text-sm gap-1 dark:text-gray-300 dark:hover:bg-gray-700">
-            Xem tất cả
-            <ChevronRight size={16} />
-          </Button>
+          <Link href="/admin/payment">
+            {" "}
+            <Button variant="ghost" size="sm" className="text-sm gap-1 dark:text-gray-300 dark:hover:bg-gray-700">
+              See all
+              <ChevronRight size={16} />
+            </Button>
+          </Link>
         </div>
       </CardHeader>
       <CardContent>
@@ -68,7 +71,7 @@ export function RecentTransactions({
               </div>
             ))
           ) : (
-            <div className="text-center py-6 text-gray-400 dark:text-gray-500">Không có giao dịch gần đây</div>
+            <div className="text-center py-6 text-gray-400 dark:text-gray-500">No recent transactions</div>
           )}
         </div>
       </CardContent>

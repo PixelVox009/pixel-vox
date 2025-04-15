@@ -6,7 +6,6 @@ import { Calendar, RefreshCw } from "lucide-react";
 import { ChangeEvent } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-
 interface TransactionChartProps {
   startDate: string;
   endDate: string;
@@ -35,9 +34,9 @@ export function TransactionChart({
       <CardHeader className="pb-2">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <CardTitle className="text-lg dark:text-gray-200">Biểu đồ giao dịch</CardTitle>
+            <CardTitle className="text-lg dark:text-gray-200">Trading chart</CardTitle>
             <CardDescription className="dark:text-gray-400">
-              Thống kê từ {startDate} đến {endDate}
+              Statistics from {startDate} to {endDate}
             </CardDescription>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -70,7 +69,7 @@ export function TransactionChart({
                   Đang tải...
                 </>
               ) : (
-                "Lọc"
+                "Filter"
               )}
             </Button>
           </div>
@@ -102,7 +101,7 @@ export function TransactionChart({
             </ResponsiveContainer>
           ) : (
             <div className="h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
-              Không có dữ liệu trong khoảng thời gian này
+              No data for this period
             </div>
           )}
         </div>

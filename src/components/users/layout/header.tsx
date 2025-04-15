@@ -233,11 +233,6 @@ export default function Header() {
                     <div className="text-sm text-gray-500 dark:text-gray-400">Top-up Credits</div>
                     <div className="font-medium">{formatVndToUsd(creditsDetails.topup, rates.vndToUsdRate)}$</div>
                   </div>
-                  <div className="col-span-1 flex items-center justify-center">+</div>
-                  <div className="col-span-1">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Bonus Credits</div>
-                    <div className="font-medium">{creditsDetails.bonus.toLocaleString()}</div>
-                  </div>
                 </div>
 
                 {/* Transaction Tabs */}
