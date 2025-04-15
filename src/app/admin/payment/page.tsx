@@ -54,14 +54,13 @@ export default function TransactionHistory() {
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [totalTransactions, setTotalTransactions] = useState(0);
   const { rates } = useExchangeRates();
-  // Tùy chọn lọc type
+
   const typeOptions = [
     { value: "all", label: "All Types" },
     { value: "bank", label: "Bank Payment" },
     { value: "bonus", label: "Bonus" },
     { value: "token_usage", label: "Token Usage" },
   ];
-
   // Hàm lấy dữ liệu từ API
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -101,58 +100,39 @@ export default function TransactionHistory() {
       setLoading(false);
     }
   }, [page, limit, searchTerm, selectedType, startDate, endDate]);
-
-  // Hook để gọi API khi các bộ lọc thay đổi
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
-
-  // Thay đổi trang
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
-
-  // Handle tìm kiếm
   const handleSearch = () => {
-    setPage(1); // Reset về trang đầu tiên khi tìm kiếm
+    setPage(1); 
     fetchTransactions();
   };
-
-  // Handle export
   const handleExport = async () => {
     try {
-      // Tạo query params cho export (thường là tất cả dữ liệu)
       const params = new URLSearchParams();
-
-      // Giữ các bộ lọc nhưng lấy tất cả dữ liệu
-      params.append("limit", "1000"); // Số lượng lớn hoặc có thể có endpoint riêng cho export
-
+      params.append("limit", "1000"); 
       if (selectedType !== "all") {
         params.append("type", selectedType);
       }
-
       if (startDate) {
         params.append("startDate", startDate.toISOString());
       }
-
       if (endDate) {
         params.append("endDate", endDate.toISOString());
       }
-
       if (searchTerm) {
         params.append("search", searchTerm);
       }
-
       params.append("export", "true");
-
       // Gọi API export
       window.open(`/api/user/payments/activities/export?${params.toString()}`, "_blank");
     } catch (error) {
       console.error("Error exporting transactions:", error);
     }
   };
-
-  // Định dạng ngày tháng cho hiển thị
   const formatDateRange = () => {
     if (!startDate || !endDate) {
       return "Select date range";
@@ -160,7 +140,6 @@ export default function TransactionHistory() {
     return `${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`;
   };
 
-  // Lấy icon cho loại giao dịch
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case "bank":
@@ -174,7 +153,6 @@ export default function TransactionHistory() {
     }
   };
 
-  // Lấy màu cho trạng thái
   const getStatusColor = (status: string) => {
     switch (status) {
       case "success":
@@ -188,13 +166,23 @@ export default function TransactionHistory() {
     }
   };
 
-  // Format thời gian
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return {
       date: format(date, "dd/MM/yyyy"),
       time: format(date, "HH:mm:ss"),
     };
+  };
+  const formatTokens = (transaction: Transaction) => {
+    if (transaction.type === "token_usage") {
+      const tokenValue = Math.abs(transaction.tokensEarned);
+      return `-${tokenValue}`;
+    } else {
+      return `+${transaction.tokensEarned}`;
+    }
+  };
+  const getTokenColor = (transaction: Transaction) => {
+    return transaction.type === "token_usage" ? "text-red-600 font-medium" : "text-green-600 font-medium";
   };
 
   return (
@@ -349,12 +337,8 @@ export default function TransactionHistory() {
                       <div>{dateTime.date}</div>
                       <div className="text-sm text-muted-foreground">{dateTime.time}</div>
                     </TableCell>
-                    <TableCell
-                      className={`hidden lg:table-cell ${
-                        transaction.tokensEarned > 0 ? "text-green-600 font-medium" : "text-red-600 font-medium"
-                      }`}
-                    >
-                      {transaction.tokensEarned > 0 ? `+${transaction.tokensEarned}` : transaction.tokensEarned}
+                    <TableCell className={`hidden lg:table-cell ${getTokenColor(transaction)}`}>
+                      {formatTokens(transaction)}
                     </TableCell>
                     <TableCell className="hidden lg:table-cell font-medium">
                       {formatVndToUsd(transaction.amount, rates.vndToUsdRate)} $
