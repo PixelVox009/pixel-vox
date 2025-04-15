@@ -264,11 +264,10 @@ function splitStoryByCharLength(story: string) {
 
   // Tìm tất cả các câu trong truyện
   const sentenceRegex = /[^.!?。？！]+[.!?。？！]+/g;
-  let sentences: any[] = [];
+  let sentences: string[] = [];
   let match;
 
   while ((match = sentenceRegex.exec(story)) !== null) {
-    // Kiểm tra nếu câu quá dài (> MAX ký tự), chia nhỏ câu đó
     if (match[0].length > MAX) {
       // Chia câu dài thành các phần nhỏ hơn theo khoảng trắng
       const parts = splitLongSentence(match[0]);

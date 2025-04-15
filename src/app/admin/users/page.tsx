@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatVndToUsd } from "@/utils/formatVndUseDola";
+import { formatVndToUsd, useExchangeRates } from "@/utils/formatVndUseDola";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Edit, Gift, MoreVertical, Plus, Search } from "lucide-react";
 import Link from "next/link";
@@ -71,7 +71,6 @@ const fetchUsers = async (page = 1, limit = 10, search = "", role = "") => {
   return response.json();
 };
 
-// API để tặng token cho người dùng
 const giftTokensToUser = async (userId: string, walletId: string, tokens: number, description: string) => {
   const response = await fetch(`/api/admin/payments/gift`, {
     method: "POST",
@@ -106,7 +105,7 @@ export default function UsersPage() {
   const [giftDescription, setGiftDescription] = useState("");
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isGiftingTokens, setIsGiftingTokens] = useState(false);
-
+  const { rates } = useExchangeRates();
   const queryClient = useQueryClient();
 
   // Fetch users with React Query
@@ -114,7 +113,7 @@ export default function UsersPage() {
     queryKey: ["users", page, limit, search, role],
     queryFn: () => fetchUsers(page, limit, search, role),
   });
-
+  console.log(data);
   const handleRoleChange = (value: string) => {
     const roleFilter = value === "all" ? "" : value;
     setRole(roleFilter);
@@ -139,7 +138,7 @@ export default function UsersPage() {
     if (selectedRows.length === (data?.users?.length || 0)) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(data?.users?.map((user: any) => user._id) || []);
+      setSelectedRows(data?.users?.map((user: UserData) => user._id) || []);
     }
   };
 
@@ -178,6 +177,7 @@ export default function UsersPage() {
   };
 
   const getInitials = (name: string) => {
+    if (!name) return "";
     return name
       .split(" ")
       .map((part) => part.charAt(0))
@@ -308,9 +308,9 @@ export default function UsersPage() {
                       <TableCell>{user.paymentCode || "N/A"}</TableCell>
                       <TableCell>{user.wallet?.totalTokens || 0} tokens</TableCell>
                       <TableCell>{user.wallet?.totalSpent || 0} tokens</TableCell>
-                      <TableCell>{formatVndToUsd(user.wallet?.totalRecharged || 0)} $</TableCell>
+                      <TableCell>{formatVndToUsd(user.wallet?.totalRecharged || 0, rates.vndToUsdRate)} $</TableCell>
                       <TableCell className="font-medium">
-                        <Badge>{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</Badge>
+                        <Badge>{user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "N/A"}</Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-end gap-2">
@@ -415,9 +415,7 @@ export default function UsersPage() {
                 onChange={(e) => setGiftDescription(e.target.value)}
                 placeholder="Ví dụ: Khuyến mãi, thưởng hoạt động,..."
               />
-              <p className="text-sm text-muted-foreground">
-                Description will be displayed in user's transaction history
-              </p>
+              <p className="text-sm text-muted-foreground">Description will be displayed in user transaction history</p>
             </div>
           </div>
 

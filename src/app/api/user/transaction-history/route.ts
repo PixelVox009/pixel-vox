@@ -3,9 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import PaymentActivity from "@/models/payment-activity";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import dbConnect from "@/lib/db";
 
 export async function GET(req: NextRequest) {
     try {
+        await dbConnect();
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -13,7 +15,7 @@ export async function GET(req: NextRequest) {
         const searchParams = req.nextUrl.searchParams;
         const limit = parseInt(searchParams.get("limit") || "10");
         const type = searchParams.get("type");
-        const query: any = { customer: session.user.id };
+        const query: { customer: string; type?: string; tokensEarned?: { $gt: number } } = { customer: session.user.id };
         if (type) {
             if (type === "all") {
                 // Không thêm điều kiện

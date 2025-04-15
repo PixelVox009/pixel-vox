@@ -2,37 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
-import { User } from "@/models/User";
+import { IUser, User } from "@/models/User";
 import Wallet from "@/models/wallet";
 import { getServerSession } from "next-auth";
 
-
 export async function GET(req: NextRequest) {
     try {
+        await dbConnect();
         // Kiểm tra quyền admin
         const session = await getServerSession(authOptions);
         if (!session?.user?.role || session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
-
         // Lấy các tham số từ URL
         const { searchParams } = new URL(req.url);
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
         const search = searchParams.get('search') || '';
         const role = searchParams.get('role') || '';
-
-        // Kết nối database
-        await dbConnect();
-
         // Xây dựng query
-        const query: any = {};
-
+        const query: Record<string, unknown> = {};
         // Filter theo role
         if (role && role !== '') {
             query.role = role;
         }
-
         // Tìm kiếm theo name hoặc email hoặc paymentCode
         if (search) {
             query.$or = [
@@ -41,33 +34,27 @@ export async function GET(req: NextRequest) {
                 { paymentCode: { $regex: search, $options: 'i' } }
             ];
         }
-
         // Tính toán skip cho phân trang
         const skip = (page - 1) * limit;
-
         // Thực hiện truy vấn với phân trang
         const users = await User.find(query)
             .select('-hashedPassword')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .lean();
-
+            .lean<IUser[]>();
         // Lấy tổng số bản ghi phù hợp với query
         const total = await User.countDocuments(query);
-
         // Tính toán thông tin phân trang
         const totalPages = Math.ceil(total / limit);
         const from = skip + 1;
         const to = Math.min(skip + limit, total);
-
         // Lấy thông tin ví cho mỗi người dùng
-        const userIds = users.map(user => user._id);
+        const userIds = users.map((user: IUser) => user._id);
         const wallets = await Wallet.find({ customer: { $in: userIds } }).lean();
-
         // Map wallets vào users
         const usersWithWallets = users.map(user => {
-            const wallet = wallets.find(w => w.customer.toString() === (user as any)._id.toString());
+            const wallet = wallets.find(w => w.customer.toString() === (user)._id.toString());
             return {
                 ...user,
                 wallet: wallet || {
@@ -81,7 +68,6 @@ export async function GET(req: NextRequest) {
             };
         });
 
-
         return NextResponse.json({
             users: usersWithWallets,
             pagination: {
@@ -93,75 +79,9 @@ export async function GET(req: NextRequest) {
                 totalPages
             }
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching users:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
-    }
-}
-
-
-
-export async function POST(req: NextRequest) {
-    try {
-        // Kiểm tra quyền admin
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.role || session.user.role !== "admin") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-        const data = await req.json();
-        if (!data.name || !data.email || !data.password) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-        }
-
-        // Kết nối database
-        await dbConnect();
-
-        // Kiểm tra email đã tồn tại chưa
-        const existingUser = await User.findOne({ email: data.email });
-        if (existingUser) {
-            return NextResponse.json({ error: "Email already exists" }, { status: 400 });
-        }
-
-        // Tạo người dùng mới
-        const newUser = new User({
-            name: data.name,
-            email: data.email,
-            password: data.password, // Sẽ được hash bởi middleware/hooks trong model
-            role: data.role || "user",
-            status: data.status || "pending",
-            tokenBalance: 0,
-            lastLoginAt: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            paymentCode: data.paymentCode || Date.now().toString().substring(7)
-        });
-
-        // Lưu người dùng mới
-        const savedUser = await newUser.save();
-
-        // Tạo ví cho người dùng mới
-        const newWallet = new Wallet({
-            customer: savedUser._id,
-            balance: 0,
-            totalRecharged: 0,
-            totalTokens: 0,
-            totalSpent: 0,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        // Lưu ví mới
-        await newWallet.save();
-
-        return NextResponse.json({
-            success: true,
-            user: {
-                ...savedUser.toObject(),
-                password: undefined // Loại bỏ password khỏi response
-            }
-        }, { status: 201 });
-    } catch (error: any) {
-        console.error('Error creating user:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

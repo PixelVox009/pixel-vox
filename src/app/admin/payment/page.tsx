@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatVndToUsd } from "@/utils/formatVndUseDola";
+import { formatVndToUsd, useExchangeRates } from "@/utils/formatVndUseDola";
 import { format, subDays } from "date-fns";
 import { ArrowDown, Calendar as CalendarIcon, CreditCard, Download, Gift, RefreshCcw, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 // Định nghĩa kiểu dữ liệu cho giao dịch
 interface Transaction {
@@ -49,11 +49,11 @@ export default function TransactionHistory() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [limit, setLimit] = useState(25);
+  const [limit] = useState(25);
   const [startDate, setStartDate] = useState<Date>(subDays(new Date(), 30));
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [totalTransactions, setTotalTransactions] = useState(0);
-
+  const { rates } = useExchangeRates();
   // Tùy chọn lọc type
   const typeOptions = [
     { value: "all", label: "All Types" },
@@ -63,10 +63,9 @@ export default function TransactionHistory() {
   ];
 
   // Hàm lấy dữ liệu từ API
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true);
     try {
-      // Tạo query params
       const params = new URLSearchParams();
       params.append("page", page.toString());
       params.append("limit", limit.toString());
@@ -94,19 +93,19 @@ export default function TransactionHistory() {
 
       const data: TransactionResponse = await response.json();
       setTransactions(data.data);
-      setTotalPages(data.pagination.totalPages);
+      setTotalPages(data?.pagination?.totalPages);
       setTotalTransactions(data.pagination.total);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit, searchTerm, selectedType, startDate, endDate]);
 
   // Hook để gọi API khi các bộ lọc thay đổi
   useEffect(() => {
     fetchTransactions();
-  }, [page, limit, selectedType, startDate, endDate]);
+  }, [fetchTransactions]);
 
   // Thay đổi trang
   const handlePageChange = (newPage: number) => {
@@ -151,14 +150,6 @@ export default function TransactionHistory() {
     } catch (error) {
       console.error("Error exporting transactions:", error);
     }
-  };
-
-  // Format số VND
-  const formatVND = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
   };
 
   // Định dạng ngày tháng cho hiển thị
@@ -213,88 +204,108 @@ export default function TransactionHistory() {
         <p className="text-muted-foreground">View your payment history and token transactions</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        {/* Transaction Type */}
-        <div className="md:col-span-3">
-          <label htmlFor="type" className="block text-sm font-medium mb-2">
-            Transaction Type
-          </label>
-          <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger id="type" className="w-full">
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {typeOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Filter section */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Transaction Type */}
+          <div>
+            <label htmlFor="type" className="block text-sm font-medium mb-2">
+              Transaction Type
+            </label>
+            <Select value={selectedType} onValueChange={setSelectedType}>
+              <SelectTrigger id="type" className="w-full">
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {typeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Date Range */}
-        <div className="md:col-span-5">
-          <label className="block text-sm font-medium mb-2">Date Range</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {formatDateRange()}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                selected={{
-                  from: startDate,
-                  to: endDate,
-                }}
-                onSelect={(range) => {
-                  setStartDate(range?.from || subDays(new Date(), 30));
-                  setEndDate(range?.to || new Date());
-                }}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+          {/* Date Range */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Date Range</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start text-left font-normal">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formatDateRange()}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  selected={{
+                    from: startDate,
+                    to: endDate,
+                  }}
+                  onSelect={(range) => {
+                    setStartDate(range?.from || subDays(new Date(), 30));
+                    setEndDate(range?.to || new Date());
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
 
-        {/* Search */}
-        <div className="md:col-span-4 flex items-end">
-          <div className="flex w-full max-w-sm items-center space-x-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search transaction..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              />
-            </div>
-            <Button type="button" onClick={handleSearch} className="bg-slate-900">
-              Search
+          {/* Export button - desktop */}
+          <div className="hidden lg:flex items-end">
+            <Button variant="outline" size="default" className="w-full flex items-center gap-2" onClick={handleExport}>
+              <Download className="h-4 w-4" />
+              Export
             </Button>
           </div>
+        </div>
+
+        {/* Search row */}
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
+          <div className="relative flex-grow">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search transaction..."
+              className="pl-10 w-full"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            />
+          </div>
+          <Button type="button" onClick={handleSearch} className="bg-slate-900 min-w-[100px]">
+            Search
+          </Button>
+
+          {/* Export button - mobile */}
+          <Button
+            variant="outline"
+            size="default"
+            className="lg:hidden flex items-center justify-center gap-2"
+            onClick={handleExport}
+          >
+            <Download className="h-4 w-4" />
+            Export
+          </Button>
         </div>
       </div>
 
       {/* Transactions Table */}
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Transaction</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="hidden lg:table-cell">Tokens</TableHead>
-              <TableHead className="hidden lg:table-cell">Amount</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead className="min-w-[120px]">Transaction</TableHead>
+              <TableHead className="min-w-[250px]">Description</TableHead>
+              <TableHead className="hidden md:table-cell min-w-[100px]">Type</TableHead>
+              <TableHead className="min-w-[120px]">Date</TableHead>
+              <TableHead className="hidden lg:table-cell min-w-[80px]">Tokens</TableHead>
+              <TableHead className="hidden lg:table-cell min-w-[100px]">Amount</TableHead>
+              <TableHead className="min-w-[100px]">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -315,31 +326,41 @@ export default function TransactionHistory() {
                 const dateTime = formatDateTime(transaction.createdAt);
                 return (
                   <TableRow key={transaction._id}>
-                    <TableCell className=" text-sm">{transaction.transaction}</TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-sm font-medium">{transaction.transaction}</TableCell>
+                    <TableCell>
                       <div className="flex items-center space-x-3">
-                        <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center">
+                        <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
                           {getTransactionIcon(transaction.type)}
                         </div>
-                        <div>
-                          <div className="font-medium truncate max-w-xs">{transaction.description}</div>
+                        <div className="min-w-0">
+                          <div className="font-medium truncate max-w-[200px] md:max-w-xs">
+                            {transaction.description}
+                          </div>
                           <div className="text-sm text-muted-foreground md:hidden">
                             {dateTime.date} {dateTime.time}
                           </div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}</TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="hidden md:table-cell capitalize">
+                      {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell whitespace-nowrap">
                       <div>{dateTime.date}</div>
                       <div className="text-sm text-muted-foreground">{dateTime.time}</div>
                     </TableCell>
-                    <TableCell className={transaction.tokensEarned > 0 ? "text-green-600" : "text-red-600"}>
+                    <TableCell
+                      className={`hidden lg:table-cell ${
+                        transaction.tokensEarned > 0 ? "text-green-600 font-medium" : "text-red-600 font-medium"
+                      }`}
+                    >
                       {transaction.tokensEarned > 0 ? `+${transaction.tokensEarned}` : transaction.tokensEarned}
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell">{formatVndToUsd(transaction.amount)} $</TableCell>
-                    <TableCell className="hidden lg:table-cell">
-                      <Badge className={getStatusColor(transaction.status)}>
+                    <TableCell className="hidden lg:table-cell font-medium">
+                      {formatVndToUsd(transaction.amount, rates.vndToUsdRate)} $
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={`${getStatusColor(transaction.status)} whitespace-nowrap`}>
                         {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
                       </Badge>
                     </TableCell>
@@ -352,11 +373,11 @@ export default function TransactionHistory() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="text-sm text-muted-foreground order-2 sm:order-1">
           Showing page {page} of {totalPages} ({totalTransactions} transactions)
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 order-1 sm:order-2">
           <Button
             variant="outline"
             size="sm"
@@ -372,10 +393,6 @@ export default function TransactionHistory() {
             disabled={page === totalPages || loading}
           >
             Next
-          </Button>
-          <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={handleExport}>
-            <Download className="h-4 w-4" />
-            Export
           </Button>
         </div>
       </div>

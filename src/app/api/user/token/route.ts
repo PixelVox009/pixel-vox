@@ -1,11 +1,13 @@
 // api/user/token-balance.ts hoặc route.ts
+import dbConnect from "@/lib/db";
 import Wallet from "@/models/wallet";
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
+        await dbConnect();
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

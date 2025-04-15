@@ -79,8 +79,9 @@ export async function POST(req: NextRequest) {
             newBalance,
             paymentActivity: paymentActivity.toObject()
         }, { status: 201 });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error gifting tokens:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

@@ -12,7 +12,11 @@ interface Payment {
   tokensEarned: number;
   _id: string;
 }
-const VND_TO_USD_RATE = 25000; 
+
+interface ExchangeRates {
+  vndToUsdRate: number;
+  usdToTokenRate: number;
+}
 
 const fetchPaymentData = async (userId: string) => {
   const response = await fetch(`/api/credits/check-payment?userId=${userId}`);
@@ -23,18 +27,46 @@ const fetchPaymentData = async (userId: string) => {
   return data;
 };
 
-const PaymentNotification: React.FC<PaymentNotificationProps> = ({ userId, transactionId }) => {
+const fetchExchangeRates = async (): Promise<ExchangeRates> => {
+  try {
+    const response = await fetch("/api/settings/exchange-rates");
+    if (response.ok) {
+      return await response.json();
+    }
+    return { vndToUsdRate: 25000, usdToTokenRate: 10 };
+  } catch (error) {
+    console.error("Lỗi khi lấy tỷ giá:", error);
+    return { vndToUsdRate: 25000, usdToTokenRate: 10 };
+  }
+};
+
+const PaymentNotification: React.FC<PaymentNotificationProps> = ({ userId }) => {
   const [latestPayment, setLatestPayment] = useState<Payment | null>(null);
   const [showNotification, setShowNotification] = useState(false);
   const [checkCount, setCheckCount] = useState(0);
+  const [exchangeRates, setExchangeRates] = useState<ExchangeRates>({
+    vndToUsdRate: 25000,
+    usdToTokenRate: 10,
+  });
+
+  // Lấy tỷ giá
+  useEffect(() => {
+    const getExchangeRates = async () => {
+      const rates = await fetchExchangeRates();
+      setExchangeRates(rates);
+    };
+    getExchangeRates();
+  }, []);
+
   const { data, error, isLoading } = useQuery({
     queryKey: ["paymentStatus", userId],
     queryFn: () => fetchPaymentData(userId),
-    refetchInterval: 30000, 
+    refetchInterval: 30000,
     refetchOnWindowFocus: false,
-    staleTime: 10000, 
-    enabled: !!userId, 
+    staleTime: 10000,
+    enabled: !!userId,
   });
+
   useEffect(() => {
     if (data?.recentPayments && data.recentPayments.length > 0) {
       const mostRecentPayment = data.recentPayments.sort(
@@ -53,19 +85,23 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ userId, trans
       setCheckCount((prev) => prev + 1);
     }
   }, [data, latestPayment, isLoading]);
+
   useEffect(() => {
     const stopRefetchTimeout = setTimeout(() => {
+      // Dừng refetch sau 10 phút
     }, 10 * 60 * 1000);
     return () => clearTimeout(stopRefetchTimeout);
   }, []);
+
   const formatVndToUsd = (vndAmount: number) => {
-    const usdAmount = vndAmount / VND_TO_USD_RATE;
+    const usdAmount = vndAmount / exchangeRates.vndToUsdRate;
     return usdAmount.toFixed(2);
   };
 
   const handleCloseNotification = () => {
     setShowNotification(false);
   };
+
   if (error) {
     return (
       <div className="mt-4 p-4 bg-red-50 rounded-md border border-red-200">
@@ -73,6 +109,7 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ userId, trans
       </div>
     );
   }
+
   if ((isLoading && checkCount === 0) || !showNotification) {
     return null;
   }
@@ -116,6 +153,12 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ userId, trans
                   {new Date(latestPayment.createdAt).toLocaleString("vi-VN")}.
                 </p>
                 <p className="font-medium">Số token nhận được: {latestPayment.tokensEarned}</p>
+                <p className="text-xs mt-1">
+                  <span className="italic">
+                    1 USD = {exchangeRates.usdToTokenRate} token = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")}{" "}
+                    VND
+                  </span>
+                </p>
               </div>
             </div>
           </div>

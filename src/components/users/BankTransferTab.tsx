@@ -1,0 +1,177 @@
+import PaymentNotification from "@/components/users/PaymentNotification";
+import BankTransferInfo from "@/components/users/deposit/BankTransferInfo";
+import CustomAmountInput from "@/components/users/deposit/CustomAmountInput";
+import ImportantNotes from "@/components/users/deposit/ImportantNotes";
+import QRCodeDisplay from "@/components/users/deposit/QRCodeDisplay";
+import TokenPackages from "@/components/users/deposit/TokenPackages";
+import { useUserData } from "@/hooks/useUserData";
+import copy from "clipboard-copy";
+import { useEffect, useState } from "react";
+
+const BANK_CONFIG = {
+  bankName: "ACB",
+  accountNumber: "6959741",
+  accountName: "CA VAN QUE",
+  prefixCode: "TB",
+  suffixCode: "AI",
+};
+
+const SUGGESTED_PACKAGES = [
+  { tokens: 10, amount: 250000 },
+  { tokens: 20, amount: 500000 },
+  { tokens: 50, amount: 1250000 },
+  { tokens: 100, amount: 2500000 },
+];
+
+export default function BankTransferTab() {
+  const { data: userData, isLoading } = useUserData();
+
+  const [amount, setAmount] = useState<number>(250000);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [transferContent, setTransferContent] = useState<string>("");
+  const [customAmount, setCustomAmount] = useState<string>("");
+  const [copied, setCopied] = useState<boolean>(false);
+  const [activePackage, setActivePackage] = useState<number>(0);
+  const [, setTokenEstimate] = useState<number>(10);
+  const [transactionId, setTransactionId] = useState<string>(`QRPAY${Date.now()}`);
+  const [, setIsValidAmount] = useState<boolean>(true);
+  const [exchangeRates, setExchangeRates] = useState({
+    vndToUsdRate: 25000,
+    usdToTokenRate: 10,
+  });
+
+  // Lấy tỷ giá từ API
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("/api/settings/exchange-rates");
+        if (response.ok) {
+          const data = await response.json();
+          setExchangeRates({
+            vndToUsdRate: data.vndToUsdRate || 25000,
+            usdToTokenRate: data.usdToTokenRate || 10,
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tỷ giá:", error);
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
+
+  useEffect(() => {
+    if (userData?.paymentCode) {
+      const content = `${BANK_CONFIG.prefixCode} ${userData.paymentCode} ${BANK_CONFIG.suffixCode}`;
+      setTransferContent(content);
+
+      // Tính toán số token dựa trên tỷ giá mới
+      const amountUsd = amount / exchangeRates.vndToUsdRate;
+      const tokens = Math.floor(amountUsd * exchangeRates.usdToTokenRate);
+      setTokenEstimate(tokens);
+
+      const vietQrUrl = `https://img.vietqr.io/image/ACB-${
+        BANK_CONFIG.accountNumber
+      }-compact.jpg?amount=${amount}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(
+        BANK_CONFIG.accountName
+      )}`;
+      setQrCodeUrl(vietQrUrl);
+    }
+  }, [amount, userData?.paymentCode, exchangeRates]);
+
+  useEffect(() => {
+    setTransactionId(`QRPAY${Date.now()}`);
+  }, [amount]);
+
+  const handleSelectPackage = (index: number, packageAmount: number) => {
+    setActivePackage(index);
+    setAmount(packageAmount);
+    setCustomAmount("");
+    setIsValidAmount(true);
+  };
+
+  const handleCustomAmountChange = (value: string, isValid: boolean) => {
+    setCustomAmount(value);
+    setIsValidAmount(isValid);
+    if (Number(value) > 0) {
+      setAmount(Number(value));
+      setActivePackage(-1);
+    } else {
+      setAmount(SUGGESTED_PACKAGES[0].amount);
+      setActivePackage(0);
+    }
+  };
+
+  const handleCopy = (text: string) => {
+    copy(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+    }).format(value);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-40">
+        <div className="animate-pulse flex space-x-2">
+          <div className="h-3 w-3 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+          <div className="h-3 w-3 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+          <div className="h-3 w-3 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-8">
+      {/* Left Column */}
+      <div className="lg:col-span-2">
+        <div className="bg-white dark:bg-slate-800 rounded-xl ">
+          {/* Thông báo giao dịch */}
+          {userData?.id && (
+            <div className="mb-6">
+              <PaymentNotification userId={userData.id} transactionId={transactionId} />
+            </div>
+          )}
+
+          {/* Gói token */}
+          <div className="mb-10">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Chọn số lượng token</h2>
+            <TokenPackages
+              packages={SUGGESTED_PACKAGES}
+              activePackage={activePackage}
+              onSelectPackage={handleSelectPackage}
+              formatCurrency={formatCurrency}
+            />
+            <CustomAmountInput value={customAmount} onChange={handleCustomAmountChange} />
+          </div>
+
+          {/* Thông tin chuyển khoản */}
+          <BankTransferInfo
+            bankConfig={BANK_CONFIG}
+            amount={amount}
+            transferContent={transferContent}
+            onCopy={handleCopy}
+            copied={copied}
+            formatCurrency={formatCurrency}
+          />
+
+          <div className="mt-8">
+            <ImportantNotes />
+          </div>
+        </div>
+      </div>
+
+      {/* Mã QR */}
+      <div className="lg:col-span-1">
+        <QRCodeDisplay qrCodeUrl={qrCodeUrl} />
+      </div>
+    </div>
+  );
+}
