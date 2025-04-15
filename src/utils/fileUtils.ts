@@ -2,10 +2,16 @@
 
 import axios from "axios";
 import fs from "fs";
+import path from "path";
 
 // Hàm tải xuống file từ URL
 export async function downloadFile(url: string, outputPath: string) {
   try {
+    const dir = path.dirname(outputPath);
+
+    // Tạo thư mục cha nếu chưa có
+    await fs.promises.mkdir(dir, { recursive: true });
+
     const response = await axios.get(url, { responseType: "stream" });
 
     const writer = fs.createWriteStream(outputPath);

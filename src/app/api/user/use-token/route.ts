@@ -24,15 +24,15 @@ export async function POST(req: NextRequest) {
     const oldBalance = wallet.balance;
     const newBalance = oldBalance - tokenNumber;
 
-    // them ban ghi payment activities voi type = spend
+    // them ban ghi payment activities voi type = token_usage
     const paymentActivity = await PaymentActivity.create({
-      transaction: "SPEND" + new Date().getTime(),
+      transaction: "TOKEN_USAGE" + new Date().getTime(),
       oldBalance: wallet.balance,
       newBalance: newBalance,
       customer: session.user.id,
       wallet: wallet._id,
       amount: 0,
-      type: "spend",
+      type: "token_usage",
       status: "success",
       description: `Bạn đã tiêu ${tokenNumber} tokens`,
       tokensEarned: tokenNumber,

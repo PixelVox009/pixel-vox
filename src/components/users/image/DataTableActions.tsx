@@ -25,11 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { imageService } from "@/lib/api/image";
-import { api } from "@/utils/axios";
-
-const downloadImage = async (url: string) => {
-  await api.post("/file/download", { url });
-};
+import { saveFile } from "@/utils/saveFile";
 
 type DataTableActionsProps<TData> = {
   row: Row<TData>;
@@ -65,7 +61,7 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
               disabled={!image.imageLink}
               className="h-8 w-8 p-0 dark:text-white dark:bg-gray-800 dark:border-gray-700"
               onClick={() => {
-                downloadImage(image.imageLink);
+                saveFile(image.imageLink, image.title);
               }}
             >
               <ArrowDownToLine size={16} />

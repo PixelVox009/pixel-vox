@@ -1,16 +1,37 @@
-// export const runtime = "nodejs";
+import { NextRequest, NextResponse } from "next/server";
+import mime from "mime-types";
+import slugify from "slugify";
 
+import path from "path";
+import fs from "fs/promises";
 import { downloadFile } from "@/utils/fileUtils";
-import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { url } = await req.json();
+  const { url, title } = await req.json();
 
-  console.log("🚀 ~ POST ~ url:", url);
-  const savedPath = await downloadFile(
-    url,
-    "c:/Users/hoant/Downloads/image.jpg"
-  );
+  const ext = path.extname(url) || ".jpg";
+  const fileName = `${
+    slugify(title, { lower: true }) || "default-filename"
+  }${ext}`;
+  const uploadsPath = path.join(process.cwd(), "public", "uploads");
+  const savePath = path.join(uploadsPath, fileName);
 
-  return Response.json({ path: savedPath });
+  // Tải về
+  await downloadFile(url, savePath);
+
+  // Đọc file
+  const fileBuffer = await fs.readFile(savePath);
+  const mimeType = mime.lookup(savePath) || "application/octet-stream";
+
+  await fs.rm(uploadsPath, { recursive: true, force: true });
+
+  return new NextResponse(fileBuffer, {
+    status: 200,
+    headers: {
+      "Content-Type": mimeType,
+      "Content-Disposition": `attachment; filename="${fileName}"`,
+      "Content-Length": fileBuffer.length.toString(),
+      "X-File-Name": fileName,
+    },
+  });
 }

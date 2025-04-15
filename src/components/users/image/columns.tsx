@@ -8,11 +8,7 @@ import Download from "yet-another-react-lightbox/plugins/download";
 
 import { Badge } from "@/components/ui/badge";
 import DataTableActions from "./DataTableActions";
-import { api } from "@/utils/axios";
-
-const downloadImage = async (url: string) => {
-  await api.post("/file/download", { url });
-};
+import { saveFile } from "@/utils/saveFile";
 
 export const columns: ColumnDef<Image>[] = [
   {
@@ -99,7 +95,7 @@ function TitleRow<TData>({ row }: TitleRowProps<TData>) {
             plugins={[Download]}
             on={{
               download: () => {
-                downloadImage(image.imageLink);
+                saveFile(image.imageLink, image.title);
               },
             }}
           />

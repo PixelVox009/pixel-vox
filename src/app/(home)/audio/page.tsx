@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -10,16 +10,7 @@ import { audioService } from "@/lib/api/audio";
 import { userService } from "@/lib/api/user";
 import { genai } from "@/utils/genai";
 import { api } from "@/utils/axios";
-import { TokenBalance } from "@/components/users/layout/header";
-
-// API functions
-const fetchTokenBalance = async (): Promise<TokenBalance> => {
-  const response = await fetch("/api/user/token");
-  if (!response.ok) {
-    throw new Error("Failed to fetch token balance");
-  }
-  return response.json();
-};
+import { useTokenStore } from "@/lib/store";
 
 const getSettings = async () => {
   const { data: res } = await api.get("/settings", {
@@ -32,21 +23,16 @@ const getSettings = async () => {
 
 export default function TextToSpeechPage() {
   const [text, setText] = useState("");
+  const [isPending, setIsPending] = useState(false);
+  const tokenStore = useTokenStore();
 
   const queryClient = useQueryClient();
 
-  // Fetch token balance with React Query
-  const { data: balanceData } = useQuery<TokenBalance>({
-    queryKey: ["tokenBalance"],
-    queryFn: fetchTokenBalance,
-    refetchOnWindowFocus: false,
-    staleTime: 60000, // 1 minute
-  });
-
   // Mutations
-  const { isPending, mutate } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: audioService.generateAudio,
     onSuccess: () => {
+      setIsPending(false);
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["audio"] });
     },
@@ -54,8 +40,8 @@ export default function TextToSpeechPage() {
 
   const handleGenerate = async () => {
     if (!text.trim()) return;
-    return mutate(text);
 
+    setIsPending(true);
     const title = text.split(" ").slice(0, 8).join(" ").trim();
     const setting = await getSettings();
     const tokenRate = +setting[0].value;
@@ -68,13 +54,15 @@ export default function TextToSpeechPage() {
     const estimateDuration = Math.ceil(text.length / parseInt(resData ?? "0"));
     const tokenUsage = estimateDuration * +tokenRate;
 
-    if ((balanceData?.balance ?? 0) >= tokenRate) {
+    if ((tokenStore.tokenBalance ?? 0) >= tokenRate) {
       userService.useToken(tokenUsage);
+      tokenStore.subtractTokens(tokenUsage);
       mutate(text);
     } else {
       toast.error(
         "Điểm của bạn đang ko đủ. Vui lòng nạp thêm điểm để tiếp tục sử dụng."
       );
+      setIsPending(false);
     }
   };
 
