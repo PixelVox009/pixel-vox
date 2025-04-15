@@ -1,8 +1,10 @@
+import Joi from "joi";
+import { NextRequest, NextResponse } from "next/server";
+import axios from "axios";
+
 import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
 import { Segment } from "@/models/Segment";
-import Joi from "joi";
-import { NextRequest, NextResponse } from "next/server";
 
 const schema = Joi.object({
   orderId: Joi.string().required(),
@@ -46,7 +48,7 @@ export async function PUT(req: NextRequest) {
     const audio = await Audio.findOne({
       orderId: value.orderId,
       segments: { $in: updatedSegment._id },
-    });
+    }).populate("segments");
 
     if (!audio) {
       return NextResponse.json(
@@ -61,6 +63,26 @@ export async function PUT(req: NextRequest) {
       (audio.completedSegments / audio.totalSegments) * 100
     );
     audio.status = audio.progress === 100 ? "success" : "processing";
+
+    if (audio.progress === 100) {
+      const segments = audio.segments;
+      segments.sort((a: any, b: any) => a.segmentIndex - b.segmentIndex);
+
+      const audioLinks = segments.map((segment: any) => segment.link);
+      const { data: resData } = await axios.post(
+        `${process.env.AUDIO_SERVER_URL}/tool-service-api/create-audio-merge`,
+        {
+          audioLinks: audioLinks,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + process.env.AUDIO_SERVER_KEY,
+          },
+        }
+      );
+
+      audio.audioLink = resData.data.audioLink;
+    }
 
     await audio.save();
 

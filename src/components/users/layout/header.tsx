@@ -26,7 +26,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 
 // Định nghĩa các interface
-interface TokenBalance {
+export interface TokenBalance {
   balance: number;
   totalRecharged: number;
   totalSpent: number;

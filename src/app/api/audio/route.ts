@@ -1,6 +1,7 @@
-import dbConnect from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import Joi from "joi";
+
+import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
 
 const schema = Joi.object({

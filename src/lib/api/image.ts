@@ -10,9 +10,18 @@ export const imageService = {
       throw error;
     }
   },
-  generateImage: async (textContent: string) => {
+  generateImage: async ({
+    title,
+    textContent,
+  }: {
+    title: string;
+    textContent: string;
+  }) => {
     try {
-      const { data } = await api.post("/image/generate", { textContent });
+      const { data } = await api.post("/image/generate", {
+        title,
+        textContent,
+      });
       return data;
     } catch (error) {
       console.error("Error fetching images:", error);

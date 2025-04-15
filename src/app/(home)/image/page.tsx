@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import "yet-another-react-lightbox/styles.css";
+import axios from "axios";
 
 import TextInputArea from "@/components/TextInputArea";
 import { DataTable } from "@/components/DataTable";
@@ -11,6 +12,7 @@ import { columns } from "@/components/users/image/columns";
 
 export default function ImageGenerationPage() {
   const [text, setText] = useState("");
+  const [isPending, setIsPending] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -20,17 +22,40 @@ export default function ImageGenerationPage() {
   });
 
   // Mutations
-  const { isPending, mutate } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: imageService.generateImage,
     onSuccess: () => {
+      setIsPending(false);
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["image"] });
     },
   });
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!text.trim()) return;
-    mutate(text);
+    const payload = {
+      contents: [
+        {
+          parts: [
+            {
+              text: `Translate this to English: "${text}"`,
+            },
+          ],
+        },
+      ],
+    };
+
+    setIsPending(true);
+    const { data: resData } = await axios.post(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+      payload,
+      { params: { key: "AIzaSyCVow2f9OcpR_GRse_T5KR3RtyUjP04zB4" } }
+    );
+    const data = resData;
+    const content = data["candidates"][0]["content"]["parts"][0]["text"];
+    const title = text.split(" ").slice(0, 8).join(" ").trim();
+
+    mutate({ title, textContent: content });
   };
 
   return (

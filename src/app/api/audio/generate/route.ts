@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     const orderId = new Date().getTime();
+
     const title = value.textContent.split(" ").slice(0, 8).join(" ").trim();
 
     const contentSegments = autoSplitStory(value.textContent);
