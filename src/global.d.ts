@@ -16,5 +16,6 @@ declare global {
     //   promise: Promise<typeof import('mongoose')> | null;
     // } | undefined;
 }
-
+declare module 'lucide-react';
+declare module '@tanstack/react-query';
 export { };
