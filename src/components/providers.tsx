@@ -18,7 +18,7 @@ export function Providers({ children }: ProvidersProps) {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SessionProvider>
         <QueryClientProvider client={queryClient}>
-          {children}
+          <main className="m-0 p-0">{children}</main>
           <ToastContainer />
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>

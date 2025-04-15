@@ -27,41 +27,59 @@ export function ExchangeRateSettings({
 }: ExchangeRateSettingsProps) {
   // Khởi tạo state local để đảm bảo giá trị luôn tồn tại
   const [localRates, setLocalRates] = useState<ExchangeRates>({
-    usdToTokenRate: exchangeRates?.usdToTokenRate || 0,
-    vndToUsdRate: exchangeRates?.vndToUsdRate || 0,
+    usdToTokenRate: exchangeRates?.usdToTokenRate ?? 0,
+    vndToUsdRate: exchangeRates?.vndToUsdRate ?? 0,
+    imageToTokenRate: exchangeRates?.imageToTokenRate ?? 5,
+    minuteToTokenRate: exchangeRates?.minuteToTokenRate ?? 30,
   });
+
   // Cập nhật local state khi exchangeRates thay đổi
   useEffect(() => {
     if (exchangeRates) {
       setLocalRates({
-        usdToTokenRate: exchangeRates.usdToTokenRate || 0,
-        vndToUsdRate: exchangeRates.vndToUsdRate || 0,
+        usdToTokenRate: exchangeRates.usdToTokenRate ?? 0,
+        vndToUsdRate: exchangeRates.vndToUsdRate ?? 0,
+        imageToTokenRate: exchangeRates.imageToTokenRate ?? 5,
+        minuteToTokenRate: exchangeRates.minuteToTokenRate ?? 30,
       });
     }
   }, [exchangeRates]);
-  // Xử lý thay đổi tỉ giá USD sang Token
-  const handleUsdToTokenRateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newRate = parseFloat(e.target.value) || 0;
-    onExchangeRatesChange({
-      ...newExchangeRates,
-      usdToTokenRate: newRate,
-    });
-  };
 
-  // Xử lý thay đổi tỉ giá VND sang USD
   const handleVndToUsdRateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newRate = parseFloat(e.target.value) || 0;
+    const value = e.target.value;
+    const newRate = value === "" ? 0 : parseFloat(value);
+
     onExchangeRatesChange({
       ...newExchangeRates,
       vndToUsdRate: newRate,
     });
   };
 
+  const handleImageToTokenRateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newRate = value === "" ? 0 : parseFloat(value);
+
+    onExchangeRatesChange({
+      ...newExchangeRates,
+      imageToTokenRate: newRate,
+    });
+  };
+
+  const handleMinuteToTokenRateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newRate = value === "" ? 0 : parseFloat(value);
+
+    onExchangeRatesChange({
+      ...newExchangeRates,
+      minuteToTokenRate: newRate,
+    });
+  };
+
   return (
     <Card className="bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg dark:text-gray-200">Cài đặt tỉ giá</CardTitle>
-        <CardDescription className="dark:text-gray-400">Cập nhật tỉ giá quy đổi</CardDescription>
+        <CardTitle className="text-lg dark:text-gray-200">Exchange rate settings</CardTitle>
+        <CardDescription className="dark:text-gray-400">Update exchange and token rates</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -71,41 +89,61 @@ export function ExchangeRateSettings({
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium dark:text-gray-300">Tỉ giá USD sang Token</label>
+              <label className="text-sm font-medium dark:text-gray-300">VND to USD exchange rate</label>
               <div>
                 <Input
                   type="number"
-                  value={newExchangeRates.usdToTokenRate || ""}
-                  onChange={handleUsdToTokenRateChange}
+                  value={newExchangeRates.vndToUsdRate ?? ""}
+                  onChange={handleVndToUsdRateChange}
                   min="0"
-                  step="0.01"
+                  step="1"
                   className="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                 />
-
                 <div className="flex justify-between mt-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Token/USD</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">VND/USD</span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Hiện tại: 1 USD = {localRates.usdToTokenRate} Token
+                    Current: 1 USD = {formatCurrency(localRates.vndToUsdRate)} VND
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* New fields for Image and Minute token rates */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium dark:text-gray-300">Image to Token Rate</label>
+              <div>
+                <Input
+                  type="number"
+                  value={newExchangeRates.imageToTokenRate ?? ""}
+                  onChange={handleImageToTokenRateChange}
+                  min="0"
+                  step="1"
+                  className="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                />
+                <div className="flex justify-between mt-1">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Token/Image</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Current: 1 Image = {localRates.imageToTokenRate} Token
                   </span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium dark:text-gray-300">Tỉ giá VND sang USD</label>
+              <label className="text-sm font-medium dark:text-gray-300">Minute to Token Rate</label>
               <div>
                 <Input
                   type="number"
-                  value={newExchangeRates.vndToUsdRate || ""}
-                  onChange={handleVndToUsdRateChange}
+                  value={newExchangeRates.minuteToTokenRate ?? ""}
+                  onChange={handleMinuteToTokenRateChange}
                   min="0"
-                  step="0.01"
+                  step="1"
                   className="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                 />
                 <div className="flex justify-between mt-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">VND/USD</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Token/Minute</span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Hiện tại: 1 USD = {formatCurrency(localRates.vndToUsdRate)} VND
+                    Current: 1 Minute = {localRates.minuteToTokenRate} Token
                   </span>
                 </div>
               </div>
@@ -119,10 +157,10 @@ export function ExchangeRateSettings({
               {isUpdating ? (
                 <>
                   <RefreshCw size={16} className="mr-2 animate-spin" />
-                  Đang cập nhật...
+                  Updating...
                 </>
               ) : (
-                "Cập nhật tỉ giá"
+                "Update exchange rates"
               )}
             </Button>
           </div>

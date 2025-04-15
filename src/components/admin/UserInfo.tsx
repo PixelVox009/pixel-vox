@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 // Định nghĩa kiểu cho User
@@ -39,33 +40,33 @@ export default function UserContactsCard() {
   });
   const [loading, setLoading] = useState(false);
 
- const fetchUsers = useCallback(
-   async (page = 1) => {
-     setLoading(true);
-     try {
-       const params = new URLSearchParams({
-         page: page.toString(),
-         limit: pagination.limit.toString(),
-         role: "user",
-       });
+  const fetchUsers = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: pagination.limit.toString(),
+          role: "user",
+        });
 
-       const response = await fetch(`/api/admin/users?${params.toString()}`);
+        const response = await fetch(`/api/admin/users?${params.toString()}`);
 
-       if (response.ok) {
-         const data = await response.json();
-         setUsers(data.users);
-         setPagination(data.pagination);
-       } else {
-         console.error("Lỗi khi lấy danh sách người dùng");
-       }
-     } catch (error) {
-       console.error("Lỗi khi gọi API:", error);
-     } finally {
-       setLoading(false);
-     }
-   },
-   [pagination.limit]
- );
+        if (response.ok) {
+          const data = await response.json();
+          setUsers(data.users);
+          setPagination(data.pagination);
+        } else {
+          console.error("Lỗi khi lấy danh sách người dùng");
+        }
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [pagination.limit]
+  );
   useEffect(() => {
     fetchUsers(); // gọi lần đầu khi component render
   }, [fetchUsers]);
@@ -93,13 +94,16 @@ export default function UserContactsCard() {
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="dark:text-gray-200">Danh sách người dùng</CardTitle>
-            <CardDescription className="dark:text-gray-400">Bạn có {pagination.total} người dùng</CardDescription>
+            <CardTitle className="dark:text-gray-200">List of users</CardTitle>
+            <CardDescription className="dark:text-gray-400 mt-2">You have {pagination.total} users</CardDescription>
           </div>
-          <Button variant="ghost" size="sm" className="gap-1 dark:text-gray-300 dark:hover:bg-gray-700">
-            Xem tất cả
-            <ChevronRight size={16} />
-          </Button>
+          <Link href="/admin/users">
+            {" "}
+            <Button variant="ghost" size="sm" className="gap-1 dark:text-gray-300 dark:hover:bg-gray-700">
+              See all
+              <ChevronRight size={16} />
+            </Button>
+          </Link>
         </div>
       </CardHeader>
       <CardContent>
@@ -129,17 +133,19 @@ export default function UserContactsCard() {
                   </div>
                   <div className="flex items-center">
                     <div className="text-right mr-3">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Số dư</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Balance</div>
                       <div className="font-medium">{formatBalance(user.wallet?.balance)} Token</div>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 dark:text-gray-300 dark:hover:bg-gray-600">
-                      <ArrowRight size={16} />
-                    </Button>
+                    <Link href={`/admin/users/${user._id}/transactions`}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 dark:text-gray-300 dark:hover:bg-gray-600">
+                        <ArrowRight size={16} />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">Không tìm thấy người dùng nào</div>
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">No users found</div>
             )}
           </div>
         )}
@@ -147,7 +153,7 @@ export default function UserContactsCard() {
         {pagination.totalPages > 1 && (
           <div className="flex justify-between items-center mt-4">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Hiển thị {pagination.from}-{pagination.to} trên {pagination.total}
+              Show {pagination.from}-{pagination.to} over {pagination.total}
             </div>
             <div className="flex items-center gap-1">
               <Button
