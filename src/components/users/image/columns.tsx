@@ -8,6 +8,7 @@ import Download from "yet-another-react-lightbox/plugins/download";
 
 import { Badge } from "@/components/ui/badge";
 import DataTableActions from "./DataTableActions";
+import { saveFile } from "@/utils/saveFile";
 
 export const columns: ColumnDef<Image>[] = [
   {
@@ -94,7 +95,7 @@ function TitleRow<TData>({ row }: TitleRowProps<TData>) {
             plugins={[Download]}
             on={{
               download: () => {
-                // handle download image
+                saveFile(image.imageLink, image.title);
               },
             }}
           />

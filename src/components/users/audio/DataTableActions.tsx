@@ -25,6 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { audioService } from "@/lib/api/audio";
+import { saveFile } from "@/utils/saveFile";
 
 type DataTableActionsProps<TData> = {
   row: Row<TData>;
@@ -59,6 +60,9 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
               size={"icon"}
               disabled={!audio.audioLink || audio.progress !== 100}
               className="h-8 w-8 p-0 dark:text-white dark:bg-gray-800 dark:border-gray-700"
+              onClick={() => {
+                saveFile(audio.audioLink, audio.title);
+              }}
             >
               <ArrowDownToLine size={16} />
             </Button>

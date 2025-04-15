@@ -7,6 +7,7 @@ import { Image } from "@/models/Image";
 import { autoSplitStory } from "@/utils/splitStory";
 
 const schema = Joi.object({
+  title: Joi.string().required(),
   textContent: Joi.string().required(),
 });
 
@@ -43,11 +44,9 @@ export async function POST(req: NextRequest) {
     );
     const imageService = resData.data;
 
-    const title = value.textContent.split(" ").slice(0, 8).join(" ").trim();
-
     // Create Image
     const image = await Image.create({
-      title,
+      title: value.title,
       orderId,
       serviceId: imageService.serviceId,
     });
