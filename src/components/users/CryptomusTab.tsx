@@ -84,8 +84,8 @@ export default function CryptomusTab() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 sm:p-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="bg-white dark:bg-slate-800  p-6 sm:p-8">
+      <div className=" mx-auto">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Chọn số lượng token</h2>
           <TokenPackages

@@ -45,16 +45,6 @@ export function ExchangeRateSettings({
     }
   }, [exchangeRates]);
 
-  const handleUsdToTokenRateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const newRate = value === "" ? 0 : parseFloat(value);
-
-    onExchangeRatesChange({
-      ...newExchangeRates,
-      usdToTokenRate: newRate,
-    });
-  };
-
   const handleVndToUsdRateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const newRate = value === "" ? 0 : parseFloat(value);

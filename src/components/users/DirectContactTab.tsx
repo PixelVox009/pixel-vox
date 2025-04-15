@@ -1,12 +1,12 @@
+import { Mail, MessageCircle, PhoneCall } from "lucide-react";
 import { useState } from "react";
-import { PhoneCall, Mail, MessageCircle } from "lucide-react";
 
 export default function DirectContactTab() {
   const [contactMethod, setContactMethod] = useState<string>("phone");
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 sm:p-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="bg-white dark:bg-slate-800  p-6 sm:p-8">
+      <div className="mx-auto">
         <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Liên hệ trực tiếp để nạp token</h2>
 
         <div className="mb-8">
@@ -126,7 +126,6 @@ export default function DirectContactTab() {
         <div className="mt-8 border-t dark:border-gray-700 pt-6">
           <h3 className="text-md font-medium text-slate-800 dark:text-white mb-3">Thông tin quan trọng</h3>
           <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
-            <li>Số lượng token tối thiểu khi nạp qua liên hệ trực tiếp là 100 token.</li>
             <li>Chúng tôi có thể cung cấp các gói ưu đãi đặc biệt cho khách hàng doanh nghiệp.</li>
             <li>
               Thanh toán có thể được thực hiện qua chuyển khoản hoặc các phương thức thanh toán khác tùy theo thỏa

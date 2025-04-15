@@ -28,7 +28,7 @@ export async function GET(request: Request) {
                 type: "bank"
             })
                 .sort({ createAt: -1 })
-                .limit(7);
+                .limit(6);
 
             return NextResponse.json({
                 success: true,

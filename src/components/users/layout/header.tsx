@@ -130,6 +130,7 @@ export default function Header() {
     { id: "all", label: "All" },
     { id: "purchased", label: "Purchased" },
     { id: "bonus", label: "Bonus" },
+    { id: "token_usage", label: "Token usage" },
   ];
 
   const formatDate = (dateString: string) => {

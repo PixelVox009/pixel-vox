@@ -32,7 +32,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 sticky top-6">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md sticky p-8 mt-8">
       <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 text-center">Quét mã QR để thanh toán</h2>
 
       <div className="flex flex-col items-center justify-center">

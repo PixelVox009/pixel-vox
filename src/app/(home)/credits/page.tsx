@@ -6,31 +6,31 @@ import BankTransferTab from "@/components/users/BankTransferTab";
 import CryptomusTab from "@/components/users/CryptomusTab";
 import DirectContactTab from "@/components/users/DirectContactTab";
 import PayPalTab from "@/components/users/PayPalTab";
-import Image from "next/image";
+import { BadgeDollarSign, Coins, Headset, Landmark } from "lucide-react";
 
 const PAYMENT_METHODS = [
   {
     id: "bank",
     label: "Nạp qua thẻ ngân hàng",
-    icon: "/images/atm-icon.png", // Đường dẫn đến icon ATM của bạn
+    icon: <Landmark color="#49e407" />,
     iconAlt: "ATM",
   },
   {
     id: "paypal",
     label: "Nạp qua PayPal",
-    icon: "/images/paypal-icon.png", // Đường dẫn đến icon PayPal
+    icon: <BadgeDollarSign color="#72a1fd" />,
     iconAlt: "PayPal",
   },
   {
     id: "direct",
     label: "Liên hệ trực tiếp",
-    icon: "/images/phone-icon.png", // Đường dẫn đến icon điện thoại
+    icon: <Headset />,
     iconAlt: "Liên hệ",
   },
   {
     id: "crypto",
     label: "Nạp qua Cryptomus",
-    icon: "/images/crypto-icon.png", // Đường dẫn đến icon crypto
+    icon: <Coins color="#9936a6" />,
     iconAlt: "Cryptomus",
   },
 ];
@@ -70,9 +70,7 @@ export default function PaymentMethodTabs() {
                 {method.label}
               </span>
             </div>
-            <div className="w-12 h-10 flex items-center justify-center">
-              {method.icon && <Image src={method.icon} alt={method.iconAlt} width={32} height={32} />}
-            </div>
+            <div className="w-12 h-10 flex items-center justify-center">{method.icon}</div>
           </div>
         ))}
       </div>

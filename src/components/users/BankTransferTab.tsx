@@ -129,10 +129,10 @@ export default function BankTransferTab() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-8">
       {/* Left Column */}
-      <div className="lg:col-span-2 ">
-        <div className="bg-white dark:bg-slate-800 sm:p-6">
+      <div className="lg:col-span-2">
+        <div className="bg-white dark:bg-slate-800 rounded-xl ">
           {/* Thông báo giao dịch */}
           {userData?.id && (
             <div className="mb-6">
