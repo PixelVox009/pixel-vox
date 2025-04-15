@@ -32,6 +32,8 @@ export default function DashboardComponent() {
   const [newExchangeRates, setNewExchangeRates] = useState<ExchangeRates>({
     usdToTokenRate: 0,
     vndToUsdRate: 0,
+    imageToTokenRate: 5,
+    minuteToTokenRate: 30,
   });
 
   // QueryClient to invalidate queries
@@ -75,23 +77,29 @@ export default function DashboardComponent() {
         throw new Error("Lỗi khi lấy cài đặt tỉ giá");
       }
       const data = await response.json();
-      console.log("🚀 ~ queryFn: ~ data:", data);
 
       // Chuyển đổi dữ liệu từ string sang number
       return data.success
         ? {
             usdToTokenRate: parseFloat(data.data.usdToTokenRate),
             vndToUsdRate: parseFloat(data.data.vndToUsdRate),
+            imageToTokenRate: parseFloat(data.data.imageToTokenRate || "5"),
+            minuteToTokenRate: parseFloat(data.data.minuteToTokenRate || "30"),
           }
         : {
             usdToTokenRate: parseFloat(data.usdToTokenRate),
             vndToUsdRate: parseFloat(data.vndToUsdRate),
+            imageToTokenRate: parseFloat(data.imageToTokenRate || "5"),
+            minuteToTokenRate: parseFloat(data.minuteToTokenRate || "30"),
           };
     },
-    // Thêm select để đảm bảo kiểu dữ liệu
+
+    // Cập nhật select để đảm bảo kiểu dữ liệu
     select: (data) => ({
       usdToTokenRate: data.usdToTokenRate || 0,
       vndToUsdRate: data.vndToUsdRate || 0,
+      imageToTokenRate: data.imageToTokenRate || 5,
+      minuteToTokenRate: data.minuteToTokenRate || 30,
     }),
   });
 
@@ -105,6 +113,8 @@ export default function DashboardComponent() {
       setNewExchangeRates({
         usdToTokenRate: exchangeRates.usdToTokenRate,
         vndToUsdRate: exchangeRates.vndToUsdRate,
+        imageToTokenRate: exchangeRates.imageToTokenRate,
+        minuteToTokenRate: exchangeRates.minuteToTokenRate,
       });
     }
   }, [exchangeRates]);

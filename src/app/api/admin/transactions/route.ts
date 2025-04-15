@@ -28,7 +28,7 @@ export async function GET(request: Request) {
                 type: "bank"
             })
                 .sort({ createAt: -1 })
-                .limit(5);
+                .limit(7);
 
             return NextResponse.json({
                 success: true,
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
             }
         ]);
 
-        const matchCondition : Filter = {
+        const matchCondition: Filter = {
             status: "success",
             type: "bank"
         };

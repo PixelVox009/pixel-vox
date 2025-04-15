@@ -29,6 +29,8 @@ export function ExchangeRateSettings({
   const [localRates, setLocalRates] = useState<ExchangeRates>({
     usdToTokenRate: exchangeRates?.usdToTokenRate ?? 0,
     vndToUsdRate: exchangeRates?.vndToUsdRate ?? 0,
+    imageToTokenRate: exchangeRates?.imageToTokenRate ?? 5,
+    minuteToTokenRate: exchangeRates?.minuteToTokenRate ?? 30,
   });
 
   // Cập nhật local state khi exchangeRates thay đổi
@@ -37,6 +39,8 @@ export function ExchangeRateSettings({
       setLocalRates({
         usdToTokenRate: exchangeRates.usdToTokenRate ?? 0,
         vndToUsdRate: exchangeRates.vndToUsdRate ?? 0,
+        imageToTokenRate: exchangeRates.imageToTokenRate ?? 5,
+        minuteToTokenRate: exchangeRates.minuteToTokenRate ?? 30,
       });
     }
   }, [exchangeRates]);
@@ -61,15 +65,31 @@ export function ExchangeRateSettings({
     });
   };
 
-  // Debug logs để theo dõi giá trị
-  console.log("exchangeRates:", exchangeRates);
-  console.log("newExchangeRates:", newExchangeRates);
+  const handleImageToTokenRateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newRate = value === "" ? 0 : parseFloat(value);
+
+    onExchangeRatesChange({
+      ...newExchangeRates,
+      imageToTokenRate: newRate,
+    });
+  };
+
+  const handleMinuteToTokenRateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newRate = value === "" ? 0 : parseFloat(value);
+
+    onExchangeRatesChange({
+      ...newExchangeRates,
+      minuteToTokenRate: newRate,
+    });
+  };
 
   return (
     <Card className="bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg dark:text-gray-200">Exchange rate settings</CardTitle>
-        <CardDescription className="dark:text-gray-400">Update exchange rate</CardDescription>
+        <CardDescription className="dark:text-gray-400">Update exchange and token rates</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -78,27 +98,6 @@ export function ExchangeRateSettings({
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium dark:text-gray-300">USD to Token Rate</label>
-              <div>
-                <Input
-                  type="number"
-                  value={newExchangeRates.usdToTokenRate ?? ""}
-                  onChange={handleUsdToTokenRateChange}
-                  min="0"
-                  step="1"
-                  className="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
-                />
-
-                <div className="flex justify-between mt-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Token/USD</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Hiện tại: 1 USD = {localRates.usdToTokenRate} Token
-                  </span>
-                </div>
-              </div>
-            </div>
-
             <div className="space-y-2">
               <label className="text-sm font-medium dark:text-gray-300">VND to USD exchange rate</label>
               <div>
@@ -113,7 +112,48 @@ export function ExchangeRateSettings({
                 <div className="flex justify-between mt-1">
                   <span className="text-xs text-gray-500 dark:text-gray-400">VND/USD</span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Hiện tại: 1 USD = {formatCurrency(localRates.vndToUsdRate)} VND
+                    Current: 1 USD = {formatCurrency(localRates.vndToUsdRate)} VND
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* New fields for Image and Minute token rates */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium dark:text-gray-300">Image to Token Rate</label>
+              <div>
+                <Input
+                  type="number"
+                  value={newExchangeRates.imageToTokenRate ?? ""}
+                  onChange={handleImageToTokenRateChange}
+                  min="0"
+                  step="1"
+                  className="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                />
+                <div className="flex justify-between mt-1">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Token/Image</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Current: 1 Image = {localRates.imageToTokenRate} Token
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium dark:text-gray-300">Minute to Token Rate</label>
+              <div>
+                <Input
+                  type="number"
+                  value={newExchangeRates.minuteToTokenRate ?? ""}
+                  onChange={handleMinuteToTokenRateChange}
+                  min="0"
+                  step="1"
+                  className="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                />
+                <div className="flex justify-between mt-1">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Token/Minute</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Current: 1 Minute = {localRates.minuteToTokenRate} Token
                   </span>
                 </div>
               </div>

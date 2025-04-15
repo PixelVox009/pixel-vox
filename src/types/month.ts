@@ -26,6 +26,8 @@ export interface Transaction {
 export interface ExchangeRates {
     usdToTokenRate: number;
     vndToUsdRate: number;
+    imageToTokenRate: number;
+    minuteToTokenRate: number;
 }
 
 export interface BankConfig {

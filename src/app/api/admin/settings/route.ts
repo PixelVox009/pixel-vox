@@ -1,7 +1,7 @@
+// Cập nhật API route: /api/admin/settings.ts
 import dbConnect from '@/lib/db';
 import Setting from '@/models/seting';
 import { NextResponse } from 'next/server';
-
 
 // Lấy thông tin cài đặt tỉ giá
 export async function GET() {
@@ -9,7 +9,7 @@ export async function GET() {
         await dbConnect();
 
         const settings = await Setting.find({
-            key: { $in: ['usdToTokenRate', 'vndToUsdRate'] }
+            key: { $in: ['usdToTokenRate', 'vndToUsdRate', 'imageToTokenRate', 'minuteToTokenRate'] }
         });
 
         // Chuyển đổi mảng thành object
@@ -37,11 +37,11 @@ export async function PUT(request: Request) {
         await dbConnect();
 
         const body = await request.json();
-        const { usdToTokenRate, vndToUsdRate } = body;
+        const { usdToTokenRate, vndToUsdRate, imageToTokenRate, minuteToTokenRate } = body;
 
-        if (!usdToTokenRate && !vndToUsdRate) {
+        if (!usdToTokenRate && !vndToUsdRate && !imageToTokenRate && !minuteToTokenRate) {
             return NextResponse.json(
-                { success: false, error: 'Cần cung cấp ít nhất một tỉ giá' },
+                { success: false, error: 'Cần cung cấp ít nhất một thông số tỉ giá' },
                 { status: 400 }
             );
         }
@@ -63,9 +63,26 @@ export async function PUT(request: Request) {
             );
         }
 
+        // Cập nhật tỉ giá token cho hình ảnh và phút
+        if (imageToTokenRate !== undefined) {
+            await Setting.findOneAndUpdate(
+                { key: 'imageToTokenRate' },
+                { value: parseInt(imageToTokenRate) },
+                { upsert: true, new: true }
+            );
+        }
+
+        if (minuteToTokenRate !== undefined) {
+            await Setting.findOneAndUpdate(
+                { key: 'minuteToTokenRate' },
+                { value: parseInt(minuteToTokenRate) },
+                { upsert: true, new: true }
+            );
+        }
+
         // Lấy dữ liệu đã cập nhật
         const updatedSettings = await Setting.find({
-            key: { $in: ['usdToTokenRate', 'vndToUsdRate'] }
+            key: { $in: ['usdToTokenRate', 'vndToUsdRate', 'imageToTokenRate', 'minuteToTokenRate'] }
         });
 
         const result: Record<string, string> = {};
