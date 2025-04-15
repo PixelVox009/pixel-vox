@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface TokenPackage {
   tokens: number;
@@ -13,14 +13,36 @@ interface TokenPackagesProps {
 }
 
 const TokenPackages: React.FC<TokenPackagesProps> = ({ packages, activePackage, onSelectPackage, formatCurrency }) => {
-  // Tỷ giá chuyển đổi
-  const VND_TO_USD_RATE = 25000; // 25,000 VND = 1 USD
+  const [exchangeRate, setExchangeRate] = useState<number>(25000);
+  const [usdToTokenRate, setUsdToTokenRate] = useState<number>(10);
+
+  // Lấy tỷ giá từ server
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("/api/settings/exchange-rates");
+        if (response.ok) {
+          const data = await response.json();
+          setExchangeRate(data.vndToUsdRate || 25000);
+          setUsdToTokenRate(data.usdToTokenRate || 10);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tỷ giá:", error);
+        // Sử dụng giá trị mặc định nếu có lỗi
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {packages.map((pkg, index) => {
         // Tính số USD tương đương
-        const usdAmount = (pkg.amount / VND_TO_USD_RATE).toFixed(0);
+        const usdAmount = (pkg.amount / exchangeRate).toFixed(2);
+
+        // Tính số token tương đương với USD
+        const tokenAmount = Math.floor(Number(usdAmount) * usdToTokenRate);
 
         return (
           <button
@@ -35,7 +57,7 @@ const TokenPackages: React.FC<TokenPackagesProps> = ({ packages, activePackage, 
             {activePackage === index && (
               <div className="absolute top-0 right-0 w-0 h-0 border-t-[24px] border-r-[24px] border-t-blue-500 border-r-transparent transform rotate-90"></div>
             )}
-            <div className="font-bold text-xl mb-1">{pkg.tokens} tokens</div>
+            <div className="font-bold text-xl mb-1">{tokenAmount} tokens</div>
             <div className="text-base text-blue-600 dark:text-blue-400 font-medium">${usdAmount}</div>
             <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{formatCurrency(pkg.amount)}</div>
           </button>

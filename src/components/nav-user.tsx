@@ -16,7 +16,7 @@ import { signOut } from "next-auth/react"; // Import signOut function for logout
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { data, isLoading, error } = useUserData();
+  const { data, isLoading } = useUserData();
   const handleLogout = () => {
     signOut({ callbackUrl: "/login" });
   };

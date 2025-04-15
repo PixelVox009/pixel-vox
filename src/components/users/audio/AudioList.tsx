@@ -12,7 +12,7 @@ function AudioList() {
   });
 
   return (
-    <div className="container mx-auto py-10 dark:text-gray-300">
+    <div className="py-10 dark:text-gray-300">
       <h2 className="text-xl font-bold dark:text-white mb-2">Audio List</h2>
       <DataTable
         columns={columns}

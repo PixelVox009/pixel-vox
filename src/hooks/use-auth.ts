@@ -38,6 +38,7 @@ export function useLogin() {
             return true;
         } catch (error) {
             setError('Đã xảy ra lỗi không mong muốn');
+            console.error(error);
             return false;
         } finally {
             setIsLoading(false);
@@ -88,6 +89,7 @@ export function useRegister() {
             return true;
         } catch (error) {
             setError('Đã xảy ra lỗi không mong muốn');
+            console.error(error);
             return false;
         } finally {
             setIsLoading(false);

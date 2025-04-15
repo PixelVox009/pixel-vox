@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "@/lib/db";
 import { User } from "@/models/User";
 import { compare } from "bcryptjs";
+import { Error } from "mongoose";
 
 
 export const authOptions: NextAuthOptions = {
@@ -38,8 +39,12 @@ export const authOptions: NextAuthOptions = {
                         email: user.email,
                         role: user.role,
                     };
-                } catch (error: any) {
-                    throw new Error(error.message || "Đăng nhập thất bại, vui lòng thử lại sau");
+                } catch (error: unknown) {
+                    if (error instanceof Error) {
+                        throw new Error(error.message || "Đăng nhập thất bại, vui lòng thử lại sau");
+                    } else {
+                        throw new Error("Đăng nhập thất bại, vui lòng thử lại sau");
+                    }
                 }
             },
         }),
@@ -73,3 +78,4 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+

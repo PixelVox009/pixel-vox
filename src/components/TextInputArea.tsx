@@ -8,7 +8,7 @@ type TextInputAreaProps = {
   children?: React.ReactNode;
   text: string;
   isPending: boolean;
-  setText: (value: string) => void;
+  onTextChange: (value: string) => void;
   onGenerate: () => void;
 };
 
@@ -16,7 +16,7 @@ export default function TextInputArea({
   children,
   text,
   isPending,
-  setText,
+  onTextChange,
   onGenerate,
 }: TextInputAreaProps) {
   return (
@@ -27,11 +27,11 @@ export default function TextInputArea({
         value={text}
         placeholder="Start typing here to create lifelike speech in multiple languages, voices and emotions with Pixel Vox."
         className="w-full border-transparent md:text-base p-0 h-[36vh] resize-none focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent dark:text-white placeholder-gray-400 dark:placeholder-gray-600"
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => onTextChange(e.target.value)}
       />
 
       <Separator />
-      {/* Voice selection and generate button */}
+
       <div className=" border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">{children}</div>
 

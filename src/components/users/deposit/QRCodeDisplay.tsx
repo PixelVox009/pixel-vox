@@ -1,11 +1,36 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface QRCodeDisplayProps {
   qrCodeUrl: string;
 }
 
 const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
+  const [exchangeRates, setExchangeRates] = useState({
+    vndToUsdRate: 25000,
+    usdToTokenRate: 10,
+  });
+
+  // Lấy tỷ giá từ API
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("/api/settings/exchange-rates");
+        if (response.ok) {
+          const data = await response.json();
+          setExchangeRates({
+            vndToUsdRate: data.vndToUsdRate || 25000,
+            usdToTokenRate: data.usdToTokenRate || 10,
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tỷ giá:", error);
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
+
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 sticky top-6">
       <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 text-center">Quét mã QR để thanh toán</h2>
@@ -80,6 +105,11 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
           <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
             <p className="text-slate-600 dark:text-slate-300 font-medium">
               Trạng thái: <span className="text-blue-600 dark:text-blue-400">Đang chờ thanh toán</span>
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+              <span className="italic">
+                1 USD = {exchangeRates.usdToTokenRate} token = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")} VND
+              </span>
             </p>
           </div>
         </div>

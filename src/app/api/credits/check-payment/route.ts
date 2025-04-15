@@ -3,10 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { User } from "@/models/User";
 import PaymentActivity from "@/models/payment-activity";
+import dbConnect from "@/lib/db";
 
 
 export async function GET(req: NextRequest) {
     try {
+        await dbConnect();
         // Kiểm tra phiên đăng nhập
         const session = await getServerSession(authOptions);
         if (!session || !session.user) {

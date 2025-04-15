@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatVndToUsd } from "@/utils/formatVndUseDola";
+import { formatVndToUsd, useExchangeRates } from "@/utils/formatVndUseDola";
 import { format, subDays } from "date-fns";
 import { ArrowDown, Calendar as CalendarIcon, CreditCard, Download, Gift, RefreshCcw, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 // Định nghĩa kiểu dữ liệu cho giao dịch
 interface Transaction {
@@ -49,11 +49,11 @@ export default function TransactionHistory() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [limit, setLimit] = useState(25);
+  const [limit] = useState(25);
   const [startDate, setStartDate] = useState<Date>(subDays(new Date(), 30));
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [totalTransactions, setTotalTransactions] = useState(0);
-
+  const { rates } = useExchangeRates();
   // Tùy chọn lọc type
   const typeOptions = [
     { value: "all", label: "All Types" },
@@ -63,10 +63,9 @@ export default function TransactionHistory() {
   ];
 
   // Hàm lấy dữ liệu từ API
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true);
     try {
-      // Tạo query params
       const params = new URLSearchParams();
       params.append("page", page.toString());
       params.append("limit", limit.toString());
@@ -94,19 +93,18 @@ export default function TransactionHistory() {
 
       const data: TransactionResponse = await response.json();
       setTransactions(data.data);
-      setTotalPages(data.pagination.totalPages);
+      setTotalPages(data?.pagination?.totalPages);
       setTotalTransactions(data.pagination.total);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
       setLoading(false);
     }
-  };
-
+  }, [page, limit, searchTerm, selectedType, startDate, endDate]);
   // Hook để gọi API khi các bộ lọc thay đổi
   useEffect(() => {
     fetchTransactions();
-  }, [page, limit, selectedType, startDate, endDate]);
+  }, [fetchTransactions]);
 
   // Thay đổi trang
   const handlePageChange = (newPage: number) => {
@@ -151,14 +149,6 @@ export default function TransactionHistory() {
     } catch (error) {
       console.error("Error exporting transactions:", error);
     }
-  };
-
-  // Format số VND
-  const formatVND = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
   };
 
   // Định dạng ngày tháng cho hiển thị
@@ -337,7 +327,10 @@ export default function TransactionHistory() {
                     <TableCell className={transaction.tokensEarned > 0 ? "text-green-600" : "text-red-600"}>
                       {transaction.tokensEarned > 0 ? `+${transaction.tokensEarned}` : transaction.tokensEarned}
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell">{formatVndToUsd(transaction.amount)} $</TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {" "}
+                      {formatVndToUsd(transaction.amount, rates.vndToUsdRate)} $
+                    </TableCell>
                     <TableCell className="hidden lg:table-cell">
                       <Badge className={getStatusColor(transaction.status)}>
                         {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}

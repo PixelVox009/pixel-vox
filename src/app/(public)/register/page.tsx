@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Image, Music, Sparkles, UserPlus, Video } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, Music, Sparkles, UserPlus, Video } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -73,8 +73,8 @@ export default function RegisterPage() {
       }
 
       router.push("/login?success=Đăng ký thành công");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err as Error).message );
     } finally {
       setIsSubmitting(false);
     }
@@ -94,7 +94,9 @@ export default function RegisterPage() {
           style={{ animationDuration: "8s", animationDelay: "1s" }}
         >
           <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/30">
-            <Image className="h-6 w-6 text-purple-600 dark:text-purple-300" />
+            <ImageIcon
+              className="h-6 w-6 text-purple-600 dark:text-purple-300"
+            />
           </div>
         </div>
         <div

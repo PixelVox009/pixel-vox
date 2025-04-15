@@ -6,11 +6,11 @@ if (!MONGODB_URI) {
     throw new Error('Vui lòng định nghĩa biến môi trường MONGODB_URI');
 }
 declare global {
-    var mongoose: {
+    let mongoose: {
         conn: typeof mongoose | null;
         promise: Promise<typeof mongoose> | null;
     } | undefined;
-    var mongoClientPromise: Promise<MongoClient> | undefined;
+    const mongoClientPromise: Promise<MongoClient> | undefined;
 }
 const globalWithMongoose = global as typeof globalThis & {
     mongoose?: {
@@ -44,13 +44,14 @@ export async function connectMongoose() {
 }
 
 // --- MongoClient for NextAuth Adapter
-let mongoClient: MongoClient;
-let mongoClientPromise: Promise<MongoClient>;
+const mongoClient =
+    globalWithMongoose.mongoClientPromise || new MongoClient(MONGODB_URI);
 
-if (!globalWithMongoose.mongoClientPromise) {
-    mongoClient = new MongoClient(MONGODB_URI);
-    globalWithMongoose.mongoClientPromise = mongoClient.connect();
+if (mongoClient instanceof MongoClient) {
+    const mongoClientPromise = mongoClient.connect();
+    globalWithMongoose.mongoClientPromise = mongoClientPromise;
+} else {
+    globalWithMongoose.mongoClientPromise = mongoClient;
 }
-mongoClientPromise = globalWithMongoose.mongoClientPromise;
 
-export default mongoClientPromise;
+export default globalWithMongoose.mongoClientPromise;
