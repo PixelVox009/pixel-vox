@@ -3,9 +3,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ArrowRight, ChevronRight, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Định nghĩa kiểu cho User
 interface User {
@@ -18,58 +18,39 @@ interface User {
   };
 }
 
-// Định nghĩa kiểu cho Pagination
-interface Pagination {
-  total: number;
-  page: number;
-  limit: number;
-  from: number;
-  to: number;
-  totalPages: number;
-}
-
 export default function UserContactsCard() {
   const [users, setUsers] = useState<User[]>([]);
-  const [pagination, setPagination] = useState<Pagination>({
-    total: 0,
-    page: 1,
-    limit: 3,
-    from: 1,
-    to: 3,
-    totalPages: 0,
-  });
+  const [totalUsers, setTotalUsers] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
-  const fetchUsers = useCallback(
-    async (page = 1) => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams({
-          page: page.toString(),
-          limit: pagination.limit.toString(),
-          role: "user",
-        });
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        limit: "3",
+        role: "user",
+      });
 
-        const response = await fetch(`/api/admin/users?${params.toString()}`);
+      const response = await fetch(`/api/admin/users?${params.toString()}`);
 
-        if (response.ok) {
-          const data = await response.json();
-          setUsers(data.users);
-          setPagination(data.pagination);
-        } else {
-          console.error("Lỗi khi lấy danh sách người dùng");
-        }
-      } catch (error) {
-        console.error("Lỗi khi gọi API:", error);
-      } finally {
-        setLoading(false);
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data.users);
+        setTotalUsers(data.pagination.total);
+      } else {
+        console.error("Lỗi khi lấy danh sách người dùng");
       }
-    },
-    [pagination.limit]
-  );
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchUsers(); // gọi lần đầu khi component render
-  }, [fetchUsers]);
+  }, []);
+
   const getInitials = (name?: string) => {
     if (!name) return "U";
     return name
@@ -84,18 +65,13 @@ export default function UserContactsCard() {
     return amount?.toLocaleString("vi-VN") || "0";
   };
 
-  const changePage = (newPage: number) => {
-    if (newPage < 1 || newPage > pagination.totalPages) return;
-    fetchUsers(newPage);
-  };
-
   return (
     <Card className="dark:bg-gray-800 dark:border-gray-700">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <div>
             <CardTitle className="dark:text-gray-200">List of users</CardTitle>
-            <CardDescription className="dark:text-gray-400 mt-2">You have {pagination.total} users</CardDescription>
+            <CardDescription className="dark:text-gray-400 mt-2">You have {totalUsers} users</CardDescription>
           </div>
           <Link href="/admin/users">
             {" "}
@@ -147,37 +123,6 @@ export default function UserContactsCard() {
             ) : (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">No users found</div>
             )}
-          </div>
-        )}
-
-        {pagination.totalPages > 1 && (
-          <div className="flex justify-between items-center mt-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Show {pagination.from}-{pagination.to} over {pagination.total}
-            </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
-                disabled={pagination.page === 1}
-                onClick={() => changePage(pagination.page - 1)}
-              >
-                <ChevronLeft size={16} />
-              </Button>
-              <div className="px-3 py-1 text-sm dark:text-gray-300">
-                {pagination.page} / {pagination.totalPages}
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
-                disabled={pagination.page === pagination.totalPages}
-                onClick={() => changePage(pagination.page + 1)}
-              >
-                <ChevronRight size={16} />
-              </Button>
-            </div>
           </div>
         )}
       </CardContent>
