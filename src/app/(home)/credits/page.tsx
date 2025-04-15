@@ -20,6 +20,7 @@ const PAYMENT_METHODS = [
     label: "Nạp qua PayPal",
     icon: <BadgeDollarSign color="#72a1fd" />,
     iconAlt: "PayPal",
+    disabled: true,
   },
   {
     id: "direct",
@@ -32,6 +33,7 @@ const PAYMENT_METHODS = [
     label: "Nạp qua Cryptomus",
     icon: <Coins color="#9936a6" />,
     iconAlt: "Cryptomus",
+    disabled: true,
   },
 ];
 
@@ -46,26 +48,28 @@ export default function PaymentMethodTabs() {
           <div
             key={method.id}
             className={`
-              border-2 rounded-xl p-4 flex items-center justify-between cursor-pointer transition-all
+              border-2 rounded-xl p-4 flex items-center justify-between 
+              ${method.disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} transition-all
               ${
                 activeTab === method.id
                   ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500"
                   : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700"
               }
             `}
-            onClick={() => setActiveTab(method.id)}
+            onClick={() => !method.disabled && setActiveTab(method.id)}
           >
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
                 checked={activeTab === method.id}
-                onChange={() => setActiveTab(method.id)}
+                onChange={() => !method.disabled && setActiveTab(method.id)}
+                disabled={method.disabled}
                 className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500"
               />
               <span
                 className={`font-medium ${
                   activeTab === method.id ? "text-blue-700 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"
-                }`}
+                } ${method.disabled ? "text-gray-400 dark:text-gray-500" : ""}`}
               >
                 {method.label}
               </span>
@@ -74,8 +78,6 @@ export default function PaymentMethodTabs() {
           </div>
         ))}
       </div>
-
-      {/* Active Tab Content */}
       <div className="mt-4">
         {activeTab === "bank" && <BankTransferTab />}
         {activeTab === "paypal" && <PayPalTab />}

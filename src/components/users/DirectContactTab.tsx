@@ -90,8 +90,8 @@ export default function DirectContactTab() {
             <p className="text-gray-600 dark:text-gray-300 mb-4">Gọi cho chúng tôi trong giờ làm việc (8:00 - 18:00)</p>
             <div className="flex items-center">
               <PhoneCall className="h-5 w-5 text-blue-600 mr-2" />
-              <a href="tel:+84123456789" className="text-blue-600 dark:text-blue-400 font-medium text-lg">
-                +84 123 456 789
+              <a href="tel:0967747745" className="text-blue-600 dark:text-blue-400 font-medium text-lg">
+                0967747745
               </a>
             </div>
           </div>
