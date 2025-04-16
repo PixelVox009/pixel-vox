@@ -1,4 +1,5 @@
 import { getTokenChange, getTokenColor, getTransactionTitle } from "@/lib/helpers/transactionhelpers";
+import { Transaction } from "@/types/month";
 import { formatDate } from "@/utils/format";
 
 interface TransactionListProps {
@@ -19,7 +20,7 @@ export default function TransactionList({ transactions, isLoading }: Transaction
             <div className="flex justify-between items-start">
               <div>
                 <div className="font-medium">{getTransactionTitle(transaction)}</div>
-                <div className="text-xs text-gray-500">{formatDate(transaction.createdAt)}</div>
+                <div className="text-xs text-gray-500">{formatDate(transaction?.createdAt ?? "")}</div>
               </div>
               <div className={`font-semibold ${getTokenColor(transaction)}`}>{getTokenChange(transaction)} credits</div>
             </div>

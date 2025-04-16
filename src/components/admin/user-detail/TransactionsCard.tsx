@@ -14,8 +14,6 @@ interface TransactionsCardProps {
   dateRange: DateRange | undefined;
   setDateRange: (value: DateRange | undefined) => void;
   handleSearch: (e: React.FormEvent) => void;
-  formatDate: (date: string) => string;
-  formatTime: (date: string) => string;
   vndToUsdRate: number;
   hasMore?: boolean;
   onLoadMore?: () => void;

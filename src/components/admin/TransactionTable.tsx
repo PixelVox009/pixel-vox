@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Transaction } from "@/types/month";
 import { formatDateTime, formatTokens } from "@/utils/format";
 import { formatVndToUsd } from "@/utils/formatVndUseDola";
 import { ArrowDown, CreditCard, Gift, RefreshCcw } from "lucide-react";
@@ -70,14 +71,14 @@ export function TransactionTable({ transactions, loading, rates }: TransactionTa
             </TableRow>
           ) : (
             transactions.map((transaction) => {
-              const dateTime = formatDateTime(transaction.createdAt);
+              const dateTime = formatDateTime(transaction?.createdAt ?? "");
               return (
                 <TableRow key={transaction._id}>
                   <TableCell className="text-sm font-medium">{transaction.transaction}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-3">
                       <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                        {getTransactionIcon(transaction.type)}
+                        {getTransactionIcon(transaction?.type ?? "")}
                       </div>
                       <div className="min-w-0">
                         <div className="font-medium truncate max-w-[200px] md:max-w-xs">{transaction.description}</div>
@@ -88,7 +89,7 @@ export function TransactionTable({ transactions, loading, rates }: TransactionTa
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell capitalize">
-                    {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                    {transaction?.type?.charAt(0).toUpperCase() + (transaction?.type?.slice(1) ?? "")}
                   </TableCell>
                   <TableCell className="hidden md:table-cell whitespace-nowrap">
                     <div>{dateTime.date}</div>
@@ -98,11 +99,11 @@ export function TransactionTable({ transactions, loading, rates }: TransactionTa
                     {formatTokens(transaction)}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell font-medium">
-                    {formatVndToUsd(transaction.amount, rates.vndToUsdRate)} $
+                    {formatVndToUsd(transaction?.amount ?? 0, rates.vndToUsdRate)} $
                   </TableCell>
                   <TableCell>
-                    <Badge className={`${getStatusColor(transaction.status)} whitespace-nowrap`}>
-                      {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                    <Badge className={`${getStatusColor(transaction?.status ?? "")} whitespace-nowrap`}>
+                      {transaction?.status?.charAt(0).toUpperCase() + (transaction?.status?.slice(1) ?? "")}
                     </Badge>
                   </TableCell>
                 </TableRow>

@@ -1,4 +1,4 @@
-// components/text-to-speech/TextInputArea.tsx
+// components/TextInputArea.tsx
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,19 +12,31 @@ type TextInputAreaProps = {
   isPending: boolean;
   onTextChange: (value: string) => void;
   onGenerate: () => void;
+  useToken?: boolean; // Dùng token estimation
+  fixedTokenCost?: number; // Nếu không dùng token estimation thì hiển thị số token cố định
 };
 
-export default function TextInputArea({ text, isPending, onTextChange, onGenerate }: TextInputAreaProps) {
+export default function TextInputArea({
+  text,
+  isPending,
+  onTextChange,
+  onGenerate,
+  useToken = true,
+  fixedTokenCost = 0,
+}: TextInputAreaProps) {
   const { estimatedTokens } = useTokenEstimation(text);
   const tokenBalance = useTokenStore((state) => state.tokenBalance);
-  const isInsufficientTokens = estimatedTokens !== null && tokenBalance !== null && estimatedTokens > tokenBalance;
-  const missingTokens = isInsufficientTokens ? estimatedTokens - tokenBalance : 0;
+
+  const tokenCost = useToken ? estimatedTokens : fixedTokenCost;
+  const isInsufficientTokens = tokenCost !== null && tokenBalance !== null && tokenCost > tokenBalance;
+
+  const missingTokens = isInsufficientTokens ? tokenCost - tokenBalance : 0;
+
   return (
     <div className="w-full bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden p-4">
-      {/* Text input */}
       <Textarea
         value={text}
-        placeholder="Start typing here to create lifelike speech in multiple languages, voices and emotions with Pixel Vox."
+        placeholder="Start typing here to generate content..."
         className="w-full border-transparent md:text-base p-0 h-[36vh] resize-none focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent dark:text-white placeholder-gray-400 dark:placeholder-gray-600"
         onChange={(e) => onTextChange(e.target.value)}
       />
@@ -32,7 +44,6 @@ export default function TextInputArea({ text, isPending, onTextChange, onGenerat
       <Separator />
 
       <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-end items-center">
-        {/* Generate button */}
         <div className="flex items-center gap-2">
           <Button
             variant={"ghost"}
@@ -40,6 +51,7 @@ export default function TextInputArea({ text, isPending, onTextChange, onGenerat
           >
             <Download size={20} />
           </Button>
+
           <Button
             onClick={onGenerate}
             disabled={isPending || !text.trim() || isInsufficientTokens}
@@ -56,9 +68,9 @@ export default function TextInputArea({ text, isPending, onTextChange, onGenerat
             {isPending
               ? "Generating..."
               : isInsufficientTokens
-              ? `Không đủ credits (${missingTokens} credits )`
+              ? `Không đủ credits (${missingTokens} credits)`
               : text.trim()
-              ? `${estimatedTokens} credits`
+              ? `${tokenCost} credits`
               : "Generate"}
           </Button>
         </div>

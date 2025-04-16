@@ -1,3 +1,5 @@
+import { Transaction } from "@/types/month";
+
 export const getTokenChange = (transaction: Transaction) => {
     switch (transaction.type) {
         case "token_usage":

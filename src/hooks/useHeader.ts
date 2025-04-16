@@ -1,5 +1,6 @@
 import { userService } from "@/lib/api/user";
 import { useTokenStore } from "@/lib/store";
+import { Transaction } from "@/types/month";
 import { TokenBalance } from "@/types/payment";
 import { useQuery } from "@tanstack/react-query";
 

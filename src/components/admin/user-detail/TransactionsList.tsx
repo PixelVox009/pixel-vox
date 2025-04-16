@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Transaction } from "@/types/month";
 import { formatDate, formatTime } from "@/utils/format";
 import { formatVndToUsd } from "@/utils/formatVndUseDola";
 import { Activity, ArrowDownLeft, Calendar, Clock, CreditCard, Gift, Wallet } from "lucide-react";
@@ -9,8 +10,6 @@ import { ReactNode } from "react";
 interface TransactionsListProps {
   transactions?: Transaction[] | undefined;
   isLoading: boolean;
-  formatDate: (date: string) => string;
-  formatTime: (date: string) => string;
   vndToUsdRate: number;
   hasMore?: boolean;
   onLoadMore?: () => void;
@@ -75,13 +74,13 @@ export const TransactionsList = ({
             <div className="flex flex-col md:flex-row md:items-center gap-4">
               <div className="flex items-center gap-4 flex-1">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                  {getTransactionTypeIcon(transaction.type, transaction.status)}
+                  {getTransactionTypeIcon(transaction?.type ?? "", transaction?.status ?? "")}
                 </div>
 
                 <div>
                   <div className="font-medium">{transaction.description}</div>
                   <div className="text-sm text-muted-foreground">
-                    {getTransactionTypeLabel(transaction.type)}
+                    {getTransactionTypeLabel(transaction.type ?? "")}
                     {transaction.status !== "success" && (
                       <Badge variant="outline" className="ml-2 text-xs bg-red-50 text-red-500 border-red-200">
                         {transaction.status}
@@ -95,11 +94,11 @@ export const TransactionsList = ({
                 <div className="text-sm text-right">
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    {formatDate(transaction.createdAt)}
+                    {formatDate(transaction.createdAt ?? "")}
                   </div>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <Clock className="h-3 w-3" />
-                    {formatTime(transaction.createdAt)}
+                    {formatTime(transaction.createdAt ?? "")}
                   </div>
                 </div>
 
@@ -114,16 +113,16 @@ export const TransactionsList = ({
                     <div className="font-medium">0</div>
                   )}
 
-                  {transaction.amount > 0 && (
+                  {transaction?.amount && vndToUsdRate > 0 && (
                     <div className="text-xs text-muted-foreground">
-                      {formatVndToUsd(transaction.amount, vndToUsdRate)} $
+                      {formatVndToUsd(transaction?.amount, vndToUsdRate)} $
                     </div>
                   )}
                 </div>
 
                 <div className="text-sm text-muted-foreground">
                   <div>
-                    ID: <span className="font-mono text-xs">{transaction.transaction.substring(0, 10)}...</span>
+                    ID: <span className="font-mono text-xs">{transaction?.transaction?.substring(0, 10)}...</span>
                   </div>
                 </div>
               </div>

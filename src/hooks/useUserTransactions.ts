@@ -1,11 +1,9 @@
-
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { addDays, format } from "date-fns";
-import { DateRange } from "react-day-picker";
 import { useTransactions } from "@/hooks/useTransactions";
-import { useTransactionStats } from "@/hooks/useTransactionStats";
 import { transactionsService } from "@/lib/api/transactions";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { useState } from "react";
+import { DateRange } from "react-day-picker";
 
 export const useUserTransactions = (userId: string) => {
     const {
@@ -21,25 +19,40 @@ export const useUserTransactions = (userId: string) => {
         limit,
         setPage,
     } = useTransactions();
+
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: startDate,
         to: endDate,
     });
+
+    const [page, setCurrentPage] = useState(1);
+
     const handleDateRangeChange = (range: DateRange | undefined) => {
-        setDateRange(range);
-        if (range?.from) setStartDate(range.from);
-        if (range?.to) setEndDate(range.to);
+        if (range) {
+            setDateRange(range);
+            if (range.from) setStartDate(range.from);
+            if (range.to) setEndDate(range.to);
+        }
     };
+
     const formattedStartDate = startDate ? format(startDate, "yyyy-MM-dd") : undefined;
     const formattedEndDate = endDate ? format(endDate, "yyyy-MM-dd") : undefined;
+
+    // Thay thế useTransactionStats bằng API getUserTransactions
     const {
-        statsData,
+        data: statsData,
         isLoading: isStatsLoading,
-        applyFilters
-    } = useTransactionStats(
-        formattedStartDate || format(addDays(new Date(), -30), "yyyy-MM-dd"),
-        formattedEndDate || format(new Date(), "yyyy-MM-dd")
-    );
+        refetch: refetchStats,
+    } = useQuery({
+        queryKey: ["userTransactionStats", userId, page, limit],
+        queryFn: () => transactionsService.getUserTransactionStats(
+            userId,
+            formattedStartDate,
+            formattedEndDate,
+        ),
+        enabled: !!userId,
+    });
+    console.log(statsData)
     const {
         data: transactionsData,
         isLoading: isTransactionsLoading,
@@ -56,16 +69,18 @@ export const useUserTransactions = (userId: string) => {
         ),
         enabled: !!userId,
     });
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         refetchTransactions();
-        applyFilters();
+        refetchStats(); // Gọi refetch cho API thống kê mới
     };
 
     // Function để load thêm transactions
     const handleLoadMore = () => {
         const newPage = Math.ceil((transactionsData?.transactions?.length || 0) / 20) + 1;
         setPage(newPage);
+        setCurrentPage(newPage);
     };
 
     return {
@@ -82,6 +97,6 @@ export const useUserTransactions = (userId: string) => {
         limit,
         handleSearch,
         handleLoadMore,
-        hasMore: transactionsData?.hasMore || false
+        hasMore: transactionsData?.hasMore ?? false
     };
 };

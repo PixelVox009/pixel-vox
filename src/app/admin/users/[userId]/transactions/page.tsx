@@ -11,7 +11,7 @@ import { useParams } from "next/navigation";
 
 export default function UserTransactionHistoryPage() {
   const params = useParams();
-  const userId = params.userId as string;
+  const userId = params?.userId as string;
   const { rates } = useExchangeRates();
   const { userData, isLoading: isUserLoading, getInitials } = useUserDetails(userId);
   const {
@@ -29,7 +29,6 @@ export default function UserTransactionHistoryPage() {
     handleLoadMore,
     hasMore,
   } = useUserTransactions(userId);
-
   return (
     <div className="p-6 space-y-8">
       {/* Breadcrumb and Header */}
@@ -43,7 +42,7 @@ export default function UserTransactionHistoryPage() {
         vndToUsdRate={rates.vndToUsdRate}
       />
       {/* Stats Cards */}
-      <StatsCards stats={statsData?.stats} isLoading={isStatsLoading} />
+      <StatsCards stats={statsData} isLoading={isStatsLoading} />
       {/* Transactions Card */}
       <TransactionsCard
         transactions={transactionsData?.transactions}

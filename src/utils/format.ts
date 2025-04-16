@@ -1,3 +1,4 @@
+import { Transaction } from "@/types/month";
 import { format } from "date-fns";
 export function formatDateTime(dateString: string) {
     const date = new Date(dateString);
@@ -9,7 +10,7 @@ export function formatDateTime(dateString: string) {
 
 export function formatTokens(transaction: Transaction) {
     if (transaction.type === "token_usage") {
-        const tokenValue = Math.abs(transaction.tokensEarned);
+        const tokenValue = Math.abs(transaction?.tokensEarned || 0);
         return `-${tokenValue}`;
     } else {
         return `+${transaction.tokensEarned}`;

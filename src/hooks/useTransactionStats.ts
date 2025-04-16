@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "@/lib/api/dashboard";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 
 export const useTransactionStats = (initialStartDate: string, initialEndDate: string) => {
@@ -15,7 +15,7 @@ export const useTransactionStats = (initialStartDate: string, initialEndDate: st
         queryKey: ["transaction-stats", startDate, endDate],
         queryFn: () => dashboardService.getTransactionStats(startDate, endDate),
     });
-
+    console.log(statsData);
     const applyFilters = () => {
         refetch();
     };

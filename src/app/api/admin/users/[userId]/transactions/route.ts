@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 import PaymentActivity from "@/models/payment-activity";
 
-import { isValidObjectId } from "mongoose";
-import { User } from "@/models/User";
 import dbConnect from "@/lib/db";
+import { User } from "@/models/User";
+import { isValidObjectId } from "mongoose";
 interface Query {
     customer: string;
     type?: string;
@@ -28,14 +28,11 @@ export async function GET(
         if (!session?.user?.role || session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
-
         const userId = params.userId;
-
         // Kiểm tra ID hợp lệ
         if (!isValidObjectId(userId)) {
             return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
         }
-
         // Lấy các tham số từ URL
         const { searchParams } = new URL(req.url);
         const type = searchParams.get('type') || 'all';
@@ -44,24 +41,18 @@ export async function GET(
         const search = searchParams.get('search') || '';
         const limit = parseInt(searchParams.get('limit') || '20');
         const skip = parseInt(searchParams.get('skip') || '0');
-
         // Kết nối database
-        
-
         // Kiểm tra người dùng tồn tại
         const userExists = await User.exists({ _id: userId });
         if (!userExists) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
-
         // Xây dựng query
         const query: Query = { customer: userId };
-
         // Filter theo type
         if (type !== 'all') {
             query.type = type;
         }
-
         // Filter theo ngày
         if (startDate || endDate) {
             query.createdAt = {};
@@ -74,23 +65,19 @@ export async function GET(
                 query.createdAt.$lte = endDateTime;
             }
         }
-
-        // Tìm kiếm
+        // Tìmkiếm
         if (search) {
             query.$or = [
                 { transaction: { $regex: search, $options: 'i' } },
                 { description: { $regex: search, $options: 'i' } }
             ];
         }
-
         // Thực hiện query với phân trang
         const transactions = await PaymentActivity.find(query)
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit + 1) // Lấy thêm 1 để kiểm tra có còn dữ liệu không
+            .limit(limit + 1)
             .lean();
-
-        // Kiểm tra nếu còn dữ liệu
         const hasMore = transactions.length > limit;
         const results = hasMore ? transactions.slice(0, limit) : transactions;
 

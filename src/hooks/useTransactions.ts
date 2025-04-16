@@ -1,5 +1,6 @@
 "use client"
 import { paymentService } from "@/lib/api/payment";
+import { TransactionResponse } from "@/types/month";
 import { useExchangeRates } from "@/utils/formatVndUseDola";
 import { useQuery } from "@tanstack/react-query";
 import { subDays } from "date-fns";
@@ -45,9 +46,7 @@ export function useTransactions() {
     queryKey,
     queryFn: fetchTransactions,
   });
-
-  // Lấy dữ liệu từ data
-  const transactions = data?.data ?? [];
+  const transactions = data?.transactions ?? [];
   const totalPages = data?.pagination?.totalPages ?? 1;
   const totalTransactions = data?.pagination?.total ?? 0;
 

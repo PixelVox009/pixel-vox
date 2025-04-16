@@ -1,18 +1,9 @@
 // services/transactions.service.ts
 
-import { Transaction, TransactionStats } from "@/types/month";
+import { Transaction, TransactionResponse, TransactionStats } from "@/types/month";
 import { UserData } from "@/types/users";
 import { api } from "@/utils/axios";
 
-interface TransactionResponse {
-    transactions: Transaction[];
-    pagination: {
-        total: number;
-        totalPages: number;
-        from: number;
-        to: number;
-    };
-}
 
 export const transactionsService = {
     getTransactions: async (
@@ -90,6 +81,7 @@ export const transactionsService = {
         if (data.hasMore === undefined) {
             data.hasMore = (data.transactions?.length || 0) >= limit;
         }
+        console.log(data)
         return data;
     }
 };

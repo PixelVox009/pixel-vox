@@ -28,6 +28,8 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        // Kết nối database
+        await dbConnect();
         // Lấy query parameters
         const { searchParams } = new URL(req.url);
 
@@ -44,8 +46,6 @@ export async function GET(req: NextRequest) {
         const customer = searchParams.get('customer');
         const status = searchParams.get('status');
 
-        // Kết nối database
-        await dbConnect();
 
         // Build query
         const query: Query = {};

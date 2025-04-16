@@ -1,3 +1,4 @@
+import { Transaction } from "@/types/month";
 import { TokenBalance } from "@/types/payment";
 import { UserData, UsersResponse } from "@/types/users";
 import { api } from "@/utils/axios";
