@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { useGenerateAudio } from "@/hooks/useGenerateAudio";
 import TextInputArea from "@/components/TextInputArea";
