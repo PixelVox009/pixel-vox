@@ -141,7 +141,7 @@ export default function UserTransactionHistoryPage() {
     queryFn: () => fetchTransactionStats(userId, startDate, endDate),
     enabled: !!userId,
   });
-
+  console.log(statsData);
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     refetchTransactions();
@@ -303,7 +303,7 @@ export default function UserTransactionHistoryPage() {
                   ) : (
                     <div className="text-2xl font-bold">
                       {userData?.wallet?.balance || 0}{" "}
-                      <span className="text-sm font-normal text-muted-foreground">tokens</span>
+                      <span className="text-sm font-normal text-muted-foreground">credits</span>
                     </div>
                   )}
                 </CardContent>
@@ -335,7 +335,7 @@ export default function UserTransactionHistoryPage() {
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Star className="h-4 w-4 text-yellow-500" />
-              Total Tokens
+              Total Credits
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
@@ -418,7 +418,7 @@ export default function UserTransactionHistoryPage() {
                   <SelectContent>
                     <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="bank">Bank Payment</SelectItem>
-                    <SelectItem value="token_usage">Token Usage</SelectItem>
+                    <SelectItem value="token_usage">Credits Usage</SelectItem>
                     <SelectItem value="bonus">Bonus</SelectItem>
                     <SelectItem value="refund">Refund</SelectItem>
                   </SelectContent>
@@ -497,7 +497,9 @@ export default function UserTransactionHistoryPage() {
                           </div>
 
                           <div className="text-right min-w-[100px]">
-                            {transaction.tokensEarned ? (
+                            {transaction.type === "token_usage" && transaction.tokensEarned ? (
+                              <div className="font-medium text-red-600">-{transaction.tokensEarned}</div>
+                            ) : transaction.type !== "token_usage" && transaction.tokensEarned ? (
                               <div className="font-medium text-green-600">+{transaction.tokensEarned}</div>
                             ) : transaction.tokensUsed ? (
                               <div className="font-medium text-red-600">-{transaction.tokensUsed}</div>

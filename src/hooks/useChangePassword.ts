@@ -2,7 +2,7 @@ import { useState } from "react";
 
 interface ChangePasswordResponse {
     message: string;
-    [key: string]: any;
+    [key: string]: string;
 }
 
 export const useChangePassword = () => {

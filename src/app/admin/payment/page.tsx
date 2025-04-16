@@ -107,13 +107,13 @@ export default function TransactionHistory() {
     setPage(newPage);
   };
   const handleSearch = () => {
-    setPage(1); 
+    setPage(1);
     fetchTransactions();
   };
   const handleExport = async () => {
     try {
       const params = new URLSearchParams();
-      params.append("limit", "1000"); 
+      params.append("limit", "1000");
       if (selectedType !== "all") {
         params.append("type", selectedType);
       }
@@ -126,9 +126,6 @@ export default function TransactionHistory() {
       if (searchTerm) {
         params.append("search", searchTerm);
       }
-      params.append("export", "true");
-      // Gọi API export
-      window.open(`/api/user/payments/activities/export?${params.toString()}`, "_blank");
     } catch (error) {
       console.error("Error exporting transactions:", error);
     }
@@ -189,7 +186,7 @@ export default function TransactionHistory() {
     <div className="space-y-6 p-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Payment History</h2>
-        <p className="text-muted-foreground">View your payment history and token transactions</p>
+        <p className="text-muted-foreground">View your payment history and credits transactions</p>
       </div>
 
       {/* Filter section */}

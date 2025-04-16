@@ -32,7 +32,7 @@ export function StatsOverview({ stats, isLoading, vndToUsdRate, formatVndToUsd }
 
       <StatCard
         icon={<DollarSign className="h-6 w-6" />}
-        title="Total tokens"
+        title="Total credits"
         value={stats?.totalTokens || 0}
         iconBgColor="bg-amber-100"
         iconColor="text-amber-600"

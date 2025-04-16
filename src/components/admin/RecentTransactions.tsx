@@ -25,7 +25,7 @@ export function RecentTransactions({
         <div className="flex justify-between items-center">
           <div>
             <CardTitle className="text-lg dark:text-gray-200">Recent transactions</CardTitle>
-            <CardDescription className="dark:text-gray-400">5 most recent deposits</CardDescription>
+            <CardDescription className="dark:text-gray-400">6 most recent deposits</CardDescription>
           </div>
           <Link href="/admin/payment">
             {" "}

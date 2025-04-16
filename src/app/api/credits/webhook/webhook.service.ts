@@ -158,7 +158,7 @@ export async function processWebhookData(data: Data[]) {
                     // Sử dụng tỷ giá từ cài đặt
                     const tokensEarned = await convertVndToTokens(amountVnd);
                     const newBalance = wallet.balance + tokensEarned;
-                    const message = `Nạp thành công ${amountVnd.toLocaleString('vi-VN')} VND qua ngân hàng (${tokensEarned} token)`;
+                    const message = `Nạp thành công ${amountVnd.toLocaleString('vi-VN')} VND qua ngân hàng (${tokensEarned} credits)`;
 
                     await Promise.all([
                         PaymentActivity.create({
