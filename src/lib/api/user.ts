@@ -1,3 +1,4 @@
+import { TokenBalance } from "@/types/payment";
 import { UserData, UsersResponse } from "@/types/users";
 import { api } from "@/utils/axios";
 
@@ -43,5 +44,25 @@ export const userService = {
       status: "success",
     });
     return response.data;
-  }
+  },
+  getTransactionHistory: async (type: string = "all", limit: number = 20): Promise<Transaction[]> => {
+    try {
+      const { data } = await api.get(`/user/transaction-history`, {
+        params: { type, limit }
+      });
+      return data.transactions || [];
+    } catch (error) {
+      console.error("Error fetching transaction history:", error);
+      throw error;
+    }
+  },
+  getTokenBalance: async (): Promise<TokenBalance> => {
+    try {
+      const { data } = await api.get("/user/token");
+      return data;
+    } catch (error) {
+      console.error("Error fetching token balance:", error);
+      throw error;
+    }
+  },
 };

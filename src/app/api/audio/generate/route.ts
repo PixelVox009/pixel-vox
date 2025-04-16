@@ -36,9 +36,7 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-    console.log("🚀 ~ POST ~ userId:", session.user)
     const userId = session.user.id;
-    console.log("🚀 ~ POST ~ userId:", userId)
     const orderId = new Date().getTime();
 
     const title = value.textContent.split(" ").slice(0, 8).join(" ").trim();
@@ -89,7 +87,6 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.log("🚀 ~ POST ~ error:", error);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }

@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import { ExchangeRates } from "@/types/month";
-import { dashboardService } from "@/lib/api/dashboard";
 import { settingsService } from "@/lib/api/settings";
+import { ExchangeRates } from "@/types/month";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 
 export const useExchangeRateSettings = () => {

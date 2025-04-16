@@ -1,6 +1,6 @@
 // services/transactions.service.ts
 
-import { Transaction } from "@/types/month";
+import { Transaction, TransactionStats } from "@/types/month";
 import { UserData } from "@/types/users";
 import { api } from "@/utils/axios";
 
@@ -41,7 +41,6 @@ export const transactionsService = {
         const response = await api.get("/admin/transactions?type=recent");
         return response.data.success ? response.data.data : [];
     },
-
     getUserTransactions: async (
         userId: string,
         page = 1,
@@ -55,12 +54,11 @@ export const transactionsService = {
         const response = await api.get(`/admin/users/${userId}/transactions?${params.toString()}`);
         return response.data;
     },
-
     getUserTransactionStats: async (
         userId: string,
         startDate?: string,
         endDate?: string
-    ): Promise<any> => {
+    ): Promise<TransactionStats> => {
         const params = new URLSearchParams();
         if (startDate) params.append("startDate", startDate);
         if (endDate) params.append("endDate", endDate);

@@ -1,10 +1,10 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatVndToUsd } from "@/utils/formatVndUseDola";
 import { UserData } from "@/types/users";
 import { formatDate } from "@/utils/format";
+import { formatVndToUsd } from "@/utils/formatVndUseDola";
 
 interface UserInfoCardProps {
   userData: UserData | undefined;

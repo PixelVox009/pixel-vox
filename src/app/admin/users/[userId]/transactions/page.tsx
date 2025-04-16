@@ -43,7 +43,7 @@ export default function UserTransactionHistoryPage() {
         vndToUsdRate={rates.vndToUsdRate}
       />
       {/* Stats Cards */}
-      <StatsCards stats={statsData} isLoading={isStatsLoading} />
+      <StatsCards stats={statsData?.stats} isLoading={isStatsLoading} />
       {/* Transactions Card */}
       <TransactionsCard
         transactions={transactionsData?.transactions}

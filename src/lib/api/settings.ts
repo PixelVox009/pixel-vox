@@ -24,14 +24,4 @@ export const settingsService = {
         const response = await api.put("/admin/settings", rates);
         return response.data;
     },
-
-    getSystemSettings: async (): Promise<any> => {
-        const response = await api.get("/admin/settings/system");
-        return response.data;
-    },
-
-    updateSystemSettings: async (settings: any): Promise<{ success: boolean }> => {
-        const response = await api.put("/admin/settings/system", settings);
-        return response.data;
-    }
 };

@@ -1,10 +1,10 @@
 // components/text-to-speech/TextInputArea.tsx
-import { Sparkles, Download, Coins } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { useTokenEstimation } from "@/hooks/useTokenEstimation";
 import { useTokenStore } from "@/lib/store";
+import { Download, Sparkles } from "lucide-react";
 
 type TextInputAreaProps = {
   children?: React.ReactNode;
@@ -14,12 +14,11 @@ type TextInputAreaProps = {
   onGenerate: () => void;
 };
 
-export default function TextInputArea({ children, text, isPending, onTextChange, onGenerate }: TextInputAreaProps) {
-  const { estimatedTokens, isCalculating } = useTokenEstimation(text);
+export default function TextInputArea({ text, isPending, onTextChange, onGenerate }: TextInputAreaProps) {
+  const { estimatedTokens } = useTokenEstimation(text);
   const tokenBalance = useTokenStore((state) => state.tokenBalance);
-
   const isInsufficientTokens = estimatedTokens !== null && tokenBalance !== null && estimatedTokens > tokenBalance;
-
+  const missingTokens = isInsufficientTokens ? estimatedTokens - tokenBalance : 0;
   return (
     <div className="w-full bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden p-4">
       {/* Text input */}
@@ -32,28 +31,7 @@ export default function TextInputArea({ children, text, isPending, onTextChange,
 
       <Separator />
 
-      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          {children}
-          <div className="flex items-center text-sm">
-            <Coins size={16} className="mr-1 text-yellow-500" />
-            {isCalculating ? (
-              <span className="text-gray-500">Đang tính...</span>
-            ) : estimatedTokens !== null ? (
-              <div
-                className={`flex flex-col ${
-                  isInsufficientTokens ? "text-red-500" : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
-                <span>{estimatedTokens} credits</span>
-                {isInsufficientTokens && <span className="text-xs">Không đủ credits</span>}
-              </div>
-            ) : (
-              <span className="text-gray-500">--</span>
-            )}
-          </div>
-        </div>
-
+      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-end items-center">
         {/* Generate button */}
         <div className="flex items-center gap-2">
           <Button
@@ -75,7 +53,13 @@ export default function TextInputArea({ children, text, isPending, onTextChange,
             `}
           >
             <Sparkles size={16} />
-            {isPending ? "Generating..." : "Generate"}
+            {isPending
+              ? "Generating..."
+              : isInsufficientTokens
+              ? `Không đủ credits (${missingTokens} credits )`
+              : text.trim()
+              ? `${estimatedTokens} credits`
+              : "Generate"}
           </Button>
         </div>
       </div>

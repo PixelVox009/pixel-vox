@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Payment } from "@/types/payment";
-import { ExchangeRates } from "@/types/month";
 import { paymentService } from "@/lib/api/payment";
+import { Payment } from "@/types/payment";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 export const usePaymentStatus = (userId: string) => {
     const [latestPayment, setLatestPayment] = useState<Payment | null>(null);
@@ -11,7 +10,7 @@ export const usePaymentStatus = (userId: string) => {
     const { data: exchangeRates = { vndToUsdRate: 25000, usdToTokenRate: 10 } } = useQuery({
         queryKey: ["exchangeRates"],
         queryFn: paymentService.getExchangeRates,
-        staleTime: 1000 * 60 * 60, 
+        staleTime: 1000 * 60 * 60,
         refetchOnWindowFocus: false,
     });
 
