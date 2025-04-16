@@ -5,10 +5,7 @@ import axios from "axios";
 import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
 import { Segment } from "@/models/Segment";
-interface Segment {
-  link: string;
-  segmentIndex: number;
-}
+import { ISegment } from "@/models/Segment";
 const schema = Joi.object({
   orderId: Joi.string().required(),
   serviceId: Joi.string().required(),
@@ -69,9 +66,8 @@ export async function PUT(req: NextRequest) {
 
     if (audio.progress === 100) {
       const segments = audio.segments;
-      segments.sort((a: Segment, b: Segment) => a.segmentIndex - b.segmentIndex);
-
-      const audioLinks = segments.map((segment: Segment) => segment.link);
+      segments.sort((a: ISegment, b: ISegment) => a.segmentIndex - b.segmentIndex);
+      const audioLinks = segments.map((segment: ISegment) => segment.link);
       const { data: resData } = await axios.post(
         `${process.env.AUDIO_SERVER_URL}/tool-service-api/create-audio-merge`,
         {
