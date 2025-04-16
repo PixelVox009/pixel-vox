@@ -2,10 +2,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "react-toastify";
+
 import { audioService } from "@/lib/api/audio";
-import { userService } from "@/lib/api/user";
 import { useTokenStore } from "@/lib/store";
-import { fetchMinuteToTokenRate, estimateCharsPerMinute } from "@/lib/helpers/audioHelpers";
+import {
+  fetchMinuteToTokenRate,
+  estimateCharsPerMinute,
+} from "@/lib/helpers/audioHelpers";
 
 export function useGenerateAudio() {
   const [isPending, setIsPending] = useState(false);
@@ -34,8 +37,8 @@ export function useGenerateAudio() {
       const tokenUsage = estimateDuration * tokenRate;
 
       if ((tokenStore.tokenBalance ?? 0) >= tokenUsage) {
-        await userService.useToken(tokenUsage);
         tokenStore.subtractTokens(tokenUsage);
+
         mutate(text);
       } else {
         toast.error(

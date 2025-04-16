@@ -1,12 +1,13 @@
-import { api } from "@/utils/axios";
 import { genai } from "@/utils/genai";
+import { settingService } from "../api/setting";
 
 // Lấy tỉ lệ token trên phút
 export async function fetchMinuteToTokenRate() {
-  const { data: res } = await api.get("/settings", {
-    params: { key: "minuteToTokenRate" },
-  });
-  return +res.data[0].value;
+  const { data: setting } = await settingService.getSettings(
+    "minuteToTokenRate"
+  );
+
+  return +setting[0].value;
 }
 
 // Ước tính số ký tự đọc được mỗi phút
