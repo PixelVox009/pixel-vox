@@ -1,4 +1,4 @@
-// ... existing code ...
+'use client';
 import { TransactionFilters } from "./components/TransactionFilters";
 import { TransactionTable } from "./components/TransactionTable";
 import { useTransactions } from "../../../hooks/useTransactions";

@@ -17,3 +17,11 @@ const SegmentSchema = new Schema(
 );
 
 export const Segment = models.Segment || model("Segment", SegmentSchema);
+
+export interface ISegment {
+  serviceId: string;
+  segmentIndex: number;
+  orderId: string;
+  link?: string;
+  _id?: string;
+}
