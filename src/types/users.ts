@@ -55,6 +55,16 @@ export interface GiftTokenModalProps {
     setTokensToGift: (tokens: number) => void;
     giftDescription: string;
     setGiftDescription: (description: string) => void;
-    onGift: () => Promise<void>;
+    onGift: () => void;
     isGifting: boolean;
+}
+
+export interface UsersResponse {
+    users: UserData[];
+    pagination: {
+        total: number;
+        totalPages: number;
+        from: number;
+        to: number;
+    };
 }

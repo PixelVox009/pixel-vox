@@ -1,24 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Transaction } from "@/types/month";
+import { RecentTransactionsProps } from "@/types/dashboard";
+import { formatDate } from "@/utils/format";
 import { ArrowDown, ChevronRight, Clock, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
-interface RecentTransactionsProps {
-  transactions?: Transaction[];
-  isLoading: boolean;
-  formatDate: (dateString: string) => string;
-  vndToUsdRate: number;
-  formatVndToUsd: (amount: number, rate: number) => string;
-}
-
-export function RecentTransactions({
-  transactions,
-  isLoading,
-  formatDate,
-  vndToUsdRate,
-  formatVndToUsd,
-}: RecentTransactionsProps) {
+export function RecentTransactions({ transactions, isLoading, vndToUsdRate, formatVndToUsd }: RecentTransactionsProps) {
   return (
     <Card className="bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
       <CardHeader className="pb-2">
@@ -58,7 +45,7 @@ export function RecentTransactions({
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                       <Clock size={12} />
-                      {formatDate(transaction.createAt)}
+                      {formatDate(transaction.createdAt)}
                     </div>
                   </div>
                 </div>
@@ -66,7 +53,7 @@ export function RecentTransactions({
                   <div className="font-medium text-green-600 dark:text-green-400">
                     +{formatVndToUsd(transaction.amount, vndToUsdRate)} $
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">({transaction.tokensEarned} token)</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">({transaction.tokensEarned} credits)</div>
                 </div>
               </div>
             ))

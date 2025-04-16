@@ -1,15 +1,9 @@
-import { useState } from "react";
-import { subDays } from "date-fns";
-import { useExchangeRates } from "@/utils/formatVndUseDola";
+"use client"
 import { paymentService } from "@/lib/api/payment";
+import { useExchangeRates } from "@/utils/formatVndUseDola";
 import { useQuery } from "@tanstack/react-query";
-
-export const typeOptions = [
-  { value: "all", label: "All Types" },
-  { value: "bank", label: "Bank Payment" },
-  { value: "bonus", label: "Bonus" },
-  { value: "token_usage", label: "Token Usage" },
-];
+import { subDays } from "date-fns";
+import { useState } from "react";
 
 export function useTransactions() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +14,6 @@ export function useTransactions() {
   const [endDate, setEndDate] = useState<Date>(new Date());
   const { rates } = useExchangeRates();
 
-  // Tạo key duy nhất cho query dựa trên các filter
   const queryKey = [
     "transactions",
     { page, limit, searchTerm, selectedType, startDate, endDate },
@@ -80,6 +73,7 @@ export function useTransactions() {
       console.error("Error exporting transactions:", error);
     }
   };
+
 
   return {
     searchTerm,

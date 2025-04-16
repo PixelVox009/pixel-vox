@@ -1,20 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ExchangeRateSettingsProps } from "@/types/dashboard";
 import { ExchangeRates } from "@/types/month";
 import { RefreshCw } from "lucide-react";
 import { ChangeEvent, useEffect, useState } from "react";
 
 // Định nghĩa kiểu props cho component
-interface ExchangeRateSettingsProps {
-  exchangeRates?: ExchangeRates;
-  newExchangeRates: ExchangeRates;
-  onExchangeRatesChange: (rates: ExchangeRates) => void;
-  onUpdateRates: () => void;
-  isUpdating: boolean;
-  isLoading: boolean;
-  formatCurrency: (amount?: number) => string;
-}
 
 export function ExchangeRateSettings({
   exchangeRates,

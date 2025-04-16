@@ -1,3 +1,5 @@
+import { ExchangeRates } from "@/types/month";
+import { PaymentCheckResponse } from "@/types/payment";
 import { api } from "@/utils/axios";
 
 export const paymentService = {
@@ -34,5 +36,35 @@ export const paymentService = {
             console.error("Error verifying payment:", error);
             throw error;
         }
-    }
+    },
+
+    getPaymentList: async (params?: Record<string, unknown>) => {
+        try {
+            const { data } = await api.get("/admin/payments", { params });
+            return data;
+        } catch (error) {
+            console.error("Error fetching payments:", error);
+            throw error;
+        }
+    },
+    // (Tùy chọn) Lấy chi tiết payment
+    getPaymentDetail: async (id: string) => {
+        try {
+            const { data } = await api.get(`/payments/${id}`);
+            return data;
+        } catch (error) {
+            console.error("Error fetching payment detail:", error);
+            throw error;
+        }
+    },
+
+    checkPaymentStatus: async (userId: string): Promise<PaymentCheckResponse> => {
+        try {
+            const { data } = await api.get(`/credits/check-payment?userId=${userId}`);
+            return data;
+        } catch (error) {
+            console.error("Error checking payment status:", error);
+            throw error;
+        }
+    },
 };

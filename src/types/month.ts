@@ -2,6 +2,8 @@ export interface TransactionStats {
     totalAmount: number;
     totalTransactions: number;
     totalTokens: number;
+    totalEarned: number;
+    totalSpent:number;
 }
 
 export interface MonthlyData {
@@ -24,10 +26,10 @@ export interface Transaction {
 }
 
 export interface ExchangeRates {
-    usdToTokenRate: number;
-    vndToUsdRate: number;
-    imageToTokenRate: number;
-    minuteToTokenRate: number;
+    usdToTokenRate?: number | 0;
+    vndToUsdRate?: number | 0;
+    imageToTokenRate?: number | 0;
+    minuteToTokenRate?: number | 0;
 }
 
 export interface BankConfig {

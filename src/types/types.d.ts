@@ -32,6 +32,8 @@ type Transaction = {
   tokensEarned: number;
   createdAt: string;
   updatedAt: string;
+  tokensUsed?: number;
+
   __v: number;
 }
 
@@ -43,4 +45,5 @@ type TransactionResponse = {
     limit: number;
     totalPages: number;
   };
+  hasMore?: boolean;
 }

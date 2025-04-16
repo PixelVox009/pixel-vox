@@ -1,13 +1,6 @@
-import { TransactionStats } from "@/types/month";
+import { StatsOverviewProps } from "@/types/dashboard";
 import { ArrowDown, DollarSign } from "lucide-react";
 import { StatCard } from "./StatCard";
-
-interface StatsOverviewProps {
-  stats?: TransactionStats;
-  isLoading: boolean;
-  vndToUsdRate: number;
-  formatVndToUsd: (amount: number, rate: number) => string;
-}
 
 export function StatsOverview({ stats, isLoading, vndToUsdRate, formatVndToUsd }: StatsOverviewProps) {
   return (

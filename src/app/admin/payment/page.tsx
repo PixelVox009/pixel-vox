@@ -1,9 +1,9 @@
+"use client";
+import { TransactionFilters } from "@/components/admin/TransactionFilters";
+import { TransactionTable } from "@/components/admin/TransactionTable";
+import { useTransactions } from "@/hooks/useTransactions";
 
-import { TransactionFilters } from "./components/TransactionFilters";
-import { TransactionTable } from "./components/TransactionTable";
-import { useTransactions } from "../../../hooks/useTransactions";
-
-export default function TransactionHistory() {
+export default function PaymentHistory() {
   const {
     searchTerm,
     setSearchTerm,
@@ -67,4 +67,3 @@ export default function TransactionHistory() {
     </div>
   );
 }
-// ... existing code ...
