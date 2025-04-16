@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { subDays } from "date-fns";
 import { useExchangeRates } from "@/utils/formatVndUseDola";
+import { paymentService } from "@/lib/api/payment";
+import { useQuery } from "@tanstack/react-query";
 
 export const typeOptions = [
   { value: "all", label: "All Types" },
@@ -12,51 +14,56 @@ export const typeOptions = [
 export function useTransactions() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(25);
   const [startDate, setStartDate] = useState<Date>(subDays(new Date(), 30));
   const [endDate, setEndDate] = useState<Date>(new Date());
-  const [totalTransactions, setTotalTransactions] = useState(0);
   const { rates } = useExchangeRates();
 
-  const fetchTransactions = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      params.append("page", page.toString());
-      params.append("limit", limit.toString());
+  // Tạo key duy nhất cho query dựa trên các filter
+  const queryKey = [
+    "transactions",
+    { page, limit, searchTerm, selectedType, startDate, endDate },
+  ];
 
-      if (searchTerm) params.append("search", searchTerm);
-      if (selectedType !== "all") params.append("type", selectedType);
-      if (startDate) params.append("startDate", startDate.toISOString());
-      if (endDate) params.append("endDate", endDate.toISOString());
+  // Hàm fetch
+  const fetchTransactions = async () => {
+    const params: Record<string, unknown> = {
+      page,
+      limit,
+    };
+    if (searchTerm) params.search = searchTerm;
+    if (selectedType !== "all") params.type = selectedType;
+    if (startDate) params.startDate = startDate.toISOString();
+    if (endDate) params.endDate = endDate.toISOString();
 
-      const response = await fetch(`/api/admin/payments?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to fetch transactions");
+    const response = await paymentService.getPaymentList(params);
+    if (!response.ok) throw new Error("Failed to fetch transactions");
+    const data: TransactionResponse = await response.json();
+    return data;
+  };
 
-      const data: TransactionResponse = await response.json();
-      setTransactions(data.data);
-      setTotalPages(data?.pagination?.totalPages);
-      setTotalTransactions(data.pagination.total);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, limit, searchTerm, selectedType, startDate, endDate]);
+  // Sử dụng useQuery
+  const {
+    data,
+    isLoading: loading,
+    refetch,
+  } = useQuery({
+    queryKey,
+    queryFn: fetchTransactions,
+  });
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
+  // Lấy dữ liệu từ data
+  const transactions = data?.data ?? [];
+  const totalPages = data?.pagination?.totalPages ?? 1;
+  const totalTransactions = data?.pagination?.total ?? 0;
 
+  // Các hàm xử lý
   const handlePageChange = (newPage: number) => setPage(newPage);
 
   const handleSearch = () => {
     setPage(1);
-    fetchTransactions();
+    refetch();
   };
 
   const handleExport = async () => {
@@ -94,6 +101,6 @@ export function useTransactions() {
     handlePageChange,
     handleSearch,
     handleExport,
-    fetchTransactions,
+    refetch, // dùng để refetch nếu cần
   };
 }
