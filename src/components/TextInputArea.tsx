@@ -1,8 +1,10 @@
 // components/text-to-speech/TextInputArea.tsx
-import { Sparkles, Download } from "lucide-react";
+import { Sparkles, Download, Coins } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { useTokenEstimation } from "@/hooks/useTokenEstimation";
+import { useTokenStore } from "@/lib/store";
 
 type TextInputAreaProps = {
   children?: React.ReactNode;
@@ -12,17 +14,15 @@ type TextInputAreaProps = {
   onGenerate: () => void;
 };
 
-export default function TextInputArea({
-  children,
-  text,
-  isPending,
-  onTextChange,
-  onGenerate,
-}: TextInputAreaProps) {
+export default function TextInputArea({ children, text, isPending, onTextChange, onGenerate }: TextInputAreaProps) {
+  const { estimatedTokens, isCalculating } = useTokenEstimation(text);
+  const tokenBalance = useTokenStore((state) => state.tokenBalance);
+
+  const isInsufficientTokens = estimatedTokens !== null && tokenBalance !== null && estimatedTokens > tokenBalance;
+
   return (
     <div className="w-full bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden p-4">
       {/* Text input */}
-
       <Textarea
         value={text}
         placeholder="Start typing here to create lifelike speech in multiple languages, voices and emotions with Pixel Vox."
@@ -32,8 +32,27 @@ export default function TextInputArea({
 
       <Separator />
 
-      <div className=" border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">{children}</div>
+      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          {children}
+          <div className="flex items-center text-sm">
+            <Coins size={16} className="mr-1 text-yellow-500" />
+            {isCalculating ? (
+              <span className="text-gray-500">Đang tính...</span>
+            ) : estimatedTokens !== null ? (
+              <div
+                className={`flex flex-col ${
+                  isInsufficientTokens ? "text-red-500" : "text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                <span>{estimatedTokens} credits</span>
+                {isInsufficientTokens && <span className="text-xs">Không đủ credits</span>}
+              </div>
+            ) : (
+              <span className="text-gray-500">--</span>
+            )}
+          </div>
+        </div>
 
         {/* Generate button */}
         <div className="flex items-center gap-2">
@@ -45,11 +64,11 @@ export default function TextInputArea({
           </Button>
           <Button
             onClick={onGenerate}
-            disabled={isPending || !text.trim()}
+            disabled={isPending || !text.trim() || isInsufficientTokens}
             className={`
               px-4 py-2 rounded-md flex items-center gap-2 
               ${
-                isPending || !text.trim()
+                isPending || !text.trim() || isInsufficientTokens
                   ? "bg-purple-400 text-white cursor-not-allowed"
                   : "bg-purple-600 text-white hover:bg-purple-700"
               }

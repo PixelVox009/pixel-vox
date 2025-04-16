@@ -18,7 +18,7 @@ export const useTokenStore = create<TokenState>()(
             subtractTokens: (amount) => set((state) => ({ tokenBalance: state.tokenBalance - amount })),
         }),
         {
-            name: 'token-storage', // tên của item trong localStorage
+            name: 'token-storage', 
         }
     )
 );
