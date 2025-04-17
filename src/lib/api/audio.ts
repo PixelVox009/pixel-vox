@@ -16,7 +16,7 @@ export const audioService = {
       return data;
     } catch (error) {
       console.error("Error fetching audio:", error);
-      throw error;
+      throw error;    
     }
   },
   deleteAudio: async (id: string) => {

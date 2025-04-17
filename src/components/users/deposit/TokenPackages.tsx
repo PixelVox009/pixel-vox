@@ -57,7 +57,7 @@ const TokenPackages: React.FC<TokenPackagesProps> = ({ packages, activePackage, 
             {activePackage === index && (
               <div className="absolute top-0 right-0 w-0 h-0 border-t-[24px] border-r-[24px] border-t-blue-500 border-r-transparent transform rotate-90"></div>
             )}
-            <div className="font-bold text-xl mb-1">{tokenAmount} tokens</div>
+            <div className="font-bold text-xl mb-1">{tokenAmount} credits</div>
             <div className="text-base text-blue-600 dark:text-blue-400 font-medium">${usdAmount}</div>
             <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{formatCurrency(pkg.amount)}</div>
           </button>

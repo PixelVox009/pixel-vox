@@ -1,22 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { MonthlyData } from "@/types/month";
+import { TransactionChartProps } from "@/types/dashboard";
 import { Calendar, RefreshCw } from "lucide-react";
-import { ChangeEvent } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-
-interface TransactionChartProps {
-  startDate: string;
-  endDate: string;
-  onStartDateChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onEndDateChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onApplyFilters: () => void;
-  isLoading: boolean;
-  monthlyData?: MonthlyData[];
-  vndToUsdRate: number;
-  formatVndToUsd: (amount: number, rate: number) => string;
-}
 
 export function TransactionChart({
   startDate,

@@ -65,7 +65,7 @@ function TitleRow<TData>({ row }: TitleRowProps<TData>) {
             onError={(e) => {
               // Fallback for missing images
               const target = e.target as HTMLElement;
-              target.style.backgroundColor = "#8B5CF6";
+              target.style.backgroundColor = "#1D9CF6";
               target.textContent = String(row.getValue("title")).charAt(0);
               target.style.display = "flex";
               target.style.justifyContent = "center";

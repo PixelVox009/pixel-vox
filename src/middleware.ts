@@ -11,7 +11,6 @@ export default async function middleware(req: NextRequest) {
     const userRoutes = ['/audio', '/video', '/image'];
     const authRoutes = ['/login', '/register', '/forgot-password'];
     if (adminRoutes.some(route => pathname.startsWith(route)) && token?.role !== 'admin') {
-        console.log("Redirecting non-admin from admin route");
         return NextResponse.redirect(new URL('/audio', req.url));
     }
     if (userRoutes.some(route => pathname.startsWith(route)) && !isAuthenticated) {
@@ -19,7 +18,6 @@ export default async function middleware(req: NextRequest) {
     }
     if (authRoutes.some(route => pathname.startsWith(route)) && isAuthenticated) {
         if (token.role === 'admin') {
-            console.log("Redirecting admin to dashboard");
             return NextResponse.redirect(new URL('admin/dashboard', req.url));
         } else {
             return NextResponse.redirect(new URL('/audio', req.url));

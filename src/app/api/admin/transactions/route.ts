@@ -27,15 +27,13 @@ export async function GET(request: Request) {
                 status: "success",
                 type: "bank"
             })
-                .sort({ createAt: -1 })
+                .sort({ createdAt: -1 })
                 .limit(6);
-
             return NextResponse.json({
                 success: true,
                 data: recentTransactions
             });
         }
-
         // Lấy thống kê tổng (không cần lọc theo thời gian)
         const overallStats = await PaymentActivity.aggregate([
             {
