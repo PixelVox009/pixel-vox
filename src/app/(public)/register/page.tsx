@@ -25,8 +25,8 @@ export default function RegisterPage() {
           <div className="inline-flex mx-auto items-center justify-center p-2 rounded-full bg-primary/10 text-primary mb-2">
             <UserPlus className="h-6 w-6" />
           </div>
-          <CardTitle className="text-2xl font-bold">Tạo tài khoản mới</CardTitle>
-          <CardDescription>Đăng ký để bắt đầu trải nghiệm</CardDescription>
+          <CardTitle className="text-2xl font-bold">Create a new account</CardTitle>
+          <CardDescription>Sign up to start the experience</CardDescription>
         </CardHeader>
 
         <CardContent>

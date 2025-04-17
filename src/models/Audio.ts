@@ -11,6 +11,10 @@ const AudioSchema = new Schema(
       type: String,
       required: true,
     },
+    content: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: [true, "Vui lòng nhập tiêu đề"],

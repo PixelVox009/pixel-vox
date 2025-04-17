@@ -21,7 +21,7 @@ export async function GET(
         await dbConnect();
         // Kiểm tra quyền admin
         const session = await getServerSession(authOptions);
-        if (!session?.user?.role || session.user.role !== "admin") {
+        if (!session?.user?.role || session.user.role !== "admin") {    
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
         const userId = (await params).userId;

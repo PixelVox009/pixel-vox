@@ -53,7 +53,7 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange }
   return (
     <div className="mt-6">
       <label htmlFor="customAmount" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-        Hoặc nhập số tiền tùy chỉnh
+        Or enter a custom amount
       </label>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
@@ -113,7 +113,7 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange }
         </div>
         <div className="ml-3">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Bạn sẽ nhận được <span className="font-semibold text-blue-600 dark:text-blue-400">{calculatedTokens}</span>{" "}
+            You will receive <span className="font-semibold text-blue-600 dark:text-blue-400">{calculatedTokens}</span>{" "}
             credits
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">

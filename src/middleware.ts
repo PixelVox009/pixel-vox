@@ -2,14 +2,25 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 export default async function middleware(req: NextRequest) {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     const { pathname } = req.nextUrl;
+
+    // Kiểm tra đặc biệt cho API session để tránh vòng lặp
+    if (pathname.startsWith('/api/auth/session')) {
+        // Thêm cache headers
+        const response = NextResponse.next();
+        response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=30');
+        return response;
+    }
+
+    // Chỉ gọi getToken cho các route không phải API session
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     const isAuthenticated = !!token;
 
     // Các route cần bảo vệ
     const adminRoutes = ['/dashboard', '/admin'];
     const userRoutes = ['/audio', '/video', '/image'];
     const authRoutes = ['/login', '/register', '/forgot-password'];
+
     if (adminRoutes.some(route => pathname.startsWith(route)) && token?.role !== 'admin') {
         return NextResponse.redirect(new URL('/audio', req.url));
     }
@@ -23,8 +34,12 @@ export default async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL('/audio', req.url));
         }
     }
-
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set(
+        "Cache-Control",
+        "public, s-maxage=10, stale-while-revalidate=59"
+    );
+    return response;
 }
 
 export const config = {

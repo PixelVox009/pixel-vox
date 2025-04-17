@@ -1,6 +1,6 @@
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { Image } from "@/models/Image";
-import { NextRequest, NextResponse } from "next/server";
 
 // [DELETE] /api/image/{id}
 export async function DELETE(

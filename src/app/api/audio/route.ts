@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import Joi from "joi";
-
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
-import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 
 const schema = Joi.object({
@@ -21,7 +20,7 @@ export async function GET(req: NextRequest) {
     page = 1,
     limit = 10,
     sortBy = "createdAt",
-    order = "asc",
+    order = "desc",
   } = Object.fromEntries([...searchParams]);
 
   try {

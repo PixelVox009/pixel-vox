@@ -76,7 +76,7 @@ export default function BankTransferTab() {
 
           {/* Gói token */}
           <div className="mb-10">
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Chọn số lượng token</h2>
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Choose the number of credits</h2>
             <TokenPackages
               packages={packages}
               activePackage={activePackage}
@@ -86,7 +86,7 @@ export default function BankTransferTab() {
             <CustomAmountInput value={customAmount} onChange={handleCustomAmountChange} />
           </div>
 
-          {/* Thông tin chuyển khoản */}
+          {/* Transfer information */}
           <BankTransferInfo
             bankConfig={BANK_CONFIG}
             amount={amount}

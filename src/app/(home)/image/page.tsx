@@ -10,18 +10,24 @@ import { imageService } from "@/lib/api/image";
 import { columns } from "@/components/users/image/columns";
 import { useGenerateImage } from "@/hooks/useGenerateImage";
 
+const PAGE_SIZE = 10;
+
 export default function ImageGenerationPage() {
   const [text, setText] = useState("");
   const { generateImage, isPending } = useGenerateImage();
+  const [page, setPage] = useState<number>(0);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["image"],
-    queryFn: imageService.getImageList,
+  const { data, isFetching } = useQuery({
+    queryKey: ["image", page],
+    queryFn: () =>
+      imageService.getImageList({ page: page + 1, limit: PAGE_SIZE }),
   });
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 dark:text-white">Image Generation</h1>
+      <h1 className="text-3xl font-bold mb-6 dark:text-white">
+        Image Generation
+      </h1>
 
       <TextInputArea
         text={text}
@@ -35,7 +41,16 @@ export default function ImageGenerationPage() {
       <div className="mt-4 flex flex-col gap-4">
         <div className="py-10 dark:text-gray-300">
           <h2 className="text-xl font-bold dark:text-white mb-2">Image List</h2>
-          <DataTable columns={columns} isLoading={isLoading} data={data?.data?.docs || []} />
+
+          <DataTable
+            columns={columns}
+            isLoading={isFetching}
+            items={data?.data?.docs || []}
+            totalPages={data?.data?.totalPages}
+            pageIndex={page}
+            pageSize={PAGE_SIZE}
+            setPage={setPage}
+          />
         </div>
       </div>
     </div>

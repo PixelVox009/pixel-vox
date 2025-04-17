@@ -1,13 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, LogIn } from "lucide-react";
+import { getSession, signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { getSession, signIn } from "next-auth/react";
-import Link from "next/link";
-import { ArrowRight, LogIn } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -87,8 +87,8 @@ export function LoginForm() {
         <div className="inline-flex mx-auto items-center justify-center p-2 rounded-full bg-primary/10 text-primary mb-2">
           <LogIn className="h-6 w-6" />
         </div>
-        <CardTitle className="text-2xl font-bold">Đăng nhập</CardTitle>
-        <CardDescription>Đăng nhập để truy cập vào hệ thống</CardDescription>
+        <CardTitle className="text-2xl font-bold">Login</CardTitle>
+        <CardDescription>Login to access the system</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -114,7 +114,7 @@ export function LoginForm() {
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
-              Mật khẩu
+              Password
             </label>
             <Input
               id="password"
@@ -128,7 +128,7 @@ export function LoginForm() {
 
           <div className="pt-2">
             <Button type="submit" className="w-full gap-1.5" disabled={isSubmitting} size="lg">
-              {isSubmitting ? "Đang xử lý..." : "Đăng nhập"}
+              {isSubmitting ? "Processing..." : "Login"}
               {!isSubmitting && <ArrowRight className="h-4 w-4 ml-1" />}
             </Button>
           </div>
@@ -136,16 +136,16 @@ export function LoginForm() {
 
         <div className="mt-4 text-right">
           <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-            Quên mật khẩu?
+            Forgot password?
           </Link>
         </div>
       </CardContent>
 
       <CardFooter className="flex justify-center">
         <p className="text-sm text-gray-500">
-          Chưa có tài khoản?{" "}
+          Don`t have an account?{" "}
           <Link href="/register" className="text-primary font-medium hover:underline">
-            Đăng ký ngay
+            Register now
           </Link>
         </p>
       </CardFooter>

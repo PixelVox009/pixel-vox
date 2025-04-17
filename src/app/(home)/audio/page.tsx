@@ -1,13 +1,24 @@
 // app/text-to-speech/page.tsx
 "use client";
-import { useState } from "react";
-import { useGenerateAudio } from "@/hooks/useGenerateAudio";
 import TextInputArea from "@/components/TextInputArea";
 import AudioList from "@/components/users/audio/AudioList";
+import { useGenerateAudio } from "@/hooks/useGenerateAudio";
+import { useState } from "react";
 
 export default function TextToSpeechPage() {
   const [text, setText] = useState("");
-  const { generateAudio, isPending } = useGenerateAudio();
+  const [tokenCost, setTokenCost] = useState<number | null>(null);
+  const { generateAudio, handleCheckTokens, isPending, isCheckingTokens } = useGenerateAudio();
+
+  const checkTokens = async () => {
+    if (!text.trim()) return;
+    const cost = await handleCheckTokens(text);
+    setTokenCost(cost);
+  };
+
+  const onGenerate = () => {
+    generateAudio(text, tokenCost);
+  };
 
   return (
     <div className="p-6">
@@ -15,10 +26,13 @@ export default function TextToSpeechPage() {
 
       <TextInputArea
         text={text}
-        onTextChange={setText}
         isPending={isPending}
-        onGenerate={() => generateAudio(text)}
-        useToken={true} // ✅ Dùng estimation
+        onTextChange={setText}
+        onGenerate={onGenerate}
+        onCheckTokens={checkTokens}
+        isCheckingTokens={isCheckingTokens}
+        tokenCost={tokenCost}
+        useToken={true}
       />
 
       <div className="mt-4 flex flex-col gap-4">

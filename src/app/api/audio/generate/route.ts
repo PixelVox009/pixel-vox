@@ -1,11 +1,12 @@
-import dbConnect from "@/lib/db";
-import { Audio } from "@/models/Audio";
-import { Segment } from "@/models/Segment";
-import { autoSplitStory } from "@/utils/splitStory";
 import axios from "axios";
 import Joi from "joi";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+
+import dbConnect from "@/lib/db";
+import { Audio } from "@/models/Audio";
+import { Segment } from "@/models/Segment";
+import { autoSplitStory } from "@/utils/splitStory";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
 const schema = Joi.object({
@@ -30,7 +31,6 @@ export async function POST(req: NextRequest) {
     }
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
-
       return NextResponse.json(
         { message: "Vui lòng đăng nhập để thực hiện chức năng này" },
         { status: 401 }
@@ -40,10 +40,9 @@ export async function POST(req: NextRequest) {
     const orderId = new Date().getTime();
 
     const title = value.textContent.split(" ").slice(0, 8).join(" ").trim();
-
+    
     const contentSegments = autoSplitStory(value.textContent);
     const segmentList = [];
-    // Tạo dịch vụ audio cho từng đoạn
     for (let i = 0; i < contentSegments.length; i++) {
       const { data: resData } = await axios.post(
         `${process.env.AUDIO_SERVER_URL}/tool-service-api/create-audio-customer`,
@@ -72,6 +71,7 @@ export async function POST(req: NextRequest) {
     // Create audio
     const audio = await Audio.create({
       userId,
+      content : value.textContent,
       title,
       orderId,
       segments: segments.map((segment) => segment._id),
