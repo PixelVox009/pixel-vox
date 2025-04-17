@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Joi from "joi";
+import { getServerSession } from "next-auth";
 
 import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
-import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 
 const schema = Joi.object({

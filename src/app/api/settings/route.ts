@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Setting from "@/models/seting";
+import dbConnect from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,6 +13,7 @@ export async function GET(req: NextRequest) {
         { status: 400 }
       );
     }
+    await dbConnect();
 
     const settings = await Setting.find({ key: { $in: key.split(",") } });
 

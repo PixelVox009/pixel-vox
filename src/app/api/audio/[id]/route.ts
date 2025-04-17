@@ -1,7 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
 import { Segment } from "@/models/Segment";
-import { NextRequest, NextResponse } from "next/server";
 
 // [DELETE] /api/audio/{id}
 export async function DELETE(
