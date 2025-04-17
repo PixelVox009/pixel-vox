@@ -47,7 +47,8 @@ export function NavUser() {
   const [validationError, setValidationError] = useState<string>("");
 
   const handleLogout = () => {
-    signOut({ callbackUrl: "/login" });
+    const baseUrl = window.location.origin;
+    signOut({ callbackUrl: `${baseUrl}/login` });
   };
 
   const handlePasswordChange = async (e: FormEvent<HTMLFormElement>) => {

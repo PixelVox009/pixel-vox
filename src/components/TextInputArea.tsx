@@ -47,21 +47,12 @@ export default function TextInputArea({
       onResetTokenCost();
     }
   }, [text, textChanged, tokenCost, onResetTokenCost]);
-  const effectiveTokenCost = useToken
-    ? tokenCost ?? fixedTokenCost
-    : fixedTokenCost;
+  const effectiveTokenCost = useToken ? tokenCost ?? fixedTokenCost : fixedTokenCost;
   const isInsufficientTokens =
-    effectiveTokenCost !== null &&
-    tokenBalance !== null &&
-    effectiveTokenCost > tokenBalance;
-  const missingTokens = isInsufficientTokens
-    ? effectiveTokenCost - tokenBalance
-    : 0;
+    effectiveTokenCost !== null && tokenBalance !== null && effectiveTokenCost > tokenBalance;
+  const missingTokens = isInsufficientTokens ? effectiveTokenCost - tokenBalance : 0;
   const isGenerateDisabled =
-    isPending ||
-    !text.trim() ||
-    isInsufficientTokens ||
-    (useToken && (textChanged || tokenCost === null));
+    isPending || !text.trim() || isInsufficientTokens || (useToken && (textChanged || tokenCost === null));
 
   return (
     <div className="w-full bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden p-4">
@@ -91,11 +82,7 @@ export default function TextInputArea({
                 className="flex items-center gap-2"
               >
                 <Calculator size={16} />
-                {isCheckingTokens
-                  ? "Considering..."
-                  : textChanged
-                  ? "Calculate costs"
-                  : "Calculate costs"}
+                {isCheckingTokens ? "Considering..." : textChanged ? "Calculate costs" : "Calculate costs"}
               </Button>
             )}
           </div>
