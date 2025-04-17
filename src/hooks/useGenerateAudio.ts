@@ -1,3 +1,4 @@
+// hooks/useGenerateAudio.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -11,6 +12,7 @@ import { useTokenStore } from "@/lib/store";
 
 export function useGenerateAudio() {
   const [isPending, setIsPending] = useState(false);
+  const [isCheckingTokens, setIsCheckingTokens] = useState(false);
   const tokenStore = useTokenStore();
   const queryClient = useQueryClient();
 
@@ -27,11 +29,10 @@ export function useGenerateAudio() {
     }
   });
 
-  const generateAudio = async (text: string) => {
-    if (!text.trim()) return;
+  const handleCheckTokens = async (text: string) => {
+    if (!text.trim()) return 0;
 
-    setIsPending(true);
-
+    setIsCheckingTokens(true);
     try {
       const title = text.split(" ").slice(0, 8).join(" ").trim();
       const tokenRate = await fetchMinuteToTokenRate();
@@ -40,8 +41,31 @@ export function useGenerateAudio() {
       const estimateDuration = Math.ceil(text.length / charsPerMinute);
       const tokenUsage = estimateDuration * tokenRate;
 
-      if ((tokenStore.tokenBalance ?? 0) >= tokenUsage) {
-        tokenStore.subtractTokens(tokenUsage);
+      return tokenUsage;
+    } catch (error) {
+      console.error("Error checking tokens:", error);
+      toast.error("Không thể tính toán chi phí token");
+      return 0;
+    } finally {
+      setIsCheckingTokens(false);
+    }
+  };
+
+  const generateAudio = async (text: string, tokenUsage: number | null = null) => {
+    if (!text.trim()) return;
+
+    setIsPending(true);
+
+    try {
+      let calculatedTokenUsage = tokenUsage;
+
+      // Nếu chưa có tokenUsage thì tính toán
+      if (calculatedTokenUsage === null) {
+        calculatedTokenUsage = await handleCheckTokens(text);
+      }
+
+      if ((tokenStore.tokenBalance ?? 0) >= calculatedTokenUsage) {
+        tokenStore.subtractTokens(calculatedTokenUsage);
         mutate(text);
       } else {
         toast.error(
@@ -55,5 +79,10 @@ export function useGenerateAudio() {
     }
   };
 
-  return { generateAudio, isPending };
+  return {
+    generateAudio,
+    handleCheckTokens,
+    isPending,
+    isCheckingTokens
+  };
 }
