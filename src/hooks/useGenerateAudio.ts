@@ -1,14 +1,13 @@
-// hooks/useGenerateAudio.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 import { audioService } from "@/lib/api/audio";
-import { useTokenStore } from "@/lib/store";
 import {
-  fetchMinuteToTokenRate,
   estimateCharsPerMinute,
+  fetchMinuteToTokenRate,
 } from "@/lib/helpers/audioHelpers";
+import { useTokenStore } from "@/lib/store";
 
 export function useGenerateAudio() {
   const [isPending, setIsPending] = useState(false);
@@ -20,7 +19,12 @@ export function useGenerateAudio() {
     onSuccess: () => {
       setIsPending(false);
       queryClient.invalidateQueries({ queryKey: ["audio"] });
+      toast.success("Tạo audio thành công!");
     },
+    onError: () => {
+      toast.error("Đã xảy ra lỗi khi tạo audio.");
+      setIsPending(false);
+    }
   });
 
   const generateAudio = async (text: string) => {
@@ -38,7 +42,6 @@ export function useGenerateAudio() {
 
       if ((tokenStore.tokenBalance ?? 0) >= tokenUsage) {
         tokenStore.subtractTokens(tokenUsage);
-
         mutate(text);
       } else {
         toast.error(

@@ -78,9 +78,7 @@ export default function CryptomusTab() {
   };
 
   const handleCryptoCheckout = () => {
-    // Implement Cryptomus checkout logic
     console.log("Processing crypto payment:", amount, "USD in", selectedCrypto);
-    // Redirect to Cryptomus or show QR code
   };
 
   return (

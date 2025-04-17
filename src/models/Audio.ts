@@ -1,7 +1,12 @@
-import { Schema, model, models, Types } from "mongoose";
 
+import mongoose, { Schema, Types, model, models } from 'mongoose';
 const AudioSchema = new Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     orderId: {
       type: String,
       required: true,

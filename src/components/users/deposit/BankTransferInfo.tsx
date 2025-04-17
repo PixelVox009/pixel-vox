@@ -128,7 +128,7 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
                   </button>
                 </div>
                 <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                  ≈ ${usdAmount} ({tokenAmount} tokens)
+                  ≈ ${usdAmount} ({tokenAmount} credits)
                 </p>
               </div>
 
@@ -169,7 +169,7 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
         <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
           <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
             <span className="italic">
-              1 USD = {exchangeRates.usdToTokenRate} token = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")} VND
+              1 USD = {exchangeRates.usdToTokenRate} credits = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")} VND
             </span>
           </p>
         </div>

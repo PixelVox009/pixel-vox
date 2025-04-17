@@ -37,7 +37,7 @@ const PAYMENT_METHODS = [
   },
 ];
 
-export default function PaymentMethodTabs() {
+export default function CreditsPage() {
   const [activeTab, setActiveTab] = useState("bank");
 
   return (

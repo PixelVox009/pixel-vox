@@ -1,4 +1,5 @@
-"use client";
+
+"use client"
 import { useEffect, useState } from 'react';
 
 interface ExchangeRates {
@@ -37,7 +38,7 @@ export const useExchangeRates = () => {
     return { rates, loading };
 };
 
-// Hàm định dạng VND sang USD với tỷ giá động
+
 export const formatVndToUsd = (vndAmount: number, vndToUsdRate: number = 25000) => {
     const usdAmount = vndAmount / vndToUsdRate;
     return usdAmount.toFixed(2);
