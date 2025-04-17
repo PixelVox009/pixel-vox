@@ -17,6 +17,7 @@ type TextInputAreaProps = {
 };
 
 export default function TextInputArea({
+  children,
   text,
   isPending,
   onTextChange,
@@ -28,7 +29,8 @@ export default function TextInputArea({
   const tokenBalance = useTokenStore((state) => state.tokenBalance);
 
   const tokenCost = useToken ? estimatedTokens : fixedTokenCost;
-  const isInsufficientTokens = tokenCost !== null && tokenBalance !== null && tokenCost > tokenBalance;
+  const isInsufficientTokens =
+    tokenCost !== null && tokenBalance !== null && tokenCost > tokenBalance;
 
   const missingTokens = isInsufficientTokens ? tokenCost - tokenBalance : 0;
 
@@ -43,7 +45,8 @@ export default function TextInputArea({
 
       <Separator />
 
-      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-end items-center">
+      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
+        <div className="flex items-center gap-2">{children}</div>
         <div className="flex items-center gap-2">
           <Button
             variant={"ghost"}

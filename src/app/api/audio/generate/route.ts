@@ -11,6 +11,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 
 const schema = Joi.object({
   textContent: Joi.string().required(),
+  voice: Joi.string().required(),
 });
 
 // [POST] /api/audio/generate
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
           textContent: contentSegments[i],
           segmentIndex: i + 1,
           orderId,
+          voice: value.voice,
         },
         {
           headers: {

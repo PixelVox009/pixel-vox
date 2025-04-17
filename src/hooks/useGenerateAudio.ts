@@ -29,7 +29,7 @@ export function useGenerateAudio() {
   });
 
   const generateAudio = useCallback(
-    async (text: string) => {
+    async (text: string, voice: string) => {
       if (!text.trim()) return;
 
       setIsPending(true);
@@ -47,7 +47,7 @@ export function useGenerateAudio() {
           return;
         }
 
-        mutate(text);
+        mutate({ textContent: text, voice });
       } catch (error) {
         console.error(error);
         toast.error("Đã xảy ra lỗi khi tạo audio.");
