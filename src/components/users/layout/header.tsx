@@ -16,10 +16,6 @@ export default function Header() {
   const router = useRouter();
   const { tokenBalance } = useTokenData(activeTransactionTab);
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
-
   const handleBuyCredits = () => {
     router.push("/credits");
   };
@@ -45,9 +41,9 @@ export default function Header() {
           />
         </Dialog>
 
-        <Button variant="outline" size="icon" onClick={toggleTheme} className="hover:bg-secondary">
+        <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
           {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </Button>
+        </button>
       </div>
     </header>
   );
