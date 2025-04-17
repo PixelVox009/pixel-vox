@@ -1,48 +1,59 @@
+import { PaymentCheckResponse } from "@/types/payment";
 import { api } from "@/utils/axios";
 
 export const paymentService = {
-  // Lấy danh sách payment
-  // src/lib/api/payment.ts
-  getPaymentList: async (params?: Record<string, unknown>) => {
-    try {
-      const { data } = await api.get("/admin/payments", { params });
-      return data;
-    } catch (error) {
-      console.error("Error fetching payments:", error);
-      throw error;
-    }
-  },
+    getExchangeRates: async () => {
+        try {
+            const { data } = await api.get("/settings/exchange-rates");
+            return data;
+        } catch (error) {
+            console.error("Error fetching exchange rates:", error);
+            throw error;
+        }
+    },
 
-  // Tạo payment mới
-  createPayment: async (paymentData: unknown) => {
-    try {
-      const { data } = await api.post("/payments", paymentData);
-      return data;
-    } catch (error) {
-      console.error("Error creating payment:", error);
-      throw error;
-    }
-  },
+    createBankTransfer: async (payload: {
+        amount: number;
+        transferContent: string;
+        userId: string;
+        transactionId: string;
+    }) => {
+        try {
+            const { data } = await api.post("/payments/bank-transfer", payload);
+            return data;
+        } catch (error) {
+            console.error("Error creating bank transfer:", error);
+            throw error;
+        }
+    },
 
-  // Xóa payment
-  deletePayment: async (id: string) => {
-    try {
-      const { data } = await api.delete(`/payments/${id}`);
-      return data;
-    } catch (error) {
-      console.error("Error deleting payment:", error);
-      throw error;
-    }
-  },
+    verifyPayment: async (transactionId: string) => {
+        try {
+            const { data } = await api.get(`/payments/verify/${transactionId}`);
+            return data;
+        } catch (error) {
+            console.error("Error verifying payment:", error);
+            throw error;
+        }
+    },
 
-  // (Tùy chọn) Lấy chi tiết payment
-  getPaymentDetail: async (id: string) => {
-    try {
-      const { data } = await api.get(`/payments/${id}`);
-      return data;
-    } catch (error) {
-      console.error("Error fetching payment detail:", error);
-      throw error;
-    }
-  },
+    getPaymentList: async (params?: Record<string, unknown>) => {
+        try {
+            const { data } = await api.get("/admin/payments", { params });
+            return data;
+        } catch (error) {
+            console.error("Error fetching payments:", error);
+            throw error;
+        }
+    },
+    
+    checkPaymentStatus: async (userId: string): Promise<PaymentCheckResponse> => {
+        try {
+            const { data } = await api.get(`/credits/check-payment?userId=${userId}`);
+            return data;
+        } catch (error) {
+            console.error("Error checking payment status:", error);
+            throw error;
+        }
+    },
 };

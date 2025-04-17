@@ -3,6 +3,8 @@ import Joi from "joi";
 
 import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 const schema = Joi.object({
   title: Joi.string().required(),
@@ -24,15 +26,32 @@ export async function GET(req: NextRequest) {
 
   try {
     await dbConnect();
+
+    // Lấy thông tin người dùng đang đăng nhập từ session
+    const session = await getServerSession(authOptions);
+
+    // Kiểm tra đăng nhập
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: "Vui lòng đăng nhập để xem danh sách audio" },
+        { status: 401 }
+      );
+    }
+
+    // Lấy userId từ session
+    const userId = session.user.id;
+
     const skip = (+page - 1) * +limit;
     const sortOrder = order === "asc" ? 1 : -1;
 
-    const audios = await Audio.find()
+    // Tìm audio theo userId của người dùng đang đăng nhập
+    const audios = await Audio.find({ userId: userId })
       .skip(skip)
-      // .limit(+limit)
+      .limit(+limit)
       .sort({ [sortBy]: sortOrder });
 
-    const totalAudios = await Audio.countDocuments();
+    // Đếm tổng số audio của người dùng hiện tại
+    const totalAudios = await Audio.countDocuments({ userId: userId });
     const totalPages = Math.ceil(totalAudios / +limit);
 
     return NextResponse.json(

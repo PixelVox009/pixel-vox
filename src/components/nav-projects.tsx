@@ -1,11 +1,11 @@
 "use client";
 
-import { Compass, ImagePlus, MessageSquare, Mic2, VolumeX, type LucideIcon } from "lucide-react";
+import { Compass, ImagePlus, type LucideIcon } from "lucide-react";
 
 import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
-import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navItems: {
   name: string;
@@ -14,9 +14,6 @@ const navItems: {
 }[] = [
   { name: "Explore", url: "/audio", icon: Compass },
   { name: "Image", url: "/image", icon: ImagePlus },
-  { name: "Text to Speech", url: "/text-to-speech", icon: MessageSquare },
-  { name: "Voices", url: "/voices", icon: Mic2 },
-  { name: "Voice Isolator", url: "/voice-isolator", icon: VolumeX },
 ];
 
 export function NavProjects() {

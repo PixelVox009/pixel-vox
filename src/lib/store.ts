@@ -1,5 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import { userService } from "./api/user";
 
 // Định nghĩa interface cho state
 interface TokenState {
@@ -10,17 +11,21 @@ interface TokenState {
 }
 
 export const useTokenStore = create<TokenState>()(
-    persist(
-        (set) => ({
-            tokenBalance: 0,
-            setTokenBalance: (balance) => set({ tokenBalance: balance }),
-            addTokens: (amount) => set((state) => ({ tokenBalance: state.tokenBalance + amount })),
-            subtractTokens: (amount) => set((state) => ({ tokenBalance: state.tokenBalance - amount })),
-        }),
-        {
-            name: 'token-storage', // tên của item trong localStorage
-        }
-    )
+
+    devtools((set) => ({
+        tokenBalance: 0,
+        setTokenBalance: (balance) => set({ tokenBalance: balance }),
+        addTokens: (amount) =>
+            set((state) => ({ tokenBalance: state.tokenBalance + amount })),
+        subtractTokens: async (amount) => {
+            const res = await userService.useToken(amount);
+
+            if (res.statusCode === 200) {
+                set((state) => ({ tokenBalance: state.tokenBalance - amount }));
+            }
+        },
+    }))
+
 );
 
 // Store cho các tùy chọn giao diện
@@ -43,16 +48,18 @@ interface UserSettingsState {
         defaultImageStyle: string;
         defaultVideoStyle: string;
     };
-    updateGeneratorSettings: (settings: Partial<UserSettingsState['generatorSettings']>) => void;
+    updateGeneratorSettings: (
+        settings: Partial<UserSettingsState["generatorSettings"]>
+    ) => void;
 }
 
 export const useUserSettingsStore = create<UserSettingsState>()(
     persist(
         (set) => ({
             generatorSettings: {
-                defaultVoice: 'female_1',
-                defaultImageStyle: 'realistic',
-                defaultVideoStyle: 'cinematic',
+                defaultVoice: "female_1",
+                defaultImageStyle: "realistic",
+                defaultVideoStyle: "cinematic",
             },
             updateGeneratorSettings: (settings) =>
                 set((state) => ({
@@ -63,7 +70,7 @@ export const useUserSettingsStore = create<UserSettingsState>()(
                 })),
         }),
         {
-            name: 'user-settings',
+            name: "user-settings",
         }
     )
 );

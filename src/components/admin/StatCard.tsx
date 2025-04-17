@@ -1,14 +1,5 @@
-import { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-
-interface StatCardProps {
-  icon: ReactNode;
-  title: string;
-  value: string | number;
-  iconBgColor: string;
-  iconColor: string;
-  isLoading?: boolean;
-}
+import { StatCardProps } from "@/types/dashboard";
 
 export function StatCard({ icon, title, value, iconBgColor, iconColor, isLoading = false }: StatCardProps) {
   return (

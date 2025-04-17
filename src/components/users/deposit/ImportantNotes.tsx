@@ -62,14 +62,15 @@ const ImportantNotes: React.FC = () => {
             <li className="flex items-start">
               <span className="mr-2">•</span>
               <span>
-                Số tiền tối thiểu để nhận được 1 token là{" "}
+                Số tiền tối thiểu để nhận được 1 credits là{" "}
                 {Math.ceil(minUsdAmount / exchangeRates.usdToTokenRate).toLocaleString("vi-VN")} VND
               </span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>
               <span>
-                1 USD = {exchangeRates.usdToTokenRate} token = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")} VND
+                1 USD = {exchangeRates.usdToTokenRate} credits = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")}{" "}
+                VND
               </span>
             </li>
             <li className="flex items-start">

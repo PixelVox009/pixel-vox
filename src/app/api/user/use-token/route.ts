@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       amount: 0,
       type: "token_usage",
       status: "success",
-      description: `Bạn đã tiêu ${tokenNumber} tokens`,
+      description: `Bạn đã tiêu ${tokenNumber} credits`,
       tokensEarned: tokenNumber,
     });
 
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         statusCode: 200,
-        message: "Audio created successfully",
+        message: `Tiêu ${tokenNumber} token thành công`,
         data: paymentActivity,
       },
       { status: 200 }

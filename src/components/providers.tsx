@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
-import { useState } from "react";
 import { ToastContainer } from "react-toastify";
 
 interface ProvidersProps {
@@ -13,7 +12,16 @@ interface ProvidersProps {
 }
 
 export function Providers({ children }: ProvidersProps) {
-  const [queryClient] = useState(() => new QueryClient());
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, 
+        gcTime: 10 * 60 * 1000,
+        refetchOnWindowFocus: false,
+        placeholderData: "keepPreviousData",
+      },
+    },
+  });
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SessionProvider>

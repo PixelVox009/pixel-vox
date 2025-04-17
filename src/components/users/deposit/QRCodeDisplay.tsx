@@ -108,7 +108,8 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
               <span className="italic">
-                1 USD = {exchangeRates.usdToTokenRate} token = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")} VND
+                1 USD = {exchangeRates.usdToTokenRate} credits = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")}{" "}
+                VND
               </span>
             </p>
           </div>

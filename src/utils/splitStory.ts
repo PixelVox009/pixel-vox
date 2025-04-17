@@ -168,12 +168,9 @@ function splitStoryByWords(story: string, numSegments: number) {
  * @returns {string[]} - Mảng chứa các đoạn đã được chia
  */
 function autoSplitStory(story: string, customNumSegments = null) {
-  // Nếu người dùng chỉ định số đoạn, sử dụng giá trị đó
   if (customNumSegments) {
     return splitStoryByWords(story, customNumSegments);
   }
-
-  // Sử dụng hàm splitStoryByCharLength để đảm bảo mỗi đoạn có độ dài từ MIN-MAX ký tự
   console.log(`Độ dài chuỗi: ${story?.length} ký tự`);
 
   const segments = splitStoryByCharLength(story);

@@ -1,18 +1,32 @@
-import { api } from "@/utils/axios";
 import { genai } from "@/utils/genai";
+import { settingService } from "../api/setting";
 
 // Lấy tỉ lệ token trên phút
 export async function fetchMinuteToTokenRate() {
-  const { data: res } = await api.get("/settings", {
-    params: { key: "minuteToTokenRate" },
-  });
-  return +res.data[0].value;
+  const { data: setting } = await settingService.getSettings(
+    "minuteToTokenRate"
+  );
+
+  return +setting[0].value;
 }
 
 // Ước tính số ký tự đọc được mỗi phút
 export async function estimateCharsPerMinute(title: string) {
-  const resData = await genai.genContent(
-    `Dựa trên tiêu đề sau: '${title}', xác định ngôn ngữ của nó và ước tính số ký tự có thể đọc được trong một phút theo tốc độ xử lý/ngôn ngữ tự nhiên của chính ChatGPT. Chỉ trả về một con số (ký tự mỗi phút), không thêm bất kỳ văn bản nào khác.`
-  );
-  return parseInt(resData ?? "0");
+  try {
+    const resData = await genai.genContent(
+      `Phân tích tiêu đề sau: '${title}' và xác định ngôn ngữ của nó. Dựa trên ngôn ngữ đã xác định, hãy trả về số ký tự trung bình mà một người đọc với tốc độ bình thường có thể đọc trong một phút.
+      Tham khảo:
+      - Tiếng Việt: khoảng 800-1000 ký tự/phút
+      - Tiếng Anh: khoảng 900-1100 ký tự/phút
+      - Tiếng Trung: khoảng 260-300 ký tự/phút
+      - Tiếng Nhật: khoảng 400-500 ký tự/phút
+      Nếu là ngôn ngữ khác, hãy ước tính dựa trên độ phức tạp của ngôn ngữ.
+      CHỈ TRẢ VỀ MỘT CON SỐ duy nhất (không kèm chữ hay ký tự khác). Ví dụ: "900" hoặc "350" hoặc "1000".`
+    );
+    const parsedValue = parseInt(resData || "0");
+    return isNaN(parsedValue) || parsedValue < 0 ? 0 : parsedValue;
+  } catch (error) {
+    console.error("Error estimating chars per minute:", error);
+    return 0;
+  }
 }

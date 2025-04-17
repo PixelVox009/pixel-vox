@@ -1,20 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ExchangeRateSettingsProps } from "@/types/dashboard";
 import { ExchangeRates } from "@/types/month";
 import { RefreshCw } from "lucide-react";
 import { ChangeEvent, useEffect, useState } from "react";
 
 // Định nghĩa kiểu props cho component
-interface ExchangeRateSettingsProps {
-  exchangeRates?: ExchangeRates;
-  newExchangeRates: ExchangeRates;
-  onExchangeRatesChange: (rates: ExchangeRates) => void;
-  onUpdateRates: () => void;
-  isUpdating: boolean;
-  isLoading: boolean;
-  formatCurrency: (amount?: number) => string;
-}
 
 export function ExchangeRateSettings({
   exchangeRates,
@@ -110,7 +102,7 @@ export function ExchangeRateSettings({
 
             {/* New fields for Image and Minute token rates */}
             <div className="space-y-2">
-              <label className="text-sm font-medium dark:text-gray-300">Image to Token Rate</label>
+              <label className="text-sm font-medium dark:text-gray-300">Image to Credits Rate</label>
               <div>
                 <Input
                   type="number"
@@ -121,16 +113,16 @@ export function ExchangeRateSettings({
                   className="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                 />
                 <div className="flex justify-between mt-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Token/Image</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Credits/Image</span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Current: 1 Image = {localRates.imageToTokenRate} Token
+                    Current: 1 Image = {localRates.imageToTokenRate} credits
                   </span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium dark:text-gray-300">Minute to Token Rate</label>
+              <label className="text-sm font-medium dark:text-gray-300">Minute to Credits Rate</label>
               <div>
                 <Input
                   type="number"
@@ -141,9 +133,9 @@ export function ExchangeRateSettings({
                   className="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                 />
                 <div className="flex justify-between mt-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Token/Minute</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Credits/Minute</span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Current: 1 Minute = {localRates.minuteToTokenRate} Token
+                    Current: 1 Minute = {localRates.minuteToTokenRate} credits
                   </span>
                 </div>
               </div>
