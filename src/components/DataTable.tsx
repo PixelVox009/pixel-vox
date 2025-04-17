@@ -66,7 +66,6 @@ export function DataTable<TData, TValue>({
       },
     },
   });
-
   return (
     <div className="w-full rounded-xl">
       <div className="rounded-md border mt-2">

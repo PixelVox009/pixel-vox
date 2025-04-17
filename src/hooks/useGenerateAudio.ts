@@ -1,6 +1,6 @@
 // hooks/useGenerateAudio.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
 import { audioService } from "@/lib/api/audio";
@@ -9,12 +9,10 @@ import {
   fetchMinuteToTokenRate,
 } from "@/lib/helpers/audioHelpers";
 import { useTokenGuard } from "./useTokenGuard";
-import { useTokenStore } from "@/lib/store";
 
 export function useGenerateAudio() {
   const [isPending, setIsPending] = useState(false);
   const [isCheckingTokens, setIsCheckingTokens] = useState(false);
-  const tokenStore = useTokenStore();
   const queryClient = useQueryClient();
   const { checkAndSubtract } = useTokenGuard();
 

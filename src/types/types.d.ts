@@ -7,6 +7,7 @@ type Audio = {
   completedSegments: number;
   totalSegments: number;
   createdAt: string;
+  content: string;
 };
 
 type Image = {

@@ -15,7 +15,7 @@ export function Providers({ children }: ProvidersProps) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 5 * 60 * 1000, 
+        staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
         refetchOnWindowFocus: false,
         placeholderData: "keepPreviousData",
@@ -24,7 +24,7 @@ export function Providers({ children }: ProvidersProps) {
   });
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <SessionProvider>
+      <SessionProvider refetchInterval={0} refetchOnWindowFocus={false} refetchWhenOffline={false}>
         <QueryClientProvider client={queryClient}>
           <main className="m-0 p-0">{children}</main>
           <ToastContainer />

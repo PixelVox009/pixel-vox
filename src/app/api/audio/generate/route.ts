@@ -40,10 +40,9 @@ export async function POST(req: NextRequest) {
     const orderId = new Date().getTime();
 
     const title = value.textContent.split(" ").slice(0, 8).join(" ").trim();
-
+    
     const contentSegments = autoSplitStory(value.textContent);
     const segmentList = [];
-    // Tạo dịch vụ audio cho từng đoạn
     for (let i = 0; i < contentSegments.length; i++) {
       const { data: resData } = await axios.post(
         `${process.env.AUDIO_SERVER_URL}/tool-service-api/create-audio-customer`,

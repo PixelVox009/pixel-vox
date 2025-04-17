@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, LogIn } from "lucide-react";
-import { getSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -67,12 +67,9 @@ export function LoginForm() {
       }
 
       if (res?.ok) {
-        const session = await getSession();
-        if (session?.user.role === "admin") {
-          router.push("admin/dashboard");
-        } else {
-          router.push("/audio");
-        }
+        const callbackUrl =
+          searchParams.get("callbackUrl") || (res.url?.includes("admin") ? "/admin/dashboard" : "/audio");
+        router.push(callbackUrl);
       }
     } catch (err: unknown) {
       setError((err as Error).message || "Đăng nhập thất bại");

@@ -38,7 +38,7 @@ export default function TextInputArea({
     if (tokenCost !== null && !isCheckingTokens) {
       setLastCheckedText(text);
     }
-  }, [tokenCost, isCheckingTokens]);
+  }, [tokenCost, isCheckingTokens, text]);
   const textChanged = text !== lastCheckedText && lastCheckedText !== "";
   useEffect(() => {
     if (textChanged && tokenCost !== null && onResetTokenCost) {
@@ -60,21 +60,7 @@ export default function TextInputArea({
         onChange={(e) => onTextChange(e.target.value)}
       />
       <Separator />
-      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
-        <div>
-          {useToken && (
-            <Button
-              variant="outline"
-              onClick={onCheckTokens}
-              disabled={isCheckingTokens || !text.trim()}
-              className="flex items-center gap-2"
-            >
-              <Calculator size={16} />
-              {isCheckingTokens ? "Considering..." : textChanged ? "Calculate costs" : "Calculate costs"}
-            </Button>
-          )}
-        </div>
-
+      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-end items-center">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -82,7 +68,19 @@ export default function TextInputArea({
           >
             <Download size={20} />
           </Button>
-
+          <div>
+            {useToken && (
+              <Button
+                variant="outline"
+                onClick={onCheckTokens}
+                disabled={isCheckingTokens || !text.trim()}
+                className="flex items-center gap-2"
+              >
+                <Calculator size={16} />
+                {isCheckingTokens ? "Considering..." : textChanged ? "Calculate costs" : "Calculate costs"}
+              </Button>
+            )}
+          </div>
           <Button
             onClick={async () => {
               await onGenerate();
