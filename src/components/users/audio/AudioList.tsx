@@ -6,7 +6,7 @@ import { columns } from "./columns";
 import { audioService } from "@/lib/api/audio";
 
 function AudioList() {
-  const { data, isLoading } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["audio"],
     queryFn: audioService.getAudioList,
   });
@@ -16,7 +16,7 @@ function AudioList() {
       <h2 className="text-xl font-bold dark:text-white mb-2">Audio List</h2>
       <DataTable
         columns={columns}
-        isLoading={isLoading}
+        isLoading={isFetching}
         data={data?.data?.docs || []}
       />
     </div>
