@@ -1,6 +1,6 @@
 // hooks/useGenerateAudio.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "react-toastify";
 
 import { audioService } from "@/lib/api/audio";
@@ -8,6 +8,7 @@ import {
   estimateCharsPerMinute,
   fetchMinuteToTokenRate,
 } from "@/lib/helpers/audioHelpers";
+import { useTokenGuard } from "./useTokenGuard";
 import { useTokenStore } from "@/lib/store";
 
 export function useGenerateAudio() {
@@ -15,20 +16,23 @@ export function useGenerateAudio() {
   const [isCheckingTokens, setIsCheckingTokens] = useState(false);
   const tokenStore = useTokenStore();
   const queryClient = useQueryClient();
+  const { checkAndSubtract } = useTokenGuard();
 
   const { mutate } = useMutation({
     mutationFn: audioService.generateAudio,
     onSuccess: () => {
-      setIsPending(false);
       queryClient.invalidateQueries({ queryKey: ["audio"] });
       toast.success("Tạo audio thành công!");
     },
     onError: () => {
       toast.error("Đã xảy ra lỗi khi tạo audio.");
+    },
+    onSettled: () => {
       setIsPending(false);
-    }
+    },
   });
 
+  // Hàm kiểm tra số token cần thiết
   const handleCheckTokens = async (text: string) => {
     if (!text.trim()) return 0;
 
@@ -51,33 +55,38 @@ export function useGenerateAudio() {
     }
   };
 
-  const generateAudio = async (text: string, tokenUsage: number | null = null) => {
-    if (!text.trim()) return;
+  // Hàm tạo audio
+  const generateAudio = useCallback(
+    async (text: string, tokenUsage: number | null = null) => {
+      if (!text.trim()) return;
 
-    setIsPending(true);
+      setIsPending(true);
 
-    try {
-      let calculatedTokenUsage = tokenUsage;
+      try {
+        let calculatedTokenUsage = tokenUsage;
 
-      // Nếu chưa có tokenUsage thì tính toán
-      if (calculatedTokenUsage === null) {
-        calculatedTokenUsage = await handleCheckTokens(text);
-      }
+        // Nếu chưa có tokenUsage thì tính toán
+        if (calculatedTokenUsage === null) {
+          calculatedTokenUsage = await handleCheckTokens(text);
+        }
 
-      if ((tokenStore.tokenBalance ?? 0) >= calculatedTokenUsage) {
-        tokenStore.subtractTokens(calculatedTokenUsage);
+        // Sử dụng token guard để kiểm tra và trừ tokens
+        const allowed = await checkAndSubtract(calculatedTokenUsage);
+        if (!allowed) {
+          setIsPending(false);
+          return;
+        }
+
+        // Gọi API tạo audio
         mutate(text);
-      } else {
-        toast.error(
-          "Điểm của bạn đang ko đủ. Vui lòng nạp thêm điểm để tiếp tục sử dụng."
-        );
+      } catch (error) {
+        console.error(error);
+        toast.error("Đã xảy ra lỗi khi tạo audio.");
         setIsPending(false);
       }
-    } catch {
-      toast.error("Đã xảy ra lỗi khi tạo audio.");
-      setIsPending(false);
-    }
-  };
+    },
+    [checkAndSubtract, mutate]
+  );
 
   return {
     generateAudio,

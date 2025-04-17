@@ -84,7 +84,10 @@ export default function TextInputArea({
           </Button>
 
           <Button
-            onClick={onGenerate}
+            onClick={async () => {
+              await onGenerate();
+              onTextChange("");
+            }}
             disabled={isGenerateDisabled}
             className={`
               px-4 py-2 rounded-md flex items-center gap-2 
@@ -100,11 +103,9 @@ export default function TextInputArea({
               ? "Generating..."
               : isInsufficientTokens
               ? `Not enough credits (${missingTokens} credits)`
-              : textChanged && useToken
+              : useToken && (tokenCost === null || textChanged)
               ? "Generate"
-              : effectiveTokenCost !== null
-              ? `${effectiveTokenCost} credits`
-              : "Generate"}
+              : `${effectiveTokenCost} credits`}
           </Button>
         </div>
       </div>

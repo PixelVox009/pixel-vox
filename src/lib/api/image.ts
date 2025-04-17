@@ -1,9 +1,15 @@
 import { api } from "@/utils/axios";
 
 export const imageService = {
-  getImageList: async () => {
+  getImageList: async ({
+    page = 1,
+    limit = 10,
+  }: {
+    page: number;
+    limit?: number;
+  }) => {
     try {
-      const { data } = await api.get("/image", {});
+      const { data } = await api.get("/image", { params: { page, limit } });
       return data;
     } catch (error) {
       console.error("Error fetching images:", error);

@@ -1,6 +1,8 @@
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { Image } from "@/models/Image";
-import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -13,15 +15,30 @@ export async function GET(req: NextRequest) {
 
   try {
     await dbConnect();
+
+    // Lấy thông tin người dùng đang đăng nhập từ session
+    const session = await getServerSession(authOptions);
+
+    // Kiểm tra đăng nhập
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: "Vui lòng đăng nhập để xem danh sách audio" },
+        { status: 401 }
+      );
+    }
+
+    // Lấy userId từ session
+    const userId = session.user.id;
+
     const skip = (+page - 1) * +limit;
     const sortOrder = order === "asc" ? 1 : -1;
 
-    const images = await Image.find()
+    const images = await Image.find({ userId: userId })
       .skip(skip)
-      // .limit(+limit)
+      .limit(+limit)
       .sort({ [sortBy]: sortOrder });
 
-    const totalImages = await Image.countDocuments();
+    const totalImages = await Image.countDocuments({ userId: userId });
     const totalPages = Math.ceil(totalImages / +limit);
 
     return NextResponse.json(

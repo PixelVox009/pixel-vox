@@ -1,7 +1,7 @@
-import dbConnect from "@/lib/db";
-import { Image } from "@/models/Image";
 import Joi from "joi";
 import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/db";
+import { Image } from "@/models/Image";
 
 const schema = Joi.object({
   orderId: Joi.string().required(),
