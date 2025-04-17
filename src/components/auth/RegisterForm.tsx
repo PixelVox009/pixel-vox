@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRegisterForm } from "@/hooks/useRegisterForm";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useRegisterForm } from "@/hooks/useRegisterForm";
 
 export const RegisterForm = () => {
   const { register, handleSubmit, errors, setValue, termsValue, error, isSubmitting, onSubmit } = useRegisterForm();
@@ -14,7 +14,7 @@ export const RegisterForm = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <label htmlFor="name" className="text-sm font-medium">
-            Họ tên
+            Full name
           </label>
           <Input
             id="name"
@@ -41,7 +41,7 @@ export const RegisterForm = () => {
 
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm font-medium">
-            Mật khẩu
+            Password
           </label>
           <Input
             id="password"
@@ -63,9 +63,9 @@ export const RegisterForm = () => {
               onChange={(e) => setValue("terms", e.target.checked)}
             />
             <label htmlFor="terms" className="text-sm">
-              Tôi đồng ý với{" "}
+              I agree to{" "}
               <a href="#" className="text-primary">
-                điều khoản sử dụng
+                the terms of use
               </a>
             </label>
           </div>
@@ -74,16 +74,16 @@ export const RegisterForm = () => {
 
         <div className="pt-4">
           <Button type="submit" className="w-full gap-1.5" disabled={isSubmitting} size="lg">
-            {isSubmitting ? "Đang xử lý..." : "Đăng ký ngay"} {!isSubmitting && <ArrowRight className="h-4 w-4 ml-1" />}
+            {isSubmitting ? "Processing..." : "Register now"} {!isSubmitting && <ArrowRight className="h-4 w-4 ml-1" />}
           </Button>
         </div>
       </form>
 
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-500">
-          Đã có tài khoản?{" "}
+          Already have an account?{" "}
           <Link href="/login" className="text-primary font-medium hover:underline">
-            Đăng nhập
+            Login
           </Link>
         </p>
       </div>

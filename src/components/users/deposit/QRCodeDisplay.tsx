@@ -33,7 +33,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md sticky p-8 mt-8">
-      <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 text-center">Quét mã QR để thanh toán</h2>
+      <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 text-center">Scan QR code to pay</h2>
 
       <div className="flex flex-col items-center justify-center">
         <div className="bg-white p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl shadow-md mb-4 w-full max-w-xs">
@@ -53,7 +53,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
 
         <div className="text-center space-y-4">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Sử dụng app ngân hàng để quét mã QR này hoặc nhập thông tin chuyển khoản thủ công
+            Use your banking app to scan this QR code or enter your transfer information manually
           </p>
 
           <div className="flex flex-wrap justify-center gap-3">
@@ -70,7 +70,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm text-slate-700 dark:text-slate-300">Nhanh chóng</span>
+              <span className="text-sm text-slate-700 dark:text-slate-300">Quick</span>
             </div>
 
             <div className="inline-flex items-center px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-700/30">
@@ -86,7 +86,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm text-slate-700 dark:text-slate-300">An toàn</span>
+              <span className="text-sm text-slate-700 dark:text-slate-300">Safe</span>
             </div>
 
             <div className="inline-flex items-center px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-700/30">
@@ -98,13 +98,13 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
               >
                 <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
               </svg>
-              <span className="text-sm text-slate-700 dark:text-slate-300">Dễ dàng</span>
+              <span className="text-sm text-slate-700 dark:text-slate-300">Easy</span>
             </div>
           </div>
 
           <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
             <p className="text-slate-600 dark:text-slate-300 font-medium">
-              Trạng thái: <span className="text-blue-600 dark:text-blue-400">Đang chờ thanh toán</span>
+              Status: <span className="text-blue-600 dark:text-blue-400">Awaiting payment</span>
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
               <span className="italic">

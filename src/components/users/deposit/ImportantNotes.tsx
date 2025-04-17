@@ -49,20 +49,23 @@ const ImportantNotes: React.FC = () => {
           </svg>
         </div>
         <div className="ml-4">
-          <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-2">Lưu ý quan trọng:</h3>
+          <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-2">Important Note:</h3>
           <ul className="space-y-2 text-blue-700 dark:text-blue-300">
             <li className="flex items-start">
               <span className="mr-2">•</span>
-              <span>Token sẽ được tự động cộng vào tài khoản sau khi hệ thống xác nhận giao dịch (5-15 phút)</span>
+              <span>
+                Credits will be automatically added to your account after the system confirms the transaction (5-15
+                minutes)
+              </span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>
-              <span>Vui lòng điền chính xác nội dung chuyển khoản để hệ thống xác nhận tự động</span>
+              <span>Please fill in the transfer content correctly for automatic confirmation by the system.</span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>
               <span>
-                Số tiền tối thiểu để nhận được 1 credits là{" "}
+                The minimum amount to receive 1 credit is{" "}
                 {Math.ceil(minUsdAmount / exchangeRates.usdToTokenRate).toLocaleString("vi-VN")} VND
               </span>
             </li>
@@ -75,7 +78,7 @@ const ImportantNotes: React.FC = () => {
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>
-              <span>Nếu cần hỗ trợ, vui lòng liên hệ hotline: 0967747745</span>
+              <span>If you need support, please contact hotline: 0967747745</span>
             </li>
           </ul>
         </div>

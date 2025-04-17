@@ -85,7 +85,7 @@ export default function CryptomusTab() {
     <div className="bg-white dark:bg-slate-800  p-6 sm:p-8">
       <div className=" mx-auto">
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Chọn số lượng token</h2>
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Choose the number of credits</h2>
           <TokenPackages
             packages={CRYPTO_PACKAGES}
             activePackage={activePackage}
