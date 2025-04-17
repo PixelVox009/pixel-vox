@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
 
     const images = await Image.find({ userId: userId })
       .skip(skip)
-      // .limit(+limit)
+      .limit(+limit)
       .sort({ [sortBy]: sortOrder });
 
     const totalImages = await Image.countDocuments({ userId: userId });

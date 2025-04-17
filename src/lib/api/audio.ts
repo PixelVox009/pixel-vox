@@ -1,9 +1,20 @@
 import { api } from "@/utils/axios";
 
 export const audioService = {
-  getAudioList: async () => {
+  getAudioList: async ({
+    page = 1,
+    limit = 10,
+  }: {
+    page: number;
+    limit?: number;
+  }) => {
     try {
-      const { data } = await api.get("/audio", {});
+      const { data } = await api.get("/audio", {
+        params: {
+          page,
+          limit,
+        },
+      });
       return data;
     } catch (error) {
       console.error("Error fetching audio:", error);
@@ -16,7 +27,7 @@ export const audioService = {
       return data;
     } catch (error) {
       console.error("Error fetching audio:", error);
-      throw error;    
+      throw error;
     }
   },
   deleteAudio: async (id: string) => {
