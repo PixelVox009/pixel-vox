@@ -12,7 +12,7 @@ const navItems: {
   url: string;
   icon: LucideIcon;
 }[] = [
-  { name: "Explore", url: "/audio", icon: Compass },
+  { name: "Audio", url: "/audio", icon: Compass },
   { name: "Image", url: "/image", icon: ImagePlus },
 ];
 
