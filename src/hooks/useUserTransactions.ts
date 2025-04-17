@@ -51,8 +51,8 @@ export const useUserTransactions = (userId: string) => {
             formattedEndDate,
         ),
         enabled: !!userId,
+        staleTime: 5 * 60 * 1000,
     });
-    console.log(statsData)
     const {
         data: transactionsData,
         isLoading: isTransactionsLoading,
@@ -68,17 +68,18 @@ export const useUserTransactions = (userId: string) => {
             limit
         ),
         enabled: !!userId,
+        staleTime: 5 * 60 * 1000,
     });
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+        setCurrentPage(1);
         refetchTransactions();
-        refetchStats(); // Gọi refetch cho API thống kê mới
+        refetchStats();
     };
 
-    // Function để load thêm transactions
     const handleLoadMore = () => {
-        const newPage = Math.ceil((transactionsData?.transactions?.length || 0) / 20) + 1;
+        const newPage = page + 1;
         setPage(newPage);
         setCurrentPage(newPage);
     };

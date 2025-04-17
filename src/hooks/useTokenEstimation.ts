@@ -20,8 +20,6 @@ export function useTokenEstimation(text: string) {
                 const title = debouncedText.split(" ").slice(0, 8).join(" ").trim();
                 const tokenRate = await fetchMinuteToTokenRate();
                 const charsPerMinute = await estimateCharsPerMinute(title);
-                console.log("🚀 ~ calculateTokens ~ charsPerMinute:", charsPerMinute)
-                console.log(debouncedText.length)
                 const estimateDuration = Math.ceil(debouncedText.length / charsPerMinute);
                 const tokenUsage = estimateDuration * tokenRate;
 

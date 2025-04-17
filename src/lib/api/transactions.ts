@@ -32,19 +32,6 @@ export const transactionsService = {
         const response = await api.get("/admin/transactions?type=recent");
         return response.data.success ? response.data.data : [];
     },
-    getUserTransactions: async (
-        userId: string,
-        page = 1,
-        limit = 10
-    ): Promise<TransactionResponse> => {
-        const params = new URLSearchParams({
-            page: page.toString(),
-            limit: limit.toString(),
-        });
-
-        const response = await api.get(`/admin/users/${userId}/transactions?${params.toString()}`);
-        return response.data;
-    },
     getUserTransactionStats: async (
         userId: string,
         startDate?: string,
@@ -81,7 +68,6 @@ export const transactionsService = {
         if (data.hasMore === undefined) {
             data.hasMore = (data.transactions?.length || 0) >= limit;
         }
-        console.log(data)
         return data;
     }
 };

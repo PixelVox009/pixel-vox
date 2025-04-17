@@ -18,7 +18,6 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ userId }) => 
     exchangeRates,
     error,
     isLoading,
-    formatVndToUsd,
     hideNotification,
   } = usePaymentStatus(userId);
 
@@ -35,7 +34,6 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ userId }) => 
       <SuccessNotification
         payment={latestPayment}
         exchangeRates={exchangeRates}
-        formatVndToUsd={formatVndToUsd}
         onClose={hideNotification}
       />
     );

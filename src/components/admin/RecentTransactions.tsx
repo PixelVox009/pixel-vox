@@ -6,6 +6,8 @@ import { ArrowDown, ChevronRight, Clock, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 export function RecentTransactions({ transactions, isLoading, vndToUsdRate, formatVndToUsd }: RecentTransactionsProps) {
+  const transactionsArray = Array.isArray(transactions) ? transactions : [];
+
   return (
     <Card className="bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
       <CardHeader className="pb-2">
@@ -29,8 +31,8 @@ export function RecentTransactions({ transactions, isLoading, vndToUsdRate, form
             <div className="py-8 flex justify-center">
               <RefreshCw className="h-8 w-8 animate-spin text-gray-400 dark:text-gray-500" />
             </div>
-          ) : transactions && transactions.length > 0 ? (
-            transactions.map((transaction) => (
+          ) : transactionsArray.length > 0 ? (
+            transactionsArray.map((transaction) => (
               <div
                 key={transaction._id}
                 className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-100 dark:border-gray-600"

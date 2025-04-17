@@ -15,7 +15,6 @@ export const useTransactionStats = (initialStartDate: string, initialEndDate: st
         queryKey: ["transaction-stats", startDate, endDate],
         queryFn: () => dashboardService.getTransactionStats(startDate, endDate),
     });
-    console.log(statsData);
     const applyFilters = () => {
         refetch();
     };

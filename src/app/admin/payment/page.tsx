@@ -1,9 +1,9 @@
-
 "use client";
 import { TransactionFilters } from "@/components/admin/TransactionFilters";
 import { TransactionTable } from "@/components/admin/TransactionTable";
+import { Button } from "@/components/ui/button";
 import { useTransactions } from "@/hooks/useTransactions";
-
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function PaymentHistory() {
   const {
@@ -46,24 +46,30 @@ export default function PaymentHistory() {
       />
       <TransactionTable transactions={transactions} loading={loading} rates={rates} />
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="text-sm text-muted-foreground order-2 sm:order-1">
-          Showing page {page} of {totalPages} ({totalTransactions} transactions)
-        </div>
         <div className="flex items-center space-x-2 order-1 sm:order-2">
-          <button
-            className="btn btn-outline btn-sm"
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1 || loading}
+            className="h-9 px-4 flex items-center gap-1"
           >
+            <ChevronLeft className="h-4 w-4" />
             Previous
-          </button>
-          <button
-            className="btn btn-outline btn-sm"
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => handlePageChange(page + 1)}
             disabled={page === totalPages || loading}
+            className="h-9 px-4 flex items-center gap-1"
           >
             Next
-          </button>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="text-sm text-muted-foreground order-2 sm:order-1">
+          Showing page {page} of {totalPages} ({totalTransactions} transactions)
         </div>
       </div>
     </div>

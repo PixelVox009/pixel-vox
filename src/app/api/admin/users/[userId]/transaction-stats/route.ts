@@ -24,9 +24,7 @@ export async function GET(
         if (!session?.user?.role || session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
-
-        const userId = params.userId;
-
+        const userId = (await params).userId;
         // Kiểm tra ID hợp lệ
         if (!isValidObjectId(userId)) {
             return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });

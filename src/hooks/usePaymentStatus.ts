@@ -52,12 +52,6 @@ export const usePaymentStatus = (userId: string) => {
         return () => clearTimeout(stopRefetchTimeout);
     }, []);
 
-    const formatVndToUsd = (vndAmount: number) => {
-        const rate = exchangeRates?.vndToUsdRate ?? 25000;
-        const usdAmount = vndAmount / rate;
-        return usdAmount.toFixed(2);
-    };
-
     const hideNotification = () => {
         setShowNotification(false);
     };
@@ -69,7 +63,6 @@ export const usePaymentStatus = (userId: string) => {
         exchangeRates,
         error,
         isLoading,
-        formatVndToUsd,
         hideNotification
     };
 };

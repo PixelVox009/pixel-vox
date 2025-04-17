@@ -1,23 +1,16 @@
 import { ExchangeRates } from "@/types/month";
 import { Payment } from "@/types/payment";
+import { formatVndToUsd } from "@/utils/formatVndUseDola";
 import { CheckIcon, XIcon } from "lucide-react";
 import React from "react";
 
 interface SuccessNotificationProps {
   payment: Payment;
   exchangeRates: ExchangeRates;
-  formatVndToUsd: (amount: number) => string;
   onClose: () => void;
 }
 
-const SuccessNotification: React.FC<SuccessNotificationProps> = ({
-  payment,
-  exchangeRates,
-  formatVndToUsd,
-  onClose,
-}) => {
-  const usdAmount = formatVndToUsd(payment.amount);
-
+const SuccessNotification: React.FC<SuccessNotificationProps> = ({ payment, exchangeRates, onClose }) => {
   return (
     <div className="mt-6 relative">
       <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-md">
@@ -36,7 +29,8 @@ const SuccessNotification: React.FC<SuccessNotificationProps> = ({
             <h3 className="text-green-800 font-medium">Thanh toán thành công!</h3>
             <div className="mt-2 text-sm text-green-700">
               <p>
-                Bạn đã nạp thành công ${usdAmount} ({payment.amount.toLocaleString("vi-VN")} VND) vào lúc{" "}
+                Bạn đã nạp thành công ${formatVndToUsd(payment.amount, exchangeRates.vndToUsdRate)} (
+                {payment.amount.toLocaleString("vi-VN")} VND) vào lúc{" "}
                 {new Date(payment.createdAt).toLocaleString("vi-VN")}.
               </p>
               <p className="font-medium">Số token nhận được: {payment.tokensEarned}</p>
