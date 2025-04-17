@@ -2,7 +2,6 @@ import { AdminSidebar } from "@/components/admin/app-sidebar";
 import { AdminHeader } from "@/components/admin/header";
 import Providers from "@/components/providers";
 import { SidebarProvider } from "@/components/ui/sidebar";
-
 import { ThemeProvider } from "next-themes";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

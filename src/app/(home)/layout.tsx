@@ -1,3 +1,4 @@
+"use client";
 import Providers from "@/components/providers";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import Header from "@/components/users/layout/header";

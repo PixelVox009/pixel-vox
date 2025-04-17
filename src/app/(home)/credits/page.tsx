@@ -11,26 +11,26 @@ import { BadgeDollarSign, Coins, Headset, Landmark } from "lucide-react";
 const PAYMENT_METHODS = [
   {
     id: "bank",
-    label: "Nạp qua thẻ ngân hàng",
+    label: "Top up via bank card",
     icon: <Landmark color="#49e407" />,
     iconAlt: "ATM",
   },
   {
     id: "paypal",
-    label: "Nạp qua PayPal",
+    label: "Deposit via PayPal",
     icon: <BadgeDollarSign color="#72a1fd" />,
     iconAlt: "PayPal",
     disabled: true,
   },
   {
     id: "direct",
-    label: "Liên hệ trực tiếp",
+    label: "Contact directly",
     icon: <Headset />,
     iconAlt: "Liên hệ",
   },
   {
     id: "crypto",
-    label: "Nạp qua Cryptomus",
+    label: "Deposit via Cryptomus",
     icon: <Coins color="#9936a6" />,
     iconAlt: "Cryptomus",
     disabled: true,
@@ -42,7 +42,7 @@ export default function CreditsPage() {
 
   return (
     <div className="w-full p-8">
-      <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Phương thức nạp tiền</h2>
+      <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Deposit method</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {PAYMENT_METHODS.map((method) => (
           <div

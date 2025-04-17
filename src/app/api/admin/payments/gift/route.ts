@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
             amount: 0, // Tặng token nên không có giá trị tiền
             type: type || "bonus",
             status: status || "success",
-            description: description || `Admin tặng ${tokensEarned} token`,
+            description: description || `Admin gives away ${tokensEarned} credits`,
             tokensEarned,
             depositDiscountPercent: 0,
             createdAt: new Date(),

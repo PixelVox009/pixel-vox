@@ -36,7 +36,9 @@ export default function CreditsDashboard({ activeTab, onTabChange, onBuyCredits 
 
           {/* USD Conversion Note */}
           <div className="text-xs text-gray-500 text-center">
-            <p>10 credit = $1 = {rates.vndToUsdRate} VND</p>
+            <p>
+              {rates.usdToTokenRate} credit = $1 = {rates.vndToUsdRate} VND
+            </p>
           </div>
           <div className="flex justify-end pt-4">
             <DialogClose asChild>

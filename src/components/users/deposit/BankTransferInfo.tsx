@@ -55,19 +55,19 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
 
   return (
     <div className="border-t border-slate-200 dark:border-slate-700 pt-8">
-      <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Thông tin chuyển khoản</h2>
+      <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Transfer information</h2>
 
       <div className="bg-slate-50 dark:bg-slate-700/30 rounded-xl p-6 border border-slate-200 dark:border-slate-700 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Ngân hàng</h3>
+                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Bank</h3>
                 <p className="text-lg font-semibold text-slate-800 dark:text-white">{bankConfig.bankName}</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Số tài khoản</h3>
+                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Account number</h3>
                 <div className="flex items-center space-x-2">
                   <p className="text-lg font-semibold text-slate-800 dark:text-white">{bankConfig.accountNumber}</p>
                   <button
@@ -88,13 +88,13 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
                         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-                    <span className="text-sm">Sao chép</span>
+                    <span className="text-sm">Copy</span>
                   </button>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Chủ tài khoản</h3>
+                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Account owner</h3>
                 <p className="text-lg font-semibold text-slate-800 dark:text-white">{bankConfig.accountName}</p>
               </div>
             </div>
@@ -103,7 +103,7 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
           <div>
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Số tiền</h3>
+                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Amount</h3>
                 <div className="flex items-center space-x-2">
                   <p className="text-lg font-semibold text-green-600 dark:text-green-400">{formatCurrency(amount)}</p>
                   <button
@@ -124,7 +124,7 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
                         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-                    <span className="text-sm">Sao chép</span>
+                    <span className="text-sm">Copy</span>
                   </button>
                 </div>
                 <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
@@ -133,7 +133,7 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Nội dung chuyển khoản</h3>
+                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Transfer content</h3>
                 <div className="flex flex-wrap items-center space-x-2">
                   <p className="font-mono text-lg font-bold bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-2 rounded-lg">
                     {transferContent}
@@ -156,11 +156,11 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
                         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-                    <span className="text-sm">{copied ? "Đã sao chép!" : "Sao chép"}</span>
+                    <span className="text-sm">{copied ? "Copied!" : "Copy"}</span>
                   </button>
                 </div>
                 <p className="mt-2 text-sm font-medium text-red-500 dark:text-red-400">
-                  * Vui lòng nhập chính xác nội dung chuyển khoản
+                  * Please enter the transfer content correctly
                 </p>
               </div>
             </div>
@@ -179,4 +179,3 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
 };
 
 export default BankTransferInfo;
-  

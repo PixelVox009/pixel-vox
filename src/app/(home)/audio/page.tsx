@@ -123,7 +123,15 @@ const VOICES = [
 export default function TextToSpeechPage() {
   const [text, setText] = useState("");
   const [voice, setVoice] = useState("fathom");
-  const { generateAudio, isPending } = useGenerateAudio();
+  const [tokenCost, setTokenCost] = useState<number | null>(null);
+  const { generateAudio, handleCheckTokens, isPending, isCheckingTokens } =
+    useGenerateAudio();
+
+  const checkTokens = async () => {
+    if (!text.trim()) return;
+    const cost = await handleCheckTokens(text);
+    setTokenCost(cost);
+  };
 
   const groupedByVoice = _.groupBy(VOICES, "voice");
   const currentVoice = groupedByVoice[voice][0];
@@ -136,10 +144,13 @@ export default function TextToSpeechPage() {
 
       <TextInputArea
         text={text}
-        onTextChange={setText}
         isPending={isPending}
-        onGenerate={() => generateAudio(text, voice)}
-        useToken={true} // ✅ Dùng estimation
+        onTextChange={setText}
+        onGenerate={() => generateAudio(text, tokenCost, voice)}
+        onCheckTokens={checkTokens}
+        isCheckingTokens={isCheckingTokens}
+        tokenCost={tokenCost}
+        useToken={true}
       >
         <Select value={voice} onValueChange={(value) => setVoice(value)}>
           <SelectTrigger className="w-[180px]">

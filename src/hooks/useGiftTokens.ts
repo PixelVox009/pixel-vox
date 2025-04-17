@@ -23,7 +23,7 @@ export const useGiftTokens = () => {
                 selectedUser._id,
                 selectedUser.wallet._id,
                 tokensToGift,
-                giftDescription || `Admin tặng ${tokensToGift} credits`
+                giftDescription || `Admin gives away ${tokensToGift} tokens`
             );
         },
         onSuccess: () => {
@@ -31,7 +31,7 @@ export const useGiftTokens = () => {
             setIsGiftTokenModalOpen(false);
             setTokensToGift(0);
             setGiftDescription("");
-            toast.success(`Đã tặng thành công ${tokensToGift} credits cho ${selectedUser?.name}`);
+            toast.success(`Successfully gifted ${tokensToGift} credits to ${selectedUser?.name}`);
         },
         onError: (error) => {
             console.error("Error gifting tokens:", error);
