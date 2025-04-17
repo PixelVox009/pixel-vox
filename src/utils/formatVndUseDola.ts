@@ -1,8 +1,5 @@
-<<<<<<< HEAD
+
 "use client"
-=======
-"use client";
->>>>>>> 64c64e6ee45324cd7123d8055e67ecf56831e689
 import { useEffect, useState } from 'react';
 
 interface ExchangeRates {
