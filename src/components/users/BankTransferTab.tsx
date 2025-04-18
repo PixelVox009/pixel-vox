@@ -1,5 +1,4 @@
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
-import { usePaymentNotification } from "@/hooks/usePaymentNotification";
 import { useQRCode } from "@/hooks/useQRCode";
 import { useTokenPackages } from "@/hooks/useTokenPackages";
 import { useUserData } from "@/hooks/useUserData";
@@ -50,8 +49,6 @@ export default function BankTransferTab() {
 
   const { copied, handleCopy } = useCopyToClipboard();
 
-  const { transactionId } = usePaymentNotification(userData?.id || "");
-
   if (isUserLoading) {
     return (
       <div className="flex items-center justify-center h-40">
@@ -70,7 +67,7 @@ export default function BankTransferTab() {
         <div className="bg-white dark:bg-slate-800 rounded-xl ">
           {userData?.id && (
             <div className="mb-6">
-              <PaymentNotification userId={userData.id} transactionId={transactionId} />
+              <PaymentNotification userId={userData.id} />
             </div>
           )}
 

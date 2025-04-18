@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       amount: 0,
       type: "token_usage",
       status: "success",
-      description: `Bạn đã tiêu ${tokenNumber} credits`,
+      description: `You're spent ${tokenNumber} credits`,
       tokensEarned: tokenNumber,
     });
 

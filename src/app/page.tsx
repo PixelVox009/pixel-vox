@@ -54,12 +54,12 @@ export function HeroSection() {
                 <Sparkles className="h-3.5 w-3.5 mr-2" /> AI Content Creation Platform
               </div>
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl leading-tight">
-                Tạo nội dung AI
+                AI content creation
                 <br />
-                chuyên nghiệp và nhanh chóng
+                professional and fast
               </h1>
               <p className="text-muted-foreground md:text-xl max-w-[600px] mx-auto">
-                Chuyển đổi ý tưởng của bạn thành âm thanh, hình ảnh và video chất lượng cao chỉ với vài cú nhấp chuột.
+                Convert your ideas into high-quality audio, images, and video with just a few clicks.
               </p>
             </div>
 
@@ -69,13 +69,13 @@ export function HeroSection() {
                 <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900 mb-2">
                   <Music className="h-6 w-6 text-blue-600 dark:text-blue-300" />
                 </div>
-                <span className="text-sm font-medium">Âm thanh</span>
+                <span className="text-sm font-medium">Audio</span>
               </div>
               <div className="flex flex-col items-center">
                 <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900 mb-2">
                   <ImageIc className="h-6 w-6 text-purple-600 dark:text-purple-300" />
                 </div>
-                <span className="text-sm font-medium">Hình ảnh</span>
+                <span className="text-sm font-medium">Image</span>
               </div>
               <div className="flex flex-col items-center">
                 <div className="p-3 rounded-full bg-pink-100 dark:bg-pink-900 mb-2">
@@ -88,19 +88,19 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/register">
                 <Button size="lg" className="gap-1.5 px-8 py-6 text-base">
-                  Bắt đầu ngay <ArrowRight className="h-4 w-4 ml-1" />
+                  Get started now <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>
               </Link>
               <Link href="/about">
                 <Button size="lg" variant="outline" className="px-8 py-6 text-base">
-                  Tìm hiểu thêm
+                  Learn more
                 </Button>
               </Link>
             </div>
 
             {/* Social proof */}
             <div className="mt-8 text-sm text-muted-foreground">
-              <p className="mb-2">Đã được tin dùng bởi hơn 10,000+ người dùng</p>
+              <p className="mb-2">Trusted by 10,000+ users</p>
               <div className="flex justify-center space-x-4 items-center">
                 <div className="w-16 h-8 bg-gray-200 dark:bg-gray-800 rounded"></div>
                 <div className="w-16 h-8 bg-gray-200 dark:bg-gray-800 rounded"></div>
@@ -178,7 +178,7 @@ export function HeroSection() {
         style={{ animationDuration: "3s" }}
       >
         <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">✓</div>
-        <span className="text-sm font-medium">Công nghệ mới nhất - Cập nhật 2025</span>
+        <span className="text-sm font-medium">Latest Technology - Updated 2025</span>
       </div>
     </section>
   );
