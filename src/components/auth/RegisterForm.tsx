@@ -46,7 +46,7 @@ export const RegisterForm = () => {
           <Input
             id="password"
             type="password"
-            placeholder="Ít nhất 6 ký tự"
+            placeholder="At least 6 characters"
             {...register("password")}
             className={errors.password ? "border-red-500" : ""}
           />

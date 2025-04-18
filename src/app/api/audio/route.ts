@@ -1,8 +1,8 @@
-import Joi from "joi";
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
+import Joi from "joi";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
 
 const schema = Joi.object({
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message: "Tạo audio thành công",
+        message: "Created audio successfully",
         data: audio,
       },
       { status: 201 }

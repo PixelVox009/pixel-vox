@@ -15,10 +15,10 @@ import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Email không hợp lệ.",
+    message: "Invalid email.",
   }),
   password: z.string().min(1, {
-    message: "Vui lòng nhập mật khẩu.",
+    message: "Please enter password.",
   }),
 });
 

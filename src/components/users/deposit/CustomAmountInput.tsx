@@ -70,7 +70,7 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange }
                 ? "border-red-300 focus:ring-red-500 focus:border-red-500"
                 : "border-slate-200 dark:border-slate-700 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600"
             } bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg shadow-sm`}
-            placeholder="Nhập số tiền VND"
+            placeholder="Enter the amount in VND"
           />
           <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
             <span className="text-slate-500 dark:text-slate-400 font-medium">VND</span>
