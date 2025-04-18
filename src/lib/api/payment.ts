@@ -27,16 +27,6 @@ export const paymentService = {
         }
     },
 
-    verifyPayment: async (transactionId: string) => {
-        try {
-            const { data } = await api.get(`/payments/verify/${transactionId}`);
-            return data;
-        } catch (error) {
-            console.error("Error verifying payment:", error);
-            throw error;
-        }
-    },
-
     getPaymentList: async (params?: Record<string, unknown>) => {
         try {
             const { data } = await api.get("/admin/payments", { params });

@@ -21,10 +21,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { useLogout } from "@/hooks/use-auth";
 import { useChangePassword } from "@/hooks/useChangePassword"; // Import change password hook
 import { useUserData } from "@/hooks/useUserData"; // Import custom hook
 import { ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
-import { signOut } from "next-auth/react"; // Import signOut function for logout functionality
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -37,6 +37,7 @@ interface FormDataType {
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { data, isLoading } = useUserData();
+  const { logout } = useLogout();
   const { changePassword, isLoading: isPasswordChanging, error, success, resetStates } = useChangePassword();
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormDataType>({
@@ -47,8 +48,7 @@ export function NavUser() {
   const [validationError, setValidationError] = useState<string>("");
 
   const handleLogout = () => {
-    const baseUrl = window.location.origin;
-    signOut({ callbackUrl: `${baseUrl}/login` });
+    logout();
   };
 
   const handlePasswordChange = async (e: FormEvent<HTMLFormElement>) => {

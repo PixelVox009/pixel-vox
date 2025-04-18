@@ -48,8 +48,6 @@ export async function GET(req: NextRequest) {
       .skip(skip)
       .limit(+limit)
       .sort({ [sortBy]: sortOrder });
-
-    // Đếm tổng số audio của người dùng hiện tại
     const totalAudios = await Audio.countDocuments({ userId: userId });
     const totalPages = Math.ceil(totalAudios / +limit);
 

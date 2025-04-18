@@ -39,11 +39,9 @@ export function useGenerateAudio() {
       const title = text.split(" ").slice(0, 8).join(" ").trim();
       const tokenRate = await fetchMinuteToTokenRate();
       const charsPerMinute = await estimateCharsPerMinute(title);
-
-      const estimateDuration = Math.ceil(text.length / charsPerMinute);
-      const tokenUsage = estimateDuration * tokenRate;
-
-      return tokenUsage;
+      const durationInMinutes = text.length / charsPerMinute;
+      const tokenUsage = Math.max(0.1, durationInMinutes * tokenRate);
+      return Math.ceil(tokenUsage);
     } catch (error) {
       console.error("Error checking tokens:", error);
       toast.error("Không thể tính toán chi phí token");
