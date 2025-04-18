@@ -21,9 +21,18 @@ export const audioService = {
       throw error;
     }
   },
-  generateAudio: async (textContent: string) => {
+  generateAudio: async ({
+    textContent,
+    voice,
+  }: {
+    textContent: string;
+    voice: string;
+  }) => {
     try {
-      const { data } = await api.post("/audio/generate", { textContent });
+      const { data } = await api.post("/audio/generate", {
+        textContent,
+        voice,
+      });
       return data;
     } catch (error) {
       console.error("Error fetching audio:", error);

@@ -69,7 +69,7 @@ export function LoginForm() {
       if (res?.ok) {
         const session = await getSession();
         if (session?.user.role === "admin") {
-          router.push("admin/dashboard");
+          router.push("/admin/dashboard");
         } else {
           router.push("/audio");
         }

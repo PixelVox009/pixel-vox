@@ -55,7 +55,7 @@ export function useGenerateAudio() {
 
   // Hàm tạo audio
   const generateAudio = useCallback(
-    async (text: string, tokenUsage: number | null = null) => {
+    async (text: string, tokenUsage: number | null = null, voice: string) => {
       if (!text.trim()) return;
 
       setIsPending(true);
@@ -75,8 +75,7 @@ export function useGenerateAudio() {
           return;
         }
 
-        // Gọi API tạo audio
-        mutate(text);
+        mutate({ textContent: text, voice });
       } catch (error) {
         console.error(error);
         toast.error("Đã xảy ra lỗi khi tạo audio.");
@@ -90,6 +89,6 @@ export function useGenerateAudio() {
     generateAudio,
     handleCheckTokens,
     isPending,
-    isCheckingTokens
+    isCheckingTokens,
   };
 }

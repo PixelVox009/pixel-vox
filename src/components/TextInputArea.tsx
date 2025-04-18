@@ -21,6 +21,7 @@ type TextInputAreaProps = {
 };
 
 export default function TextInputArea({
+  children,
   text,
   isPending,
   isCheckingTokens = false,
@@ -33,6 +34,7 @@ export default function TextInputArea({
   fixedTokenCost = 0,
 }: TextInputAreaProps) {
   const tokenBalance = useTokenStore((state) => state.tokenBalance);
+
   const [lastCheckedText, setLastCheckedText] = useState<string>("");
   useEffect(() => {
     if (tokenCost !== null && !isCheckingTokens) {
@@ -51,6 +53,7 @@ export default function TextInputArea({
   const missingTokens = isInsufficientTokens ? effectiveTokenCost - tokenBalance : 0;
   const isGenerateDisabled =
     isPending || !text.trim() || isInsufficientTokens || (useToken && (textChanged || tokenCost === null));
+
   return (
     <div className="w-full bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden p-4">
       <Textarea
@@ -60,7 +63,9 @@ export default function TextInputArea({
         onChange={(e) => onTextChange(e.target.value)}
       />
       <Separator />
-      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-end items-center">
+
+      <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
+        <div className="flex items-center gap-2">{children}</div>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"

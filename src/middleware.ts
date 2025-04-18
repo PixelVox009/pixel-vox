@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export default async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
-
-    // Kiểm tra đặc biệt cho API session để tránh vòng lặp
     if (pathname.startsWith('/api/auth/session')) {
         // Thêm cache headers
         const response = NextResponse.next();
@@ -29,7 +27,7 @@ export default async function middleware(req: NextRequest) {
     }
     if (authRoutes.some(route => pathname.startsWith(route)) && isAuthenticated) {
         if (token.role === 'admin') {
-            return NextResponse.redirect(new URL('admin/dashboard', req.url));
+            return NextResponse.redirect(new URL('/admin/dashboard', req.url));
         } else {
             return NextResponse.redirect(new URL('/audio', req.url));
         }

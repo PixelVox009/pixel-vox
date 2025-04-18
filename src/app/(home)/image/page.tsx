@@ -34,8 +34,8 @@ export default function ImageGenerationPage() {
         onTextChange={setText}
         isPending={isPending}
         onGenerate={() => generateImage(text)}
-        useToken={false} // ✅ Không dùng estimation
-        fixedTokenCost={5} // ✅ Ảnh mặc định 5 credits
+        useToken={false}
+        fixedTokenCost={5} 
       />
 
       <div className="mt-4 flex flex-col gap-4">
