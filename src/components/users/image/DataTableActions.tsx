@@ -7,12 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,14 +47,14 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 justify-center">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              size={"icon"}
-              disabled={!image.imageLink}
-              className="h-8 w-8 p-0 dark:text-white dark:bg-gray-800 dark:border-gray-700"
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 p-0 hover:bg-destructive/20"
               onClick={() => {
                 saveFile(image.imageLink, image.title);
               }}
@@ -77,9 +72,9 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="destructive"
-              size={"icon"}
-              className="h-8 w-8 p-0"
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 p-0 hover:bg-destructive/20"
               disabled={isPending}
               onClick={() => setOpenDialog(true)}
             >
@@ -92,17 +87,13 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
         </Tooltip>
       </TooltipProvider>
 
-      <AlertDialog
-        open={openDialog}
-        onOpenChange={(isOpen) => setOpenDialog(isOpen)}
-      >
+      <AlertDialog open={openDialog} onOpenChange={(isOpen) => setOpenDialog(isOpen)}>
         <AlertDialogTrigger asChild></AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              data from our servers.
+              This action cannot be undone. This will permanently delete your data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
