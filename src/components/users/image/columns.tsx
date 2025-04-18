@@ -2,25 +2,27 @@
 
 import { ColumnDef, Row } from "@tanstack/react-table";
 import Image from "next/image";
-import Lightbox from "yet-another-react-lightbox";
 import { useState } from "react";
+import Lightbox from "yet-another-react-lightbox";
 import Download from "yet-another-react-lightbox/plugins/download";
 
 import { Badge } from "@/components/ui/badge";
-import DataTableActions from "./DataTableActions";
 import { saveFile } from "@/utils/saveFile";
+import DataTableActions from "./DataTableActions";
 
 export const columns: ColumnDef<Image>[] = [
   {
     accessorKey: "title",
-    header: "Title",
+    header: () => <div className="text-left">Title</div>,
+    size: 200,
     cell: ({ row }) => <TitleRow row={row} />,
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: () => <div className="text-center">Status</div>,
+    size: 120,
     cell: ({ row }) => (
-      <div className="w-32">
+      <div className="flex justify-center">
         <Badge variant="outline" className="px-1.5 text-muted-foreground">
           {row.getValue("status")}
         </Badge>
@@ -29,18 +31,24 @@ export const columns: ColumnDef<Image>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "CreatedAt",
+    header: () => <div className="text-center">Created At</div>,
+    size: 180,
     cell: ({ row }) => {
       const createdAt = new Date(row.getValue("createdAt")).toLocaleString();
 
-      return <div className="capitalize">{createdAt}</div>;
+      return <div className="text-center">{createdAt}</div>;
     },
   },
   {
     id: "actions",
-    header: "Actions",
+    header: () => <div className="text-center">Actions</div>,
+    size: 120,
     enableHiding: false,
-    cell: ({ row }) => <DataTableActions row={row} />,
+    cell: ({ row }) => (
+      <div className="flex justify-center">
+        <DataTableActions row={row} />
+      </div>
+    ),
   },
 ];
 
@@ -53,17 +61,16 @@ function TitleRow<TData>({ row }: TitleRowProps<TData>) {
   const [openLightBox, setOpenLightBox] = useState(false);
 
   return (
-    <div className="capitalize flex gap-2 items-center">
+    <div className="flex flex-col gap-2">
       {image.imageLink ? (
         <>
           <Image
             src={image.imageLink}
             alt={row.getValue("title")}
-            width={80}
-            height={80}
+            width={100}
+            height={100}
             className="object-cover rounded-lg cursor-pointer"
             onError={(e) => {
-              // Fallback for missing images
               const target = e.target as HTMLElement;
               target.style.backgroundColor = "#1D9CF6";
               target.textContent = String(row.getValue("title")).charAt(0);

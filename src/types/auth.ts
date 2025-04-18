@@ -3,16 +3,16 @@ import { z } from "zod";
 // Schema validation
 export const registerFormSchema = z.object({
     name: z.string().min(2, {
-        message: "Tên phải chứa ít nhất 2 ký tự.",
+        message: "Name must contain at least 2 characters.",
     }),
     email: z.string().email({
-        message: "Email không hợp lệ.",
+        message: "Invalid email.",
     }),
     password: z.string().min(6, {
-        message: "Mật khẩu phải có ít nhất 6 ký tự.",
+        message: "Password must be at least 6 characters.",
     }),
     terms: z.boolean().refine((val) => val === true, {
-        message: "Bạn phải đồng ý với điều khoản để tiếp tục.",
+        message: "You must agree to the terms to continue.",
     }),
 });
 

@@ -20,7 +20,7 @@ export function useGenerateAudio() {
     mutationFn: audioService.generateAudio,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["audio"] });
-      toast.success("Tạo audio thành công!");
+      toast.success("Created audio successfully!");
     },
     onError: () => {
       toast.error("Đã xảy ra lỗi khi tạo audio.");
