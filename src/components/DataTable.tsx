@@ -13,7 +13,14 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { match } from "ts-pattern";
 
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -43,7 +50,10 @@ export function DataTable<TData, TValue>({
     pageCount: totalPages ?? -1,
     manualPagination: true,
     onPaginationChange: (updater) => {
-      const newPagination = typeof updater === "function" ? updater({ pageIndex, pageSize }) : updater;
+      const newPagination =
+        typeof updater === "function"
+          ? updater({ pageIndex, pageSize })
+          : updater;
 
       setPage(newPagination.pageIndex);
     },
@@ -67,14 +77,27 @@ export function DataTable<TData, TValue>({
           {/* Header của bảng */}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-muted/30 dark:bg-gray-800">
+              <TableRow
+                key={headerGroup.id}
+                className="bg-muted/30 dark:bg-gray-800"
+              >
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
                     className="px-4 py-3 font-medium text-foreground"
-                    style={{ width: header.getSize() !== 150 ? `${header.getSize()}px` : undefined }}
+                    style={{
+                      width:
+                        header.getSize() !== 150
+                          ? `${header.getSize()}px`
+                          : undefined,
+                    }}
                   >
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -87,7 +110,10 @@ export function DataTable<TData, TValue>({
               // Hiển thị loading
               .with({ isLoading: true }, () => (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-20 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-20 text-center"
+                  >
                     <div className="flex justify-center items-center gap-3 text-muted-foreground">
                       <Loader2 className="animate-spin h-5 w-5" />
                       <span>Đang tải dữ liệu...</span>
@@ -109,10 +135,16 @@ export function DataTable<TData, TValue>({
                         key={cell.id}
                         className="px-4 py-2.5 align-middle"
                         style={{
-                          width: cell.column.getSize() !== 150 ? `${cell.column.getSize()}px` : undefined,
+                          width:
+                            cell.column.getSize() !== 150
+                              ? `${cell.column.getSize()}px`
+                              : undefined,
                         }}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -121,8 +153,13 @@ export function DataTable<TData, TValue>({
               // Hiển thị khi không có dữ liệu
               .otherwise(() => (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-20 text-center">
-                    <div className="text-muted-foreground">Không tìm thấy dữ liệu</div>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-20 text-center"
+                  >
+                    <div className="text-muted-foreground">
+                      Không tìm thấy dữ liệu
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -134,7 +171,7 @@ export function DataTable<TData, TValue>({
       <div className="px-4 py-2.5 flex items-center justify-between border-t bg-muted/5 dark:bg-gray-800">
         <div className="text-sm text-muted-foreground">
           <span className="tabular-nums">
-            Page {pageIndex + 1} / {Math.max(totalPages, 1)}
+            Page {pageIndex + 1} / {Math.max(Number(totalPages ?? 0), 1)}
           </span>
         </div>
         <div className="flex items-center gap-1">

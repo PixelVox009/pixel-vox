@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
+import React from "react";
 
 interface BankConfig {
   bankName: string;
@@ -15,6 +16,8 @@ interface BankTransferInfoProps {
   onCopy: (text: string) => void;
   copied: boolean;
   formatCurrency: (value: number) => string;
+  credits?: number;
+  isCustom?: boolean;
 }
 
 const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
@@ -24,34 +27,12 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
   onCopy,
   copied,
   formatCurrency,
+  credits,
+  isCustom,
 }) => {
-  const [exchangeRates, setExchangeRates] = useState({
-    vndToUsdRate: 25000,
-    usdToTokenRate: 10,
-  });
-
-  // Lấy tỷ giá từ API
-  useEffect(() => {
-    const fetchExchangeRates = async () => {
-      try {
-        const response = await fetch("/api/settings/exchange-rates");
-        if (response.ok) {
-          const data = await response.json();
-          setExchangeRates({
-            vndToUsdRate: data.vndToUsdRate || 25000,
-            usdToTokenRate: data.usdToTokenRate || 10,
-          });
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy tỷ giá:", error);
-      }
-    };
-
-    fetchExchangeRates();
-  }, []);
-
-  const usdAmount = (amount / exchangeRates.vndToUsdRate).toFixed(2);
-  const tokenAmount = Math.floor(Number(usdAmount) * exchangeRates.usdToTokenRate);
+  const { rates } = useExchangeRates();
+  const usdAmount = (amount / rates.vndToUsdRate).toFixed(2);
+  const tokenAmount = Math.floor(Number(usdAmount) * rates.usdToTokenRate);
 
   return (
     <div className="border-t border-slate-200 dark:border-slate-700 pt-8">
@@ -135,11 +116,18 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
               <div>
                 <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Transfer content</h3>
                 <div className="flex flex-wrap items-center space-x-2">
-                  <p className="font-mono text-lg font-bold bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-2 rounded-lg">
-                    {transferContent}
-                  </p>
+                  {isCustom === false ? (
+                    <p className="font-mono text-lg font-bold bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-2 rounded-lg">
+                      {transferContent} {credits}
+                    </p>
+                  ) : (
+                    <p className="font-mono text-lg font-bold bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-2 rounded-lg">
+                      {transferContent}
+                    </p>
+                  )}
+
                   <button
-                    onClick={() => onCopy(transferContent)}
+                    onClick={() => onCopy(transferContent + (isCustom ? "" : " " + credits))}
                     className="mt-2 sm:mt-0 inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                   >
                     <svg
@@ -169,7 +157,7 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
         <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
           <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
             <span className="italic">
-              1 USD = {exchangeRates.usdToTokenRate} credits = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")} VND
+              1 USD = {rates.usdToTokenRate} credits = {rates.vndToUsdRate.toLocaleString("vi-VN")} VND
             </span>
           </p>
         </div>

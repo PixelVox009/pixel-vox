@@ -1,38 +1,15 @@
+import { useExchangeRates } from "@/hooks/useExchangeRates";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 interface QRCodeDisplayProps {
   qrCodeUrl: string;
 }
 
-const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
-  const [exchangeRates, setExchangeRates] = useState({
-    vndToUsdRate: 25000,
-    usdToTokenRate: 10,
-  });
-
-  // Lấy tỷ giá từ API
-  useEffect(() => {
-    const fetchExchangeRates = async () => {
-      try {
-        const response = await fetch("/api/settings/exchange-rates");
-        if (response.ok) {
-          const data = await response.json();
-          setExchangeRates({
-            vndToUsdRate: data.vndToUsdRate || 25000,
-            usdToTokenRate: data.usdToTokenRate || 10,
-          });
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy tỷ giá:", error);
-      }
-    };
-
-    fetchExchangeRates();
-  }, []);
-
+const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl  }) => {
+  const { rates } = useExchangeRates();
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md sticky p-8 mt-8">
+    <div className="bg-white dark:bg-black rounded-xl shadow-md sticky p-8 mt-8">
       <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 text-center">Scan QR code to pay</h2>
 
       <div className="flex flex-col items-center justify-center">
@@ -108,8 +85,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCodeUrl }) => {
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
               <span className="italic">
-                1 USD = {exchangeRates.usdToTokenRate} credits = {exchangeRates.vndToUsdRate.toLocaleString("vi-VN")}{" "}
-                VND
+                1 USD = {rates.usdToTokenRate} credits = {rates.vndToUsdRate.toLocaleString("vi-VN")} VND
               </span>
             </p>
           </div>

@@ -27,29 +27,30 @@ export default function BankTransferTab() {
     activePackage,
     amount,
     customAmount,
+    isCustom,
+    calculatedTokens,
     handleSelectPackage,
     handleCustomAmountChange,
     formatCurrency,
+    isLoading: isPackagesLoading,
   } = useTokenPackages();
 
   const [transferContent, setTransferContent] = useState<string>("");
-
   useEffect(() => {
-    if (userData?.paymentCode) {
-      const content = `${BANK_CONFIG.prefixCode} ${userData.paymentCode} ${BANK_CONFIG.suffixCode}`;
-      setTransferContent(content);
-    }
-  }, [userData?.paymentCode]);
+    if (!userData?.paymentCode) return;
+    const baseContent = `${BANK_CONFIG.prefixCode} ${userData.paymentCode} ${BANK_CONFIG.suffixCode}`;
+    const fullContent = isCustom === false ? `${baseContent} ${calculatedTokens.totalTokens}` : baseContent;
+    console.log(fullContent);
+    setTransferContent(fullContent);
+  }, [userData?.paymentCode, isCustom, calculatedTokens.totalTokens]);
 
   const { qrCodeUrl } = useQRCode({
     amount,
     transferContent,
     bankConfig: BANK_CONFIG,
   });
-
   const { copied, handleCopy } = useCopyToClipboard();
-
-  if (isUserLoading) {
+  if (isUserLoading || isPackagesLoading) {
     return (
       <div className="flex items-center justify-center h-40">
         <div className="animate-pulse flex space-x-2">
@@ -62,15 +63,14 @@ export default function BankTransferTab() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-8">
+    <div className="grid grid-cols-1 lg:grid-cols-3 ">
       <div className="lg:col-span-2">
-        <div className="bg-white dark:bg-slate-800 rounded-xl ">
+        <div className="bg-white dark:bg-black rounded-xl mx-6">
           {userData?.id && (
             <div className="mb-6">
               <PaymentNotification userId={userData.id} />
             </div>
           )}
-
           {/* Gói token */}
           <div className="mb-10">
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Choose the number of credits</h2>
@@ -79,8 +79,13 @@ export default function BankTransferTab() {
               activePackage={activePackage}
               onSelectPackage={handleSelectPackage}
               formatCurrency={formatCurrency}
+              isCustom={isCustom}
+              calculatedTokens={calculatedTokens}
             />
-            <CustomAmountInput value={customAmount} onChange={handleCustomAmountChange} />
+            <CustomAmountInput
+              value={customAmount}
+              onChange={(value, isValid) => handleCustomAmountChange(value, isValid)}
+            />
           </div>
 
           {/* Transfer information */}
@@ -91,6 +96,8 @@ export default function BankTransferTab() {
             onCopy={handleCopy}
             copied={copied}
             formatCurrency={formatCurrency}
+            credits={calculatedTokens.totalTokens}
+            isCustom={isCustom}
           />
 
           <div className="mt-8">

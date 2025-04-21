@@ -41,9 +41,9 @@ export async function POST(request: Request) {
         });
         await Wallet.create({
             customer: user._id,
-            balance: 0,
+            balance: 50,
             totalRecharged: 0,
-            totalTokens: 0
+            totalTokens: 50
         });
         return NextResponse.json(
             { message: 'Đăng ký thành công', user: { id: user._id, name: user.name, email: user.email } },

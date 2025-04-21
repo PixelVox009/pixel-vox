@@ -17,7 +17,6 @@ export async function GET(req: NextRequest) {
                 { status: 401 }
             );
         }
-
         // Lấy userId từ query hoặc session
         const { searchParams } = new URL(req.url);
         const userId = searchParams.get("userId") || session.user.id;
@@ -29,14 +28,12 @@ export async function GET(req: NextRequest) {
                 { email: session.user.email }
             ]
         });
-
         if (!customer) {
             return NextResponse.json(
                 { error: "Không tìm thấy khách hàng" },
                 { status: 404 }
             );
         }
-
         // Lấy các giao dịch thành công gần đây (trong vòng 15 phút qua)
         const fifteenMinutesAgo = new Date();
         fifteenMinutesAgo.setMinutes(fifteenMinutesAgo.getMinutes() - 15);

@@ -4,8 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "@/components/DataTable";
 import { columns } from "./columns";
 import { audioService } from "@/lib/api/audio";
-
-const PAGE_SIZE = 10;
+import { PAGE_SIZE } from "@/utils/constants";
 
 function AudioList() {
   const [page, setPage] = useState<number>(0);

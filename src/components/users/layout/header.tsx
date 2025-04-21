@@ -1,28 +1,14 @@
 "use client";
 
-import { Flower, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { useRouter } from "next/navigation";
-import { useTokenData } from "@/hooks/useHeader";
-import CreditsDashboard from "./CreditsDashboard";
-
+import { useTokenStore } from "@/lib/store";
+import { Flower, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export default function Header() {
-  const [activeTransactionTab, setActiveTransactionTab] = useState("all");
   const { theme, setTheme } = useTheme();
-  const router = useRouter();
-  const { tokenBalance } = useTokenData(activeTransactionTab);
-
-  const handleBuyCredits = () => {
-    router.push("/credits");
-  };
-
-  const handleTabChange = (tab: string) => {
-    setActiveTransactionTab(tab);
-  };
+  const { tokenBalance } = useTokenStore();
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-end border-b bg-white/80 backdrop-blur-xl dark:bg-gray-950/80 px-4">
@@ -34,11 +20,6 @@ export default function Header() {
               <span className="text-base font-medium">{tokenBalance}</span>
             </Button>
           </DialogTrigger>
-          <CreditsDashboard
-            activeTab={activeTransactionTab}
-            onTabChange={handleTabChange}
-            onBuyCredits={handleBuyCredits}
-          />
         </Dialog>
 
         <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
