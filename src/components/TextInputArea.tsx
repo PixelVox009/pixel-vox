@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useTokenStore } from "@/lib/store";
-import { Calculator, Download, Sparkles } from "lucide-react";
+import { Calculator, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type TextInputAreaProps = {
