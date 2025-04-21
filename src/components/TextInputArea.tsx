@@ -47,12 +47,21 @@ export default function TextInputArea({
       onResetTokenCost();
     }
   }, [text, textChanged, tokenCost, onResetTokenCost]);
-  const effectiveTokenCost = useToken ? tokenCost ?? fixedTokenCost : fixedTokenCost;
+  const effectiveTokenCost = useToken
+    ? tokenCost ?? fixedTokenCost
+    : fixedTokenCost;
   const isInsufficientTokens =
-    effectiveTokenCost !== null && tokenBalance !== null && effectiveTokenCost > tokenBalance;
-  const missingTokens = isInsufficientTokens ? effectiveTokenCost - tokenBalance : 0;
+    effectiveTokenCost !== null &&
+    tokenBalance !== null &&
+    effectiveTokenCost > tokenBalance;
+  const missingTokens = isInsufficientTokens
+    ? effectiveTokenCost - tokenBalance
+    : 0;
   const isGenerateDisabled =
-    isPending || !text.trim() || isInsufficientTokens || (useToken && (textChanged || tokenCost === null));
+    isPending ||
+    !text.trim() ||
+    isInsufficientTokens ||
+    (useToken && (textChanged || tokenCost === null));
 
   return (
     <div className="w-full bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden p-4">
@@ -67,12 +76,6 @@ export default function TextInputArea({
       <div className="border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">{children}</div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
-          >
-            <Download size={20} />
-          </Button>
           <div>
             {useToken && (
               <Button
@@ -82,7 +85,11 @@ export default function TextInputArea({
                 className="flex items-center gap-2"
               >
                 <Calculator size={16} />
-                {isCheckingTokens ? "Considering..." : textChanged ? "Calculate costs" : "Calculate costs"}
+                {isCheckingTokens
+                  ? "Considering..."
+                  : textChanged
+                  ? "Calculate costs"
+                  : "Calculate costs"}
               </Button>
             )}
           </div>

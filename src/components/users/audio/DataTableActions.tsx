@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Row } from "@tanstack/react-table";
-import { ArrowDownToLine, Eye, Trash } from "lucide-react";
+import { Eye, Loader, Trash } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -17,10 +17,21 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { audioService } from "@/lib/api/audio";
-import { saveFile } from "@/utils/saveFile";
+import { DownloadButton } from "./DownloadButton";
 
 interface DataTableActionsProps<TData> {
   row: Row<TData>;
@@ -38,7 +49,7 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
   const [isContentModalOpen, setIsContentModalOpen] = useState(false);
 
   // Kiểm tra audio đã sẵn sàng chưa
-  const isAudioReady = audio.audioLink && audio.progress === 100;
+  const isAudioReady = !!audio.audioLink && audio.progress === 100;
 
   // Mutation để xóa audio
   const { isPending, mutate } = useMutation({
@@ -71,24 +82,7 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
       </TooltipProvider>
 
       {/* Nút tải xuống */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant="ghost"
-              disabled={!isAudioReady}
-              className="h-8 w-8 p-0 hover:bg-muted"
-              onClick={() => saveFile(audio.audioLink, audio.title)}
-            >
-              <ArrowDownToLine className="h-4 w-4 text-muted-foreground" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p>Tải xuống</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <DownloadButton audio={audio} isAudioReady={isAudioReady} />
 
       {/* Nút xóa */}
       <TooltipProvider>
@@ -101,7 +95,11 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
               disabled={isPending}
               onClick={() => setIsDeleteDialogOpen(true)}
             >
-              <Trash className="h-4 w-4 text-destructive" />
+              {isPending ? (
+                <Loader className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : (
+                <Trash className="h-4 w-4 text-destructive" />
+              )}
             </Button>
           </TooltipTrigger>
           <TooltipContent side="left">
@@ -116,7 +114,9 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
           <DialogHeader>
             <DialogTitle>Nội dung</DialogTitle>
           </DialogHeader>
-          <div className="max-h-[60vh] overflow-y-auto p-4 whitespace-pre-wrap">{audio.content}</div>
+          <div className="max-h-[60vh] overflow-y-auto p-4 whitespace-pre-wrap">
+            {audio.content}
+          </div>
           <div className="flex justify-end">
             <DialogClose asChild>
               <Button variant="outline">Đóng</Button>
@@ -126,17 +126,24 @@ function DataTableActions<TData>({ row }: DataTableActionsProps<TData>) {
       </Dialog>
 
       {/* Dialog Xác nhận xóa */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Bạn có chắc chắn?</AlertDialogTitle>
             <AlertDialogDescription>
-              Hành động này không thể hoàn tác. Audio sẽ bị xóa vĩnh viễn khỏi hệ thống.
+              Hành động này không thể hoàn tác. Audio sẽ bị xóa vĩnh viễn khỏi
+              hệ thống.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Hủy</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={() => mutate(audio._id)}>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={() => mutate(audio._id)}
+            >
               Xóa
             </AlertDialogAction>
           </AlertDialogFooter>
