@@ -5,7 +5,7 @@ export default function DirectContactTab() {
   const [contactMethod, setContactMethod] = useState<string>("phone");
 
   return (
-    <div className="bg-white dark:bg-slate-800  p-6 sm:p-8">
+    <div className="bg-white dark:bg-black  p-6 sm:p-8">
       <div className="mx-auto">
         <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Contact directly to deposit credits</h2>
 

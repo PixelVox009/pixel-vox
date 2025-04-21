@@ -1,6 +1,6 @@
 import { Transaction } from "@/types/month";
 import { TokenBalance } from "@/types/payment";
-import { UserData, UsersResponse } from "@/types/users";
+import { UserData, UsersResponse, UserWallet } from "@/types/users";
 import { api } from "@/utils/axios";
 
 export const userService = {
@@ -66,4 +66,22 @@ export const userService = {
       throw error;
     }
   },
+  getUserProfile: async (): Promise<UserWallet> => {
+    try {
+      const { data } = await api.get("/user/profile");
+      return data;
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      throw error;
+    }
+  },
+  isFirstRecharge: async function (): Promise<boolean> {
+    try {
+      const userProfile = await this.getUserProfile();
+      return userProfile.totalRecharged === 0;
+    } catch (error) {
+      console.error('Lỗi khi kiểm tra lần đầu nạp tiền:', error);
+      return false;
+    }
+  }
 };

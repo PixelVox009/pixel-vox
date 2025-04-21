@@ -11,7 +11,7 @@ interface CreditsSummaryProps {
 export default function CreditsSummary({ creditsDetails, rates }: CreditsSummaryProps) {
   return (
     <div className="grid grid-cols-7 gap-2 text-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-      <div className="col-span-2 text-left">
+      <div className="col-span-2 text-center">
         <div className="text-sm text-gray-500 dark:text-gray-400">Remaining Credits</div>
         <div className="text-xl font-semibold text-purple-500">{creditsDetails.remaining.toLocaleString()}</div>
       </div>

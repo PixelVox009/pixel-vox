@@ -1,8 +1,9 @@
 import CustomAmountInput from "@/components/users/deposit/CustomAmountInput";
 import TokenPackages from "@/components/users/deposit/TokenPackages";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
 import { useUserData } from "@/hooks/useUserData";
 import { Bitcoin, Info } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const CRYPTO_PACKAGES = [
   { tokens: 10, amount: 10 },
@@ -25,30 +26,7 @@ export default function CryptomusTab() {
   const [selectedCrypto, setSelectedCrypto] = useState<string>("btc");
   const [customAmount, setCustomAmount] = useState<string>("");
   const [, setIsValidAmount] = useState<boolean>(true);
-  const [exchangeRates, setExchangeRates] = useState({
-    vndToUsdRate: 25000,
-    usdToTokenRate: 10,
-  });
-
-  // Lấy tỷ giá từ API
-  useEffect(() => {
-    const fetchExchangeRates = async () => {
-      try {
-        const response = await fetch("/api/settings/exchange-rates");
-        if (response.ok) {
-          const data = await response.json();
-          setExchangeRates({
-            vndToUsdRate: data.vndToUsdRate || 25000,
-            usdToTokenRate: data.usdToTokenRate || 10,
-          });
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy tỷ giá:", error);
-      }
-    };
-
-    fetchExchangeRates();
-  }, []);
+  const { rates } = useExchangeRates();
 
   const handleSelectPackage = (index: number, packageAmount: number) => {
     setActivePackage(index);
@@ -82,7 +60,7 @@ export default function CryptomusTab() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800  p-6 sm:p-8">
+    <div className="bg-white dark:bg-black  p-6 sm:p-8">
       <div className=" mx-auto">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Choose the number of credits</h2>
@@ -130,7 +108,7 @@ export default function CryptomusTab() {
               <p className="mb-1">Tài khoản: {userData?.email || "..."}</p>
               <p className="mb-1">Số tiền: {formatCurrency(amount)}</p>
               <p className="mb-1">Loại tiền điện tử: {SUPPORTED_CRYPTO.find((c) => c.id === selectedCrypto)?.name}</p>
-              <p className="mb-1">Số token nhận được: {Math.floor(amount * exchangeRates.usdToTokenRate)}</p>
+              <p className="mb-1">Số token nhận được: {Math.floor(amount * rates.usdToTokenRate)}</p>
             </div>
           </div>
         </div>

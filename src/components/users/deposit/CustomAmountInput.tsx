@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
+import React, { useState } from "react";
 
 interface CustomAmountInputProps {
   value: string;
@@ -7,48 +8,37 @@ interface CustomAmountInputProps {
 
 const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange }) => {
   const [error, setError] = useState<string>("");
-  const [exchangeRate, setExchangeRate] = useState<number>(25000);
-  const [usdToTokenRate, setUsdToTokenRate] = useState<number>(10);
-
-  // Lấy tỷ giá từ server
-  useEffect(() => {
-    const fetchExchangeRates = async () => {
-      try {
-        const response = await fetch("/api/settings/exchange-rates");
-        if (response.ok) {
-          const data = await response.json();
-          setExchangeRate(data.vndToUsdRate || 25000);
-          setUsdToTokenRate(data.usdToTokenRate || 10);
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy tỷ giá:", error);
-        // Sử dụng giá trị mặc định nếu có lỗi
-      }
-    };
-
-    fetchExchangeRates();
-  }, []);
-
-  // Tính số tiền USD tương đương
-  const usdAmount = value ? (Number(value) / exchangeRate).toFixed(2) : "0.00";
+  const { rates } = useExchangeRates();
+  const usdAmount = value ? (Number(value.replace(/[,.]/g, "")) / rates.vndToUsdRate).toFixed(2) : "0.00";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Chỉ chấp nhận số
-    const numericValue = e.target.value.replace(/\D/g, "");
-    const numAmount = Number(numericValue);
+    // Chỉ chấp nhận số và dấu phân cách
+    const inputValue = e.target.value;
 
-    // Kiểm tra điều kiện tối thiểu
-    if (numAmount > 0 && numAmount < exchangeRate) {
-      setError(`Số tiền tối thiểu là $1 (${exchangeRate.toLocaleString("vi-VN")} VND)`);
-      onChange(numericValue, false);
-    } else {
-      setError("");
-      onChange(numericValue, true);
+    // Lọc chỉ giữ lại số và dấu phân cách
+    if (inputValue === "" || /^[0-9,\.]+$/.test(inputValue)) {
+      // Loại bỏ tất cả dấu phân cách để tính toán
+      const numericValue = inputValue.replace(/[,.]/g, "");
+      const numAmount = Number(numericValue);
+
+      // Format lại số với dấu phân cách hàng nghìn
+      const formattedValue = numAmount > 0 ? new Intl.NumberFormat("vi-VN").format(numAmount) : inputValue;
+
+      // Kiểm tra điều kiện tối thiểu
+      if (numAmount > 0 && numAmount < rates.vndToUsdRate) {
+        setError(`Số tiền tối thiểu là $1 (${rates.vndToUsdRate.toLocaleString("vi-VN")} VND)`);
+        onChange(formattedValue, false);
+      } else {
+        setError("");
+        onChange(formattedValue, true);
+      }
     }
   };
 
-  // Tính số token sẽ nhận được dựa trên tỷ giá mới
-  const calculatedTokens = value ? Math.floor((Number(value) / exchangeRate) * usdToTokenRate) : 0;
+  // Tính số token sẽ nhận được dựa trên tỷ giá
+  const calculatedTokens = value
+    ? Math.floor((Number(value.replace(/[,.]/g, "")) / rates.vndToUsdRate) * rates.usdToTokenRate)
+    : 0;
 
   return (
     <div className="mt-6">
@@ -69,7 +59,7 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange }
               error
                 ? "border-red-300 focus:ring-red-500 focus:border-red-500"
                 : "border-slate-200 dark:border-slate-700 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600"
-            } bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg shadow-sm`}
+            } bg-white dark:bg-black text-slate-900 dark:text-white rounded-lg shadow-sm`}
             placeholder="Enter the amount in VND"
           />
           <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
@@ -82,7 +72,7 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange }
           <input
             type="text"
             disabled
-            value={`$${usdAmount}`}
+            value={`${usdAmount}`}
             className="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg shadow-sm cursor-not-allowed"
             placeholder="Số tiền USD"
           />
@@ -118,7 +108,7 @@ const CustomAmountInput: React.FC<CustomAmountInputProps> = ({ value, onChange }
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             <span className="italic">
-              1 USD = {usdToTokenRate} credits = {exchangeRate.toLocaleString("vi-VN")} VND
+              1 USD = {rates.usdToTokenRate} credits = {rates.vndToUsdRate.toLocaleString("vi-VN")} VND
             </span>
           </p>
         </div>

@@ -10,7 +10,7 @@ interface TransactionListProps {
 export default function TransactionList({ transactions = [], isLoading }: TransactionListProps) {
   const transactionsArray = Array.isArray(transactions) ? transactions : [];
   return (
-    <div className="space-y-3 max-h-96 overflow-y-auto">
+    <div className="space-y-3 max-h-[33rem] overflow-y-auto">
       {isLoading ? (
         <div className="text-center py-4 text-gray-500">Loading transactions...</div>
       ) : transactionsArray.length === 0 ? (

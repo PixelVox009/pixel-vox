@@ -2,6 +2,7 @@ import PaymentActivity from "@/models/payment-activity";
 import Setting from "@/models/seting";
 import { User } from "@/models/User";
 import Wallet from "@/models/wallet";
+
 interface Data {
     id: string;
     amount: number;
@@ -14,6 +15,7 @@ interface Data {
     transaction: string;
     transactionID: string;
 }
+
 // Tỉ lệ USD to Token và VND to USD sẽ được lấy từ settings
 export async function validateAccessToken(token: string) {
     const accessToken = await Setting.findOne({ key: "TokenBankWebhook" })
@@ -69,8 +71,11 @@ export async function convertVndToTokens(amountVnd: number): Promise<number> {
 }
 
 export async function processWebhookData(data: Data[]) {
+    console.log("Starting webhook data processing. Total items:", data.length);
+
     try {
         if (!Array.isArray(data)) {
+            console.log("Input is not an array. Exiting.");
             return;
         }
 
@@ -79,95 +84,137 @@ export async function processWebhookData(data: Data[]) {
         })
             .select("key value")
             .lean();
+
         const prefixSetting = settings.find(
             (setting) => setting.key === "bankPrefix"
         );
         const suffixSetting = settings.find(
             (setting) => setting.key === "bankSuffix"
         );
+
         const prefix = prefixSetting?.value;
         const suffix = suffixSetting?.value;
 
+        console.log("Bank prefix:", prefix);
+        console.log("Bank suffix:", suffix);
+
         if (!prefix || !suffix) {
+            console.log("Missing prefix or suffix. Exiting.");
             return;
         }
 
-        await Promise.all(
-            data.map(async (item) => {
-                const escapeRegExp = (string: string) =>
-                    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-                const escapedPrefix = escapeRegExp(prefix);
-                const escapedSuffix = escapeRegExp(suffix);
-                const pattern = new RegExp(
-                    `${escapedPrefix}[^\\w\\s]*\\s*(\\d+)\\s*[^\\w\\s]*${escapedSuffix}`,
-                    "i"
-                );
-                const matched = pattern.exec(item.description);
-                if (!matched || !matched[1]) {
-                    return;
+        for (const item of data) {
+            console.log("Processing item:", item);
+
+            const escapeRegExp = (string: string) =>
+                string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const escapedPrefix = escapeRegExp(prefix);
+            const escapedSuffix = escapeRegExp(suffix);
+
+            // Updated regex to handle both cases
+            const aiPattern = new RegExp(
+                `${escapedPrefix}\\s*(\\d+)\\s*${escapedSuffix}\\s*(\\d+)?`,
+                "i"
+            );
+            const matched = aiPattern.exec(item.description);
+
+            console.log("Matched regex:", matched);
+
+            if (!matched) {
+                console.log("No match found for description. Skipping.");
+                continue;
+            }
+
+            const paymentCode = matched[1];
+            console.log("Payment Code:", paymentCode);
+
+            if (item.type !== "IN") {
+                console.log("Transaction type is not 'IN'. Skipping.");
+                continue;
+            }
+
+            if (!item.amount || item.amount <= 0) {
+                console.log("Invalid amount. Skipping.");
+                continue;
+            }
+
+            const ref = item.transactionID;
+            const exist = await PaymentActivity.exists({
+                transaction: `$BANK${ref}`,
+                type: "bank",
+            });
+
+            if (exist) {
+                console.log("Transaction already exists. Skipping.");
+                continue;
+            }
+
+            const customer = await User.findOne({ paymentCode });
+            console.log("Customer found:", !!customer);
+
+            if (!customer) {
+                console.log("No customer found with payment code. Skipping.");
+                continue;
+            }
+
+            const wallet = await Wallet.findOne({ customer: customer._id });
+            console.log("Wallet found:", !!wallet);
+
+            if (!wallet) {
+                console.log("No wallet found for customer. Skipping.");
+                continue;
+            }
+
+            try {
+                const amountVnd = item.amount;
+                let tokensEarned: number;
+
+                if (matched[2]) {
+                    tokensEarned = Number(matched[2]);
+                    console.log("Using specified tokens:", tokensEarned);
+                } else {
+                    // Calculate tokens normally
+                    tokensEarned = await convertVndToTokens(amountVnd);
+                    console.log("Calculated tokens:", tokensEarned);
                 }
-                const paymentCode = matched[1];
-                if (item.type !== "IN") {
-                    return;
-                }
-                if (!item.amount || item.amount <= 0) {
-                    return;
-                }
-                const ref = item.transactionID;
-                const exist = await PaymentActivity.exists({
+
+                const newBalance = wallet.balance + tokensEarned;
+                const message = `Successfully deposited ${amountVnd.toLocaleString('vi-VN')} VND via bank (${tokensEarned} credits)`;
+
+                console.log("Creating payment activity...");
+                const paymentActivity = await PaymentActivity.create({
                     transaction: `$BANK${ref}`,
+                    oldBalance: wallet.balance,
+                    newBalance,
+                    customer: customer._id,
+                    wallet: wallet._id,
+                    amount: amountVnd,
                     type: "bank",
+                    status: "success",
+                    description: message,
+                    depositDiscountPercent: 0,
+                    tokensEarned: tokensEarned,
                 });
+                console.log("Payment activity created:", paymentActivity);
 
-                if (exist) {
-                    return;
-                }
-                const customer = await User.findOne({ paymentCode });
+                console.log("Updating wallet...");
+                const walletUpdateResult = await Wallet.updateOne(
+                    { _id: wallet._id },
+                    {
+                        $inc: {
+                            totalRecharged: amountVnd,
+                            balance: tokensEarned,
+                            totalTokens: tokensEarned,
+                        },
+                    }
+                );
+                console.log("Wallet update result:", walletUpdateResult);
 
-                if (!customer) {
-                    return;
-                }
-
-                const wallet = await Wallet.findOne({ customer: customer._id });
-
-                if (!wallet) {
-                    return;
-                }
-
-                try {
-                    const amountVnd = item.amount;
-                    const tokensEarned = await convertVndToTokens(amountVnd);
-                    const newBalance = wallet.balance + tokensEarned;
-                    const message = `Successfully deposited ${amountVnd.toLocaleString('vi-VN')} VND via bank (${tokensEarned} credits)`;
-
-                    await Promise.all([
-                        PaymentActivity.create({
-                            transaction: `$BANK${ref}`,
-                            oldBalance: wallet.balance,
-                            newBalance,
-                            customer: customer._id,
-                            wallet: wallet._id,
-                            amount: amountVnd,
-                            type: "bank",
-                            status: "success",
-                            description: message,
-                            depositDiscountPercent: 0,
-                            tokensEarned: tokensEarned,
-                        }),
-                        wallet.updateOne({
-                            $inc: {
-                                totalRecharged: amountVnd,
-                                balance: tokensEarned,
-                                totalTokens: tokensEarned,
-                            },
-                        }),
-                    ]);
-                } catch (error) {
-                    console.log("Lỗi xử lý thanh toán:", error);
-                }
-            })
-        );
+            } catch (error) {
+                console.error("Error processing payment:", error);
+            }
+        }
     } catch (error) {
-        console.log("Lỗi khi xử lý dữ liệu webhook:", error);
+        console.error("Lỗi khi xử lý dữ liệu webhook:", error);
     }
 }

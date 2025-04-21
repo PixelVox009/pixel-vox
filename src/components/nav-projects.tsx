@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, ImagePlus, type LucideIcon } from "lucide-react";
+import { Compass, ImagePlus, Landmark, type LucideIcon } from "lucide-react";
 
 import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
@@ -14,6 +14,7 @@ const navItems: {
 }[] = [
   { name: "Audio", url: "/audio", icon: Compass },
   { name: "Image", url: "/image", icon: ImagePlus },
+  { name: "Credits", url: "/credits", icon: Landmark },
 ];
 
 export function NavProjects() {
