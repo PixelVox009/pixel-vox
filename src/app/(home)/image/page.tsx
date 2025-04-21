@@ -9,8 +9,7 @@ import { DataTable } from "@/components/DataTable";
 import { imageService } from "@/lib/api/image";
 import { columns } from "@/components/users/image/columns";
 import { useGenerateImage } from "@/hooks/useGenerateImage";
-
-const PAGE_SIZE = 10;
+import { PAGE_SIZE } from "@/utils/constants";
 
 export default function ImageGenerationPage() {
   const [text, setText] = useState("");
@@ -35,7 +34,7 @@ export default function ImageGenerationPage() {
         isPending={isPending}
         onGenerate={() => generateImage(text)}
         useToken={false}
-        fixedTokenCost={5} 
+        fixedTokenCost={5}
       />
 
       <div className="mt-4 flex flex-col gap-4">
