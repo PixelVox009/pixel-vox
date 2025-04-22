@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CreditCard, Home, LayoutDashboard, Users } from "lucide-react";
+import { CreditCard, Home, LayoutDashboard, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -33,6 +33,11 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
       title: "Payment Management",
       icon: <CreditCard className="h-5 w-5" />,
       path: "/admin/payment",
+    },
+    {
+      title: "Settings",
+      icon: <Settings className="h-5 w-5" />,
+      path: "/admin/settings",
     },
     {
       title: "Back to Home",

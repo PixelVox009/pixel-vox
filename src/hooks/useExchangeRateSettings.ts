@@ -11,11 +11,14 @@ export const useExchangeRateSettings = () => {
         vndToUsdRate: 0,
         imageToTokenRate: 5,
         minuteToTokenRate: 30,
+        AUDIO_SERVER_URL: "",
+        AUDIO_SERVER_KEY: "",
+        IMAGE_SERVER_URL: "",
+        IMAGE_SERVER_KEY: "",
     });
 
     const queryClient = useQueryClient();
 
-    // Fetch exchange rate settings
     const {
         data: exchangeRates,
         isLoading
@@ -27,6 +30,10 @@ export const useExchangeRateSettings = () => {
             vndToUsdRate: data.vndToUsdRate || 0,
             imageToTokenRate: data.imageToTokenRate || 5,
             minuteToTokenRate: data.minuteToTokenRate || 30,
+            AUDIO_SERVER_URL: data.AUDIO_SERVER_URL || "",
+            AUDIO_SERVER_KEY: data.AUDIO_SERVER_KEY || "",
+            IMAGE_SERVER_URL: data.IMAGE_SERVER_URL || "",
+            IMAGE_SERVER_KEY: data.IMAGE_SERVER_KEY || "",
         }),
     });
 
@@ -35,7 +42,7 @@ export const useExchangeRateSettings = () => {
         mutationFn: settingsService.updateExchangeRates,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["exchange-rates"] });
-            toast.success("Cập nhật tỉ giá thành công!");
+            toast.success("Cập nhật thành công!");
         },
         onError: (error: Error) => {
             toast.error("Lỗi khi cập nhật tỉ giá: " + error.message);
@@ -50,6 +57,10 @@ export const useExchangeRateSettings = () => {
                 vndToUsdRate: exchangeRates.vndToUsdRate,
                 imageToTokenRate: exchangeRates.imageToTokenRate,
                 minuteToTokenRate: exchangeRates.minuteToTokenRate,
+                AUDIO_SERVER_URL: exchangeRates.AUDIO_SERVER_URL,
+                AUDIO_SERVER_KEY: exchangeRates.AUDIO_SERVER_KEY,
+                IMAGE_SERVER_URL: exchangeRates.IMAGE_SERVER_URL,
+                IMAGE_SERVER_KEY: exchangeRates.IMAGE_SERVER_KEY
             });
         }
     }, [exchangeRates]);

@@ -1,11 +1,11 @@
+import axios from "axios";
 import Joi from "joi";
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
 
 import dbConnect from "@/lib/db";
 import { Audio } from "@/models/Audio";
-import { Segment } from "@/models/Segment";
-import { ISegment } from "@/models/Segment";
+import { ISegment, Segment } from "@/models/Segment";
+import Setting from "@/models/seting";
 const schema = Joi.object({
   orderId: Joi.string().required(),
   serviceId: Joi.string().required(),
@@ -28,7 +28,13 @@ export async function PUT(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    const server = await Setting.find({
+      key: { $in: ["AUDIO_SERVER_KEY", "AUDIO_SERVER_URL"] }
+    })
+    const serverSettings: { [key: string]: string } = {};
+    server.forEach(setting => {
+      serverSettings[setting.key] = setting.value;
+    });
     const updatedSegment = await Segment.findOneAndUpdate(
       {
         orderId: value.orderId,
@@ -69,13 +75,13 @@ export async function PUT(req: NextRequest) {
       segments.sort((a: ISegment, b: ISegment) => a.segmentIndex - b.segmentIndex);
       const audioLinks = segments.map((segment: ISegment) => segment.link);
       const { data: resData } = await axios.post(
-        `${process.env.AUDIO_SERVER_URL}/tool-service-api/create-audio-merge`,
+        `${serverSettings.AUDIO_SERVER_URL}/tool-service-api/create-audio-merge`,
         {
           audioLinks: audioLinks,
         },
         {
           headers: {
-            Authorization: "Bearer " + process.env.AUDIO_SERVER_KEY,
+            Authorization: "Bearer " + serverSettings.AUDIO_SERVER_KEY,
           },
         }
       );

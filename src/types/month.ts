@@ -41,6 +41,10 @@ export interface ExchangeRates {
     vndToUsdRate?: number | 0;
     imageToTokenRate?: number | 0;
     minuteToTokenRate?: number | 0;
+    AUDIO_SERVER_URL?: string | "";
+    AUDIO_SERVER_KEY?: string | "";
+    IMAGE_SERVER_URL?: string | "";
+    IMAGE_SERVER_KEY?: string | "";
 }
 
 export interface BankConfig {

@@ -16,8 +16,6 @@ interface BankTransferInfoProps {
   onCopy: (text: string) => void;
   copied: boolean;
   formatCurrency: (value: number) => string;
-  credits?: number;
-  isCustom?: boolean;
 }
 
 const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
@@ -27,8 +25,6 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
   onCopy,
   copied,
   formatCurrency,
-  credits,
-  isCustom,
 }) => {
   const { rates } = useExchangeRates();
   const usdAmount = (amount / rates.vndToUsdRate).toFixed(2);
@@ -116,18 +112,11 @@ const BankTransferInfo: React.FC<BankTransferInfoProps> = ({
               <div>
                 <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Transfer content</h3>
                 <div className="flex flex-wrap items-center space-x-2">
-                  {isCustom === false ? (
-                    <p className="font-mono text-lg font-bold bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-2 rounded-lg">
-                      {transferContent} {credits}
-                    </p>
-                  ) : (
-                    <p className="font-mono text-lg font-bold bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-2 rounded-lg">
-                      {transferContent}
-                    </p>
-                  )}
-
+                  <p className="font-mono text-lg font-bold bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-2 rounded-lg">
+                    {transferContent}
+                  </p>
                   <button
-                    onClick={() => onCopy(transferContent + (isCustom ? "" : " " + credits))}
+                    onClick={() => onCopy(transferContent)}
                     className="mt-2 sm:mt-0 inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                   >
                     <svg

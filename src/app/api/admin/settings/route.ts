@@ -1,4 +1,3 @@
-// Cập nhật API route: /api/admin/settings.ts
 import dbConnect from '@/lib/db';
 import Setting from '@/models/seting';
 import { NextResponse } from 'next/server';
@@ -8,9 +7,7 @@ export async function GET() {
     try {
         await dbConnect();
 
-        const settings = await Setting.find({
-            key: { $in: ['usdToTokenRate', 'vndToUsdRate', 'imageToTokenRate', 'minuteToTokenRate'] }
-        });
+        const settings = await Setting.find();
 
         // Chuyển đổi mảng thành object
         const settingsObj: Record<string, string> = {};
@@ -31,17 +28,28 @@ export async function GET() {
     }
 }
 
-// Cập nhật cài đặt tỉ giá
+// Cập nhật cài đặt tỉ giá và cấu hình server
 export async function PUT(request: Request) {
     try {
         await dbConnect();
 
         const body = await request.json();
-        const { usdToTokenRate, vndToUsdRate, imageToTokenRate, minuteToTokenRate } = body;
+        const {
+            usdToTokenRate,
+            vndToUsdRate,
+            imageToTokenRate,
+            minuteToTokenRate,
+            AUDIO_SERVER_URL,
+            AUDIO_SERVER_KEY,
+            IMAGE_SERVER_URL,
+            IMAGE_SERVER_KEY
+        } = body;
 
-        if (!usdToTokenRate && !vndToUsdRate && !imageToTokenRate && !minuteToTokenRate) {
+        // Kiểm tra nếu không có dữ liệu nào được cung cấp
+        if (!usdToTokenRate && !vndToUsdRate && !imageToTokenRate && !minuteToTokenRate
+            && !AUDIO_SERVER_URL && !AUDIO_SERVER_KEY && !IMAGE_SERVER_URL && !IMAGE_SERVER_KEY) {
             return NextResponse.json(
-                { success: false, error: 'Cần cung cấp ít nhất một thông số tỉ giá' },
+                { success: false, error: 'Cần cung cấp ít nhất một thông số để cập nhật' },
                 { status: 400 }
             );
         }
@@ -50,7 +58,7 @@ export async function PUT(request: Request) {
         if (usdToTokenRate !== undefined) {
             await Setting.findOneAndUpdate(
                 { key: 'usdToTokenRate' },
-                { value: parseInt(usdToTokenRate) },
+                { value: usdToTokenRate.toString() },
                 { upsert: true, new: true }
             );
         }
@@ -58,7 +66,7 @@ export async function PUT(request: Request) {
         if (vndToUsdRate !== undefined) {
             await Setting.findOneAndUpdate(
                 { key: 'vndToUsdRate' },
-                { value: parseInt(vndToUsdRate) },
+                { value: vndToUsdRate.toString() },
                 { upsert: true, new: true }
             );
         }
@@ -67,7 +75,7 @@ export async function PUT(request: Request) {
         if (imageToTokenRate !== undefined) {
             await Setting.findOneAndUpdate(
                 { key: 'imageToTokenRate' },
-                { value: parseInt(imageToTokenRate) },
+                { value: imageToTokenRate.toString() },
                 { upsert: true, new: true }
             );
         }
@@ -75,15 +83,46 @@ export async function PUT(request: Request) {
         if (minuteToTokenRate !== undefined) {
             await Setting.findOneAndUpdate(
                 { key: 'minuteToTokenRate' },
-                { value: parseInt(minuteToTokenRate) },
+                { value: minuteToTokenRate.toString() },
+                { upsert: true, new: true }
+            );
+        }
+        if (AUDIO_SERVER_URL !== undefined) {
+            await Setting.findOneAndUpdate(
+                { key: 'AUDIO_SERVER_URL' },
+                { value: AUDIO_SERVER_URL },
                 { upsert: true, new: true }
             );
         }
 
+        if (AUDIO_SERVER_KEY !== undefined) {
+            await Setting.findOneAndUpdate(
+                { key: 'AUDIO_SERVER_KEY' },
+                { value: AUDIO_SERVER_KEY },
+                { upsert: true, new: true }
+            );
+        }
+        // Cập nhật cấu hình Image Server
+        if (IMAGE_SERVER_URL !== undefined) {
+            await Setting.findOneAndUpdate(
+                { key: 'IMAGE_SERVER_URL' },
+                { value: IMAGE_SERVER_URL },
+                { upsert: true, new: true }
+            );
+        }
+
+        if (IMAGE_SERVER_KEY !== undefined) {
+            await Setting.findOneAndUpdate(
+                { key: 'IMAGE_SERVER_KEY' },
+                { value: IMAGE_SERVER_KEY },
+                { upsert: true, new: true }
+            );
+        }
+        // Đợi tất cả các thao tác cập nhật hoàn tất
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         // Lấy dữ liệu đã cập nhật
-        const updatedSettings = await Setting.find({
-            key: { $in: ['usdToTokenRate', 'vndToUsdRate', 'imageToTokenRate', 'minuteToTokenRate'] }
-        });
+        const updatedSettings = await Setting.find();
 
         const result: Record<string, string> = {};
         updatedSettings.forEach(setting => {

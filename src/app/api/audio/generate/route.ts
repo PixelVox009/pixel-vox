@@ -8,6 +8,7 @@ import { Audio } from "@/models/Audio";
 import { Segment } from "@/models/Segment";
 import { autoSplitStory } from "@/utils/splitStory";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import Setting from "@/models/seting";
 
 const schema = Joi.object({
   textContent: Joi.string().required(),
@@ -39,14 +40,20 @@ export async function POST(req: NextRequest) {
     }
     const userId = session.user.id;
     const orderId = new Date().getTime();
-
+    const server = await Setting.find({
+      key: { $in: ["AUDIO_SERVER_KEY", "AUDIO_SERVER_URL"] }
+    })
+    const serverSettings: { [key: string]: string } = {};
+    server.forEach(setting => {
+      serverSettings[setting.key] = setting.value;
+    });
     const title = value.textContent.split(" ").slice(0, 8).join(" ").trim();
     
     const contentSegments = autoSplitStory(value.textContent);
     const segmentList = [];
     for (let i = 0; i < contentSegments.length; i++) {
       const { data: resData } = await axios.post(
-        `${process.env.AUDIO_SERVER_URL}/tool-service-api/create-audio-customer`,
+        `${serverSettings.AUDIO_SERVER_URL}/tool-service-api/create-audio-customer`,
         {
           textContent: contentSegments[i],
           segmentIndex: i + 1,
@@ -55,7 +62,7 @@ export async function POST(req: NextRequest) {
         },
         {
           headers: {
-            Authorization: "Bearer " + process.env.AUDIO_SERVER_KEY,
+            Authorization: "Bearer " + serverSettings.AUDIO_SERVER_KEY,
           },
         }
       );
