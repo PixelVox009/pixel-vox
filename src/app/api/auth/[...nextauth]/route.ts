@@ -1,12 +1,13 @@
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 import dbConnect from "@/lib/db";
 import { User } from "@/models/User";
-import { compare } from "bcryptjs";
+import Wallet from "@/models/wallet";
+import bcrypt, { compare } from "bcryptjs";
 import { Error } from "mongoose";
-
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -20,7 +21,6 @@ export const authOptions: NextAuthOptions = {
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Vui lòng cung cấp email và mật khẩu");
                 }
-
                 try {
                     await dbConnect();
                     const user = await User.findOne({ email: credentials.email }).select("+password");
@@ -48,6 +48,10 @@ export const authOptions: NextAuthOptions = {
                 }
             },
         }),
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        }),
     ],
     callbacks: {
         async jwt({ token, user }) {
@@ -64,6 +68,47 @@ export const authOptions: NextAuthOptions = {
             }
             return session;
         },
+        async signIn({ user, account, profile }) {
+            try {
+                await dbConnect();
+                if (account?.provider === "google" && profile?.email) {
+                    const existingUser = await User.findOne({ email: profile.email });
+                    const password = await bcrypt.hash("12345678", 10);
+                    const payment = Math.floor(100000 + Math.random() * 900000).toString()
+                    if (!existingUser) {
+                        const newUser = new User({
+                            email: profile.email,
+                            name: profile.name || 'Google User',
+                            image: profile.image ?? '',
+                            role: "user",
+                            hashedPassword: password,
+                            paymentCode: payment,
+
+                        });
+                        await newUser.save();
+                        await Wallet.create({
+                            customer: newUser._id,
+                            balance: 50,
+                            totalRecharged: 0,
+                            totalTokens: 50
+                        });
+                        if (user) {
+                            user.id = newUser._id.toString();
+                            user.role = "user";
+                        }
+                    } else {
+                        if (user) {
+                            user.id = existingUser._id.toString();
+                            user.role = existingUser.role;
+                        }
+                    }
+                }
+                return true;
+            } catch (error) {
+                console.error("Lỗi khi xử lý đăng nhập:", error);
+                return false;
+            }
+        },
     },
     pages: {
         signIn: "/login",
@@ -74,6 +119,7 @@ export const authOptions: NextAuthOptions = {
         strategy: "jwt",
     },
     secret: process.env.NEXTAUTH_SECRET,
+    debug: process.env.NODE_ENV === "development",
 };
 
 const handler = NextAuth(authOptions);

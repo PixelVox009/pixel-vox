@@ -1,29 +1,21 @@
 // app/text-to-speech/page.tsx
 "use client";
-import { useState } from "react";
 import _ from "lodash";
 import Image from "next/image";
+import { useState } from "react";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useGenerateAudio } from "@/hooks/useGenerateAudio";
 import TextInputArea from "@/components/TextInputArea";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AudioList from "@/components/users/audio/AudioList";
 import { PlayPreviewButton } from "@/components/users/audio/PlayPreviewButton";
+import { useGenerateAudio } from "@/hooks/useGenerateAudio";
 import { VOICES } from "@/utils/constants";
 
 export default function TextToSpeechPage() {
   const [text, setText] = useState("");
   const [voice, setVoice] = useState("fathom");
   const [tokenCost, setTokenCost] = useState<number | null>(null);
-  const { generateAudio, handleCheckTokens, isPending, isCheckingTokens } =
-    useGenerateAudio();
+  const { generateAudio, handleCheckTokens, isPending, isCheckingTokens } = useGenerateAudio();
 
   const checkTokens = async () => {
     if (!text.trim()) return;
@@ -40,9 +32,7 @@ export default function TextToSpeechPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 dark:text-white">
-        Create Lifelike Speech
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 dark:text-white">Create Lifelike Speech</h1>
 
       <TextInputArea
         text={text}

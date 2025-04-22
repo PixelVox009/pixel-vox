@@ -96,8 +96,6 @@ export default function BankTransferTab() {
             onCopy={handleCopy}
             copied={copied}
             formatCurrency={formatCurrency}
-            credits={calculatedTokens.totalTokens}
-            isCustom={isCustom}
           />
 
           <div className="mt-8">
