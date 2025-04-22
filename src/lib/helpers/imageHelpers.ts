@@ -1,8 +1,9 @@
-import { settingService } from "../api/setting";
+import { settingsService } from "../api/settings";
+
 
 // Lấy tỉ lệ token ảnh
 export async function fetchImageToTokenRate() {
-  const { data: setting } = await settingService.getSettings(
+  const { data: setting } = await settingsService.getSettings(
     "imageToTokenRate"
   );
 

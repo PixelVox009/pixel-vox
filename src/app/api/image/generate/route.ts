@@ -1,10 +1,11 @@
-import Joi from "joi";
 import axios from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import Joi from "joi";
 import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 import dbConnect from "@/lib/db";
 import { Image } from "@/models/Image";
+import Setting from "@/models/seting";
 import { autoSplitStory } from "@/utils/splitStory";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
@@ -41,16 +42,22 @@ export async function POST(req: NextRequest) {
 
     const orderId = new Date().getTime();
     const contentSegments = autoSplitStory(value.textContent);
-
+    const server = await Setting.find({
+      key: { $in: ["IMAGE_SERVER_URL", "IMAGE_SERVER_KEY"] }
+    })
+    const serverSettings: { [key: string]: string } = {};
+    server.forEach(setting => {
+      serverSettings[setting.key] = setting.value;
+    });
     const { data: resData } = await axios.post(
-      `${process.env.IMAGE_SERVER_URL}/tool-service-api/create-image-by-customer`,
+      `${serverSettings.IMAGE_SERVER_URL}/tool-service-api/create-image-by-customer`,
       {
         thumbnailsText: contentSegments,
         orderId,
       },
       {
         headers: {
-          Authorization: "Bearer " + process.env.IMAGE_SERVER_KEY,
+          Authorization: "Bearer " + serverSettings.IMAGE_SERVER_KEY,
         },
       }
     );

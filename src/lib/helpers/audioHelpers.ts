@@ -1,9 +1,10 @@
 import { genai } from "@/utils/genai";
-import { settingService } from "../api/setting";
+import { settingsService } from "../api/settings";
+
 
 // Lấy tỉ lệ token trên phút
 export async function fetchMinuteToTokenRate() {
-  const { data: setting } = await settingService.getSettings(
+  const { data: setting } = await settingsService.getSettings(
     "minuteToTokenRate"
   );
 
