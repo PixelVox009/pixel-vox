@@ -13,6 +13,8 @@ interface UserResponse {
     email: string | null;
     paymentCode?: string;
     balance: number;
+    hasPassword?: boolean;
+    hashedPassword?: string;
 }
 
 export async function GET() {
@@ -45,7 +47,9 @@ export async function GET() {
             name: user.name ?? null,
             email: user.email ?? null,
             paymentCode: user.paymentCode,
-            balance: wallet?.balance ?? 0
+            balance: wallet?.balance ?? 0,
+            hashedPassword: user.hashedPassword,
+            hasPassword: !!user.hashedPassword && user.hashedPassword.length > 0
         };
 
         return NextResponse.json(response);

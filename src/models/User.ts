@@ -3,12 +3,14 @@ export interface IUser {
     _id: string | Types.ObjectId;
     name: string;
     email: string;
-    hashedPassword: string;
+    hashedPassword?: string;
     image: string;
     role: 'user' | 'admin';
     tokenBalance: number;
     lastLoginAt: Date | null;
     paymentCode: string;
+    hasPassword?: boolean;
+
 }
 const UserSchema = new Schema({
     name: {

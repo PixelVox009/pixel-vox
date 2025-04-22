@@ -27,6 +27,7 @@ interface TokenPackagesProps {
 const TokenPackages: React.FC<TokenPackagesProps> = ({ packages, activePackage, onSelectPackage, formatCurrency }) => {
   const { rates } = useExchangeRates();
   const { isFirstRecharge, isLoading } = useFirstRecharge();
+
   const calculateBonus = (usdAmount: number, isCustomInput: boolean = false) => {
     if (isCustomInput) return 0;
 
@@ -36,9 +37,10 @@ const TokenPackages: React.FC<TokenPackagesProps> = ({ packages, activePackage, 
     if (usdAmount >= 20) return 5;
     return 0;
   };
+
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, index) => (
           <div key={index} className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 animate-pulse">
             <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded mb-2 w-2/3 mx-auto"></div>
@@ -49,6 +51,7 @@ const TokenPackages: React.FC<TokenPackagesProps> = ({ packages, activePackage, 
       </div>
     );
   }
+
   const getBonusStyle = (bonusPercent: number) => {
     if (isFirstRecharge) {
       return {
@@ -101,7 +104,7 @@ const TokenPackages: React.FC<TokenPackagesProps> = ({ packages, activePackage, 
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {packages.map((pkg, index) => {
         const usdAmount = Number((pkg.amount / rates.vndToUsdRate).toFixed(2));
         const baseTokenAmount = pkg.tokens;
@@ -145,7 +148,7 @@ const TokenPackages: React.FC<TokenPackagesProps> = ({ packages, activePackage, 
                     <div className="text-sm text-slate-500 dark:text-slate-400 line-through mb-1">
                       {baseTokenAmount} credits
                     </div>
-                    <div className="text-2xl font-bold text-slate-800 dark:text-white flex items-center">
+                    <div className="text-2xl font-bold text-slate-800 dark:text-white flex items-center justify-center">
                       {totalTokens}
                       <span className="text-base ml-1">credits</span>
                     </div>

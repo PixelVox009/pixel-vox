@@ -1,21 +1,25 @@
-import { useState } from "react";
+// hooks/useChangePassword.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+
+interface ChangePasswordParams {
+    currentPassword: string;
+    newPassword: string;
+}
 
 interface ChangePasswordResponse {
     message: string;
-    [key: string]: unknown;
+    user?: {
+        hasPassword: boolean;
+    };
 }
 
 export const useChangePassword = () => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
-    const [success, setSuccess] = useState<string>("");
+    const { update } = useSession();
+    const queryClient = useQueryClient();
 
-    const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
-        setIsLoading(true);
-        setError("");
-        setSuccess("");
-
-        try {
+    const mutation = useMutation<ChangePasswordResponse, Error, ChangePasswordParams>({
+        mutationFn: async ({ currentPassword, newPassword }) => {
             const response = await fetch("/api/user/change-password", {
                 method: "POST",
                 headers: {
@@ -27,30 +31,39 @@ export const useChangePassword = () => {
                 }),
             });
 
-            const data = await response.json() as ChangePasswordResponse;
+            const data = await response.json();
 
             if (!response.ok) {
                 throw new Error(data.message || "Có lỗi xảy ra khi đổi mật khẩu");
             }
 
-            setSuccess(data.message || "Đổi mật khẩu thành công");
+            return data;
+        },
+        onSuccess: async () => {
+            await update({
+                user: {
+                    hasPassword: true
+                }
+            });
+            queryClient.invalidateQueries({ queryKey: ['userData'] });
+        },
+    });
+
+    const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
+        try {
+            await mutation.mutateAsync({ currentPassword, newPassword });
             return true;
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Có lỗi xảy ra khi đổi mật khẩu");
+        } catch (error) {
+            console.error("Error changing password:", error);
             return false;
-        } finally {
-            setIsLoading(false);
         }
     };
 
     return {
         changePassword,
-        isLoading,
-        error,
-        success,
-        resetStates: () => {
-            setError("");
-            setSuccess("");
-        }
+        isLoading: mutation.isPending,
+        error: mutation.error?.message || "",
+        success: mutation.isSuccess ? "Đổi mật khẩu thành công" : "",
+        resetStates: () => mutation.reset(),
     };
 };

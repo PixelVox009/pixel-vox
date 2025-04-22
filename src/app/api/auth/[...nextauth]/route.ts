@@ -6,7 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 import dbConnect from "@/lib/db";
 import { User } from "@/models/User";
 import Wallet from "@/models/wallet";
-import bcrypt, { compare } from "bcryptjs";
+import { compare } from "bcryptjs";
 import { Error } from "mongoose";
 
 export const authOptions: NextAuthOptions = {
@@ -23,13 +23,11 @@ export const authOptions: NextAuthOptions = {
                 }
                 try {
                     await dbConnect();
-                    const user = await User.findOne({ email: credentials.email }).select("+password");
-
+                    const user = await User.findOne({ email: credentials.email }).select("+hashedPassword");
                     if (!user) {
                         throw new Error("Email hoặc mật khẩu không chính xác");
                     }
                     const isPasswordCorrect = await compare(credentials.password, user.hashedPassword);
-
                     if (!isPasswordCorrect) {
                         throw new Error("Email hoặc mật khẩu không chính xác");
                     }
@@ -38,6 +36,7 @@ export const authOptions: NextAuthOptions = {
                         name: user.name,
                         email: user.email,
                         role: user.role,
+                        hasPassword: !!user.hashedPassword && user.hashedPassword.length > 0
                     };
                 } catch (error: unknown) {
                     if (error instanceof Error) {
@@ -58,6 +57,23 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
+                if ('hasPassword' in user) {
+                    token.hasPassword = user.hasPassword;
+                }
+            }
+            if (token.hasPassword === undefined) {
+                try {
+                    await dbConnect();
+                    const dbUser = await User.findOne({ email: token.email });
+                    if (dbUser && dbUser.hashedPassword && dbUser.hashedPassword.length > 0) {
+                        token.hasPassword = true;
+                    } else {
+                        token.hasPassword = false;
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi kiểm tra hashedPassword:", error);
+                    token.hasPassword = false;
+                }
             }
             return token;
         },
@@ -65,6 +81,7 @@ export const authOptions: NextAuthOptions = {
             if (token) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as string;
+                session.user.hasPassword = !!token.hasPassword;
             }
             return session;
         },
@@ -73,17 +90,16 @@ export const authOptions: NextAuthOptions = {
                 await dbConnect();
                 if (account?.provider === "google" && profile?.email) {
                     const existingUser = await User.findOne({ email: profile.email });
-                    const password = await bcrypt.hash("12345678", 10);
-                    const payment = Math.floor(100000 + Math.random() * 900000).toString()
+                    const payment = Math.floor(100000 + Math.random() * 900000).toString();
                     if (!existingUser) {
                         const newUser = new User({
                             email: profile.email,
                             name: profile.name || 'Google User',
                             image: profile.image ?? '',
                             role: "user",
-                            hashedPassword: password,
+                            hashedPassword: "",
                             paymentCode: payment,
-
+                            provider: "google"
                         });
                         await newUser.save();
                         await Wallet.create({
@@ -95,11 +111,13 @@ export const authOptions: NextAuthOptions = {
                         if (user) {
                             user.id = newUser._id.toString();
                             user.role = "user";
+                            user.hasPassword = false;
                         }
                     } else {
                         if (user) {
                             user.id = existingUser._id.toString();
                             user.role = existingUser.role;
+                            user.hasPassword = !!existingUser.hashedPassword && existingUser.hashedPassword.length > 0;
                         }
                     }
                 }

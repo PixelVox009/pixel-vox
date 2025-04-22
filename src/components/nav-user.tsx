@@ -22,8 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { useLogout } from "@/hooks/use-auth";
-import { useChangePassword } from "@/hooks/useChangePassword"; // Import change password hook
-import { useUserData } from "@/hooks/useUserData"; // Import custom hook
+import { useChangePassword } from "@/hooks/useChangePassword";
+import { useUserData } from "@/hooks/useUserData";
 import { ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
@@ -46,30 +46,26 @@ export function NavUser() {
     confirmPassword: "",
   });
   const [validationError, setValidationError] = useState<string>("");
-
+  const hasPassword = data?.hasPassword;
   const handleLogout = () => {
     logout();
   };
-
   const handlePasswordChange = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Reset previous states
     setValidationError("");
-
-    // Basic validation
     if (formData.newPassword !== formData.confirmPassword) {
       setValidationError("Mật khẩu mới không khớp với xác nhận mật khẩu");
       return;
     }
-
     if (formData.newPassword.length < 6) {
       setValidationError("Mật khẩu mới phải có ít nhất 6 ký tự");
       return;
     }
-
-    const result = await changePassword(formData.currentPassword, formData.newPassword);
-
+    if (hasPassword && !formData.currentPassword) {
+      setValidationError("Vui lòng nhập mật khẩu hiện tại");
+      return;
+    }
+    const result = await changePassword(hasPassword ? formData.currentPassword : "", formData.newPassword);
     if (result) {
       if (typeof toast !== "undefined") {
         toast.success(success || "Đổi mật khẩu thành công");
@@ -103,7 +99,6 @@ export function NavUser() {
     }
     setIsPasswordModalOpen(open);
   };
-
   return (
     <>
       <SidebarMenu>
@@ -147,7 +142,7 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => setIsPasswordModalOpen(true)}>
                   <Sparkles className="mr-2 h-4 w-4" />
-                  Change password
+                  {hasPassword ? "Change password" : "Set password"}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
@@ -163,8 +158,12 @@ export function NavUser() {
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handlePasswordChange}>
             <DialogHeader>
-              <DialogTitle>Change password</DialogTitle>
-              <DialogDescription>Enter your current password and your new password.</DialogDescription>
+              <DialogTitle>{hasPassword ? "Change password" : "Set password"}</DialogTitle>
+              <DialogDescription>
+                {hasPassword
+                  ? "Enter your current password and your new password."
+                  : "Create a new password for your account."}
+              </DialogDescription>
             </DialogHeader>
             {(validationError || error) && (
               <div className="mb-4 mt-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
@@ -175,18 +174,21 @@ export function NavUser() {
               <div className="mb-4 mt-2 rounded-md bg-green-100 p-3 text-sm text-green-800">{success}</div>
             )}
             <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="currentPassword">Current password</Label>
-                <Input
-                  id="currentPassword"
-                  name="currentPassword"
-                  type="password"
-                  value={formData.currentPassword}
-                  onChange={handleInputChange}
-                  required
-                  autoComplete="current-password"
-                />
-              </div>
+              {/* Chỉ hiển thị input mật khẩu hiện tại nếu người dùng đã có mật khẩu */}
+              {hasPassword && (
+                <div className="grid gap-2">
+                  <Label htmlFor="currentPassword">Current password</Label>
+                  <Input
+                    id="currentPassword"
+                    name="currentPassword"
+                    type="password"
+                    value={formData.currentPassword}
+                    onChange={handleInputChange}
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+              )}
               <div className="grid gap-2">
                 <Label htmlFor="newPassword">New password</Label>
                 <Input
