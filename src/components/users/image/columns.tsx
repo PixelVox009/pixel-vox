@@ -21,13 +21,28 @@ export const columns: ColumnDef<Image>[] = [
     accessorKey: "status",
     header: () => <div className="text-center">Status</div>,
     size: 120,
-    cell: ({ row }) => (
-      <div className="flex justify-center">
-        <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.getValue("status")}
-        </Badge>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      // Xác định màu dựa vào trạng thái
+      let className = "bg-gray-100 text-gray-800 ";
+      if (status === "success") {
+        className = "bg-green-100 text-green-800 border-green-600";
+      } else if (status === "processing") {
+        className = "bg-blue-100 text-blue-800 border-blue-600";
+      } else if (status === "failed") {
+        className = "bg-red-100 text-red-800 border-red-600";
+      } else if (status === "pending") {
+        className = "bg-yellow-100 text-yellow-800 border-yellow-600";
+      }
+
+      return (
+        <div className="flex justify-center">
+          <Badge variant="outline" className={`${className} text-xs px-2 py-1 rounded-full`}>
+            {status}
+          </Badge>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "createdAt",

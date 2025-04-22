@@ -1,5 +1,4 @@
-import mongoose, { Schema, models } from 'mongoose';
-import { Types } from 'mongoose';
+import mongoose, { Schema, Types, models } from 'mongoose';
 export interface IUser {
     _id: string | Types.ObjectId;
     name: string;
@@ -23,9 +22,12 @@ const UserSchema = new Schema({
     },
     hashedPassword: {
         type: String,
-        required: [true, 'Vui lòng nhập mật khẩu'],
+        required: false,
     },
-    image: String,
+    image: {
+        type: String,
+        default: "",
+    },
     role: {
         type: String,
         enum: ['user', 'admin'],
@@ -45,6 +47,11 @@ const UserSchema = new Schema({
         unique: true,
         index: true
     },
+    provider: {
+        type: String,
+        enum: ["credentials", "google", ""],
+        default: "credentials",
+    }
 }, { timestamps: true });
 
 export const User = models.User || mongoose.model<IUser>('User', UserSchema);

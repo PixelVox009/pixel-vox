@@ -86,7 +86,7 @@ export function HeroSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/register">
+              <Link href="/login">
                 <Button size="lg" className="gap-1.5 px-8 py-6 text-base">
                   Get started now <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>

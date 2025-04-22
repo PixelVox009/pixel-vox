@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export default async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
+
+    // Xử lý API routes
     if (pathname.startsWith('/api/auth/session')) {
         // Thêm cache headers
         const response = NextResponse.next();
@@ -10,7 +12,7 @@ export default async function middleware(req: NextRequest) {
         return response;
     }
 
-    // Chỉ gọi getToken cho các route không phải API session
+    // Lấy token xác thực
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     const isAuthenticated = !!token;
 
@@ -19,12 +21,22 @@ export default async function middleware(req: NextRequest) {
     const userRoutes = ['/audio', '/video', '/image'];
     const authRoutes = ['/login', '/register', '/forgot-password'];
 
+    if (pathname === '/' && isAuthenticated) {
+        if (token.role === 'admin') {
+            return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+        } else {
+            return NextResponse.redirect(new URL('/audio', req.url));
+        }
+    }
+
     if (adminRoutes.some(route => pathname.startsWith(route)) && token?.role !== 'admin') {
         return NextResponse.redirect(new URL('/audio', req.url));
     }
+
     if (userRoutes.some(route => pathname.startsWith(route)) && !isAuthenticated) {
         return NextResponse.redirect(new URL('/login', req.url));
     }
+
     if (authRoutes.some(route => pathname.startsWith(route)) && isAuthenticated) {
         if (token.role === 'admin') {
             return NextResponse.redirect(new URL('/admin/dashboard', req.url));
@@ -32,6 +44,7 @@ export default async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL('/audio', req.url));
         }
     }
+
     const response = NextResponse.next();
     response.headers.set(
         "Cache-Control",
@@ -42,6 +55,7 @@ export default async function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
+        '/',
         '/dashboard/:path*',
         '/admin/:path*',
         '/audio/:path*',
