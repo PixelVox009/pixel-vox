@@ -31,8 +31,10 @@ export const UserRow = ({ user, onGift, vndToUsdRate }: UserRowProps) => {
       <td className="py-3 px-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9 border border-muted/50">
-            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`} />
-            <AvatarFallback className="bg-primary/10 text-primary">{getInitials(user.name)}</AvatarFallback>
+            <AvatarImage
+              src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user?.name ?? "")}`}
+            />
+            <AvatarFallback className="bg-primary/10 text-primary">{getInitials(user?.name ?? "")}</AvatarFallback>
           </Avatar>
           <div>
             <div className="font-medium">{user.name}</div>

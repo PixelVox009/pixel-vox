@@ -20,6 +20,8 @@ export interface UserData {
     updatedAt: string;
     paymentCode?: string;
     wallet?: UserWallet;
+    hasPassword?: boolean;
+    hashedPassword?: string;
 }
 
 export interface PaginationProps {

@@ -3,14 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, LogIn } from "lucide-react";
 import { getSession, signIn } from "next-auth/react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
@@ -196,15 +195,6 @@ export function LoginForm() {
           )}
         </Button>
       </CardContent>
-
-      <CardFooter className="flex justify-center">
-        <p className="text-sm text-gray-500">
-          Don`t have an account?{" "}
-          <Link href="/register" className="text-primary font-medium hover:underline">
-            Register now
-          </Link>
-        </p>
-      </CardFooter>
     </Card>
   );
 }

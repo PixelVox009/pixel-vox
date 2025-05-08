@@ -1,42 +1,53 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import bcrypt from "bcryptjs";
-
+// app/api/user/change-password/route.ts
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import { User } from "@/models/User";
+import bcrypt from "bcryptjs";
+import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        await dbConnect();
         const session = await getServerSession(authOptions);
-        if (!session?.user?.email) {
-            return NextResponse.json({ message: "Bạn chưa đăng nhập" }, { status: 401 });
+        if (!session || !session.user) {
+            return NextResponse.json(
+                { message: "Bạn phải đăng nhập để thực hiện hành động này" },
+                { status: 401 }
+            );
         }
+        await dbConnect();
         const { currentPassword, newPassword } = await req.json();
-        if (!currentPassword || !newPassword) {
-            return NextResponse.json({ message: "Vui lòng nhập đầy đủ thông tin" }, { status: 400 });
-        }
-        if (newPassword.length < 6) {
-            return NextResponse.json({ message: "Mật khẩu mới phải có ít nhất 6 ký tự" }, { status: 400 });
-        }
-        const user = await User.findOne({ email: session.user.email });
+        const user = await User.findById(session.user.id).select("+hashedPassword");
         if (!user) {
-            return NextResponse.json({ message: "Người dùng không tồn tại" }, { status: 404 });
+            return NextResponse.json(
+                { message: "Không tìm thấy người dùng" },
+                { status: 404 }
+            );
         }
-        const isPasswordValid = await bcrypt.compare(currentPassword, user.hashedPassword);
-        if (!isPasswordValid) {
-            return NextResponse.json({ message: "Mật khẩu hiện tại không chính xác" }, { status: 400 });
+        const hasPassword = session.user.hasPassword;
+        if (hasPassword) {
+            const isCorrectPassword = await bcrypt.compare(currentPassword, user.hashedPassword);
+            if (!isCorrectPassword) {
+                return NextResponse.json(
+                    { message: "Mật khẩu hiện tại không chính xác" },
+                    { status: 400 }
+                );
+            }
         }
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await User.updateOne(
-            { _id: user._id },
-            { $set: { hashedPassword: hashedPassword } }
-        );
-        return NextResponse.json({ message: "Đổi mật khẩu thành công" }, { status: 200 });
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        user.hashedPassword = hashedNewPassword;
+        if (user.provider === "google") {
+            user.provider = "credentials";
+        }
+        await user.save();
+        return NextResponse.json({
+            message: "Mật khẩu đã được cập nhật thành công"
+        });
     } catch (error) {
-        console.error('Lỗi khi đổi mật khẩu:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Lỗi server';
-        return NextResponse.json({ message: `Đã xảy ra lỗi: ${errorMessage}` }, { status: 500 });
+        console.error("Lỗi thay đổi mật khẩu:", error);
+        return NextResponse.json(
+            { message: "Đã xảy ra lỗi khi cập nhật mật khẩu" },
+            { status: 500 }
+        );
     }
 }
